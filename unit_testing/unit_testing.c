@@ -163,7 +163,7 @@ testing_library_test_result_type testing_library_evaluate_test_result(const test
 	testing_library_test_result_type test_result = test_result_test_has_no_assertion;
 	assert(ptest != NULL);
 	if (ptest != NULL) {
-		if (ptest->number_of_true_assertions > 0U && ptest->number_of_false_assertions == 0U) {
+		if (ptest->number_of_true_assertions > 0U and ptest->number_of_false_assertions == 0U) {
 			test_result = test_result_test_passes;
 		} else if (ptest->number_of_false_assertions > 0U) {
 			test_result = test_result_test_fails;

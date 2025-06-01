@@ -19,12 +19,14 @@ Note:
 #endif
 #endif
 
-#if STATIC_ASSERT_AVAILABLE == 0
+#if STATIC_ASSERT_AVAILABLE == 1
+#define STATIC_ASSERT(condition, message) static_assert(condition, message)
+#else
 #include "macro_concatenate.h"
 #if defined(__COUNTER__)
-#define static_assert(condition, message) static const char * const CONCATENATE(static_assert_message_, __COUNTER__)[(condition) ? 1 : -1] = {message}
+#define STATIC_ASSERT(condition, message) static const char * const CONCATENATE(static_assert_message_, __COUNTER__)[(condition) ? 1 : -1] = {message}
 #elif defined(__LINE__)
-#define static_assert(condition, message) static const char * const CONCATENATE(static_assert_message_, __LINE__)[(condition) ? 1 : -1] = {message}
+#define STATIC_ASSERT(condition, message) static const char * const CONCATENATE(static_assert_message_, __LINE__)[(condition) ? 1 : -1] = {message}
 #warning The static_assert macro cannot be implemented properly because __COUNTER__ is not defined by your compiler.
 #warning Only one instance of static_assert is allowed on each line.
 #else

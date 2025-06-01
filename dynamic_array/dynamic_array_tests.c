@@ -3,13 +3,12 @@
 #include "sizeof_array.h"
 #include "static_pool.h"
 #include "unit_testing.h"
-
 #include <assert.h>
 #include <iso646.h>
 #include <setjmp.h>
 #include <string.h>
 
-static static_pool_type static_pool = {0U};
+static static_pool_type static_pool = {{0U}};
 
 static void *unit_test_allocate(size_t number_of_bytes)
 {
@@ -364,21 +363,20 @@ TEST(user_defined_type_test, "User-defined type")
 	unit_test_pool_deinit();
 }
 
-DEFINE_LIST_OF_TESTS(list_of_tests) {
-	char_dynamic_array_with_no_buffer,
-	size_test_for_char_dynamic_array_with_no_element,
-	out_of_bounds_access_to_char_dynamic_array_with_no_element,
-	test_for_char_dynamic_array_initialized_with_one_element,
-	value_test_for_char_dynamic_array_with_one_element,
-	char_dynamic_array_with_one_element_and_a_new_element_is_added_to_the_back,
-	char_dynamic_array_with_one_element_and_a_new_element_is_added_to_the_front,
-	string_operations_on_char_dynamic_array,
-	dynamic_integer_array,
-	user_defined_type_test
-};
-
 int main(void)
 {	
+	DEFINE_LIST_OF_TESTS(list_of_tests) {
+		char_dynamic_array_with_no_buffer,
+		size_test_for_char_dynamic_array_with_no_element,
+		out_of_bounds_access_to_char_dynamic_array_with_no_element,
+		test_for_char_dynamic_array_initialized_with_one_element,
+		value_test_for_char_dynamic_array_with_one_element,
+		char_dynamic_array_with_one_element_and_a_new_element_is_added_to_the_back,
+		char_dynamic_array_with_one_element_and_a_new_element_is_added_to_the_front,
+		string_operations_on_char_dynamic_array,
+		dynamic_integer_array,
+		user_defined_type_test
+	};
 	PRINT_FILE_NAME();
 	RUN_TESTS(list_of_tests);
 	PRINT_TEST_STATISTICS(list_of_tests);

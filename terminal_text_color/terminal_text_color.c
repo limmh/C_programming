@@ -37,31 +37,28 @@ static void POSIX_terminal_text_color_set(terminal_color_code_type text_color_co
 
 #else
 
+#include "Boolean_type.h"
 #include <Windows.h>
 
 #define TEXT_COLOR_FLAGS (FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE)
 
-typedef int boolean_type;
-#define boolean_false 0
-#define boolean_true (!boolean_false)
-
 typedef enum Windows_text_color_type {
-    Windows_text_color_black             = 0,
-    Windows_text_color_dark_blue         = FOREGROUND_BLUE,
-    Windows_text_color_dark_green        = FOREGROUND_GREEN,
-    Windows_text_color_dark_cyan         = FOREGROUND_GREEN | FOREGROUND_BLUE,
-    Windows_text_color_dark_red          = FOREGROUND_RED,
-    Windows_text_color_dark_magenta      = FOREGROUND_RED | FOREGROUND_BLUE,
-    Windows_text_color_dark_yellow       = FOREGROUND_RED | FOREGROUND_GREEN,
-    Windows_text_color_dark_gray         = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
-    Windows_text_color_gray              = FOREGROUND_INTENSITY,
-    Windows_text_color_blue              = FOREGROUND_INTENSITY | FOREGROUND_BLUE,
-    Windows_text_color_green             = FOREGROUND_INTENSITY | FOREGROUND_GREEN,
-    Windows_text_color_cyan              = FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE,
-    Windows_text_color_red               = FOREGROUND_INTENSITY | FOREGROUND_RED,
-    Windows_text_color_magenta           = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE,
-    Windows_text_color_yellow            = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN,
-    Windows_text_color_white             = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
+	Windows_text_color_black             = 0,
+	Windows_text_color_dark_blue         = FOREGROUND_BLUE,
+	Windows_text_color_dark_green        = FOREGROUND_GREEN,
+	Windows_text_color_dark_cyan         = FOREGROUND_GREEN | FOREGROUND_BLUE,
+	Windows_text_color_dark_red          = FOREGROUND_RED,
+	Windows_text_color_dark_magenta      = FOREGROUND_RED | FOREGROUND_BLUE,
+	Windows_text_color_dark_yellow       = FOREGROUND_RED | FOREGROUND_GREEN,
+	Windows_text_color_dark_gray         = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE,
+	Windows_text_color_gray              = FOREGROUND_INTENSITY,
+	Windows_text_color_blue              = FOREGROUND_INTENSITY | FOREGROUND_BLUE,
+	Windows_text_color_green             = FOREGROUND_INTENSITY | FOREGROUND_GREEN,
+	Windows_text_color_cyan              = FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_BLUE,
+	Windows_text_color_red               = FOREGROUND_INTENSITY | FOREGROUND_RED,
+	Windows_text_color_magenta           = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_BLUE,
+	Windows_text_color_yellow            = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN,
+	Windows_text_color_white             = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE
 } Windows_text_color_type;
 
 static Windows_text_color_type
@@ -100,20 +97,20 @@ terminal_text_color_code_to_Windows_console_text_color_code(terminal_color_code_
 
 static void Windows_terminal_text_color_set(terminal_color_code_type text_color_code)
 {
-	static boolean_type is_first_time = boolean_true;
+	static Boolean_type is_first_time = Boolean_true;
 	static HANDLE hConsole = INVALID_HANDLE_VALUE;
-    static WORD default_attributes = 0U;
+	static WORD default_attributes = 0U;
 
-    if (is_first_time) {
+	if (is_first_time) {
 		CONSOLE_SCREEN_BUFFER_INFO consoleInfo = {0};
-		is_first_time = boolean_false;
+		is_first_time = Boolean_false;
 		hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 		GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
 		default_attributes = consoleInfo.wAttributes;
 	}
 
-	const Windows_text_color_type color_code = terminal_text_color_code_to_Windows_console_text_color_code(text_color_code);
 	if (text_color_code != terminal_color_code_default) {
+		const Windows_text_color_type color_code = terminal_text_color_code_to_Windows_console_text_color_code(text_color_code);
 		SetConsoleTextAttribute(hConsole, ((DWORD) default_attributes & ~TEXT_COLOR_FLAGS) | (WORD) color_code);
 	} else {
 		SetConsoleTextAttribute(hConsole, default_attributes);

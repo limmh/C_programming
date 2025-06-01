@@ -1,4 +1,5 @@
 #include "dynamic_array.h"
+#include "Boolean_type.h"
 #include "static_assert.h"
 
 #include <iso646.h>
@@ -19,12 +20,8 @@ Notes:
 
 #ifndef __cplusplus
 #if defined(__STDC_VERSION__) and (__STDC_VERSION__ >= 199901L)
-#include <stdbool.h>
 #define DYNAMIC_ARRAY_HAS_SUPPORT_FOR_C99_DESIGNATED_INITIALIZERS 1
 #else
-typedef int bool;
-#define false 0
-#define true (!false)
 #define DYNAMIC_ARRAY_HAS_SUPPORT_FOR_C99_DESIGNATED_INITIALIZERS 0
 #endif
 #else
@@ -39,9 +36,9 @@ typedef struct {
 	dynamic_array_allocator_type *allocator; /* must have a longer lifetime than the dynamic array */
 } dynamic_array_internal_type;
 
-static_assert(sizeof(unsigned char) == 1U, "Please check the size of a byte.");
-static_assert(sizeof(size_t) == sizeof(void*), "There is a mismatch between the size of size_t and a pointer type.");
-static_assert(sizeof(dynamic_array_type_) == sizeof(dynamic_array_internal_type), "There is a mismatch between the public data type and the internal data type.");
+STATIC_ASSERT(sizeof(unsigned char) == 1U, "Please check the size of a byte.");
+STATIC_ASSERT(sizeof(size_t) == sizeof(void*), "There is a mismatch between the size of size_t and a pointer type.");
+STATIC_ASSERT(sizeof(dynamic_array_type_) == sizeof(dynamic_array_internal_type), "There is a mismatch between the public data type and the internal data type.");
 
 #if DYNAMIC_ARRAY_HAS_SUPPORT_FOR_C99_DESIGNATED_INITIALIZERS != 0
 #define INTERNAL_DEBUG_INFO() {.file_name = __FILE__, .line_number = (size_t)__LINE__, .struct_size = sizeof(dynamic_array_internal_type)}
@@ -250,7 +247,7 @@ dynamic_array_create_(
 	size_t initial_capacity = 1U;
 	size_t total_bytes = 0U;
 	void *ptr = NULL;
-	bool multiplication_overflow_detected = false;
+	Boolean_type multiplication_overflow_detected = Boolean_false;
 	dynamic_array_internal_type array = {0U};
 	dynamic_array_type_ dyn_array = {0U};
 	size_t quotient = 0U;
@@ -285,9 +282,9 @@ dynamic_array_create_(
 		dynamic_array_terminate();
 	}
 #endif
-	
+
 	if (allocator != NULL) {
-		const bool use_allocator = (allocator->allocate_funcptr != NULL and allocator->reallocate_funcptr != NULL and
+		const Boolean_type use_allocator = (allocator->allocate_funcptr != NULL and allocator->reallocate_funcptr != NULL and
 					allocator->deallocate_funcptr != NULL);
 
 		assert(allocator->allocate_funcptr != NULL);
@@ -534,7 +531,7 @@ dynamic_array_add_elements_at_index_(
 		size_t new_capacity = array->capacity;
 
 		while (new_capacity < new_number_of_elements) {
-			bool multiplication_overflow_detected = false;
+			Boolean_type multiplication_overflow_detected = Boolean_false;
 			new_capacity += new_capacity;
 			multiplication_overflow_detected = not (quotient > new_capacity);
 			assert(not multiplication_overflow_detected);
@@ -707,7 +704,7 @@ dynamic_array_resize_(
 
 			quotient = SIZE_MAX / array->element_size_in_bytes;
 			while (new_capacity < new_number_of_elements) {
-				bool multiplication_overflow_detected = false; 
+				Boolean_type multiplication_overflow_detected = Boolean_false; 
 				new_capacity += new_capacity;
 				multiplication_overflow_detected = not (quotient > new_capacity);
 				assert(not multiplication_overflow_detected);
@@ -731,7 +728,7 @@ dynamic_array_resize_(
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 				const dynamic_array_error_type error = dynamic_array_error_memory_reallocation_failure_occurred;
 				const dynamic_array_debug_info_type internal_debug_info = INTERNAL_DEBUG_INFO();
-				dynamic_array_report_error(error, debug_info, internal_debug_info, 0U, 0U);
+				dynamic_array_report_error(error, debug_info, internal_debug_info, new_capacity, 0U);
 				dynamic_array_handle_exception(error);
 #endif
 				return;

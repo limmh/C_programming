@@ -114,8 +114,8 @@ static testing_library_data_type testing_library_data = {
 
 #define COMPARE_USING_OPERATOR(DATA_TYPE, LHS, OPERATOR, RHS, PRINT_FUNCTION) \
 	do { \
-		DATA_TYPE const lhs = (LHS); \
-		DATA_TYPE const rhs = (RHS); \
+		DATA_TYPE const lhs = (DATA_TYPE) (LHS); \
+		DATA_TYPE const rhs = (DATA_TYPE) (RHS); \
 		const Boolean_type result = (lhs OPERATOR rhs); \
 		testing_library_assert(__LINE__, result, STRINGIFY(LHS OPERATOR RHS), &testing_library_data); \
 		if (!result) { \
@@ -125,8 +125,8 @@ static testing_library_data_type testing_library_data = {
 
 #define COMPARE_USING_FUNCTION(DATA_TYPE, COMPARISON_FUNCTION, LHS, RHS, PRINT_FUNCTION) \
 	do { \
-		DATA_TYPE const lhs = (LHS); \
-		DATA_TYPE const rhs = (RHS); \
+		DATA_TYPE const lhs = (DATA_TYPE) (LHS); \
+		DATA_TYPE const rhs = (DATA_TYPE) (RHS); \
 		const Boolean_type result = (Boolean_type) COMPARISON_FUNCTION(lhs, rhs); \
 		testing_library_assert(__LINE__, result, STRINGIFY(COMPARISON_FUNCTION(LHS, RHS)), &testing_library_data); \
 		if (!result) { \
@@ -185,7 +185,7 @@ static testing_library_data_type testing_library_data = {
 #define SHOULD_PRINT_TRUE_ASSERTIONS() testing_library_data.should_print_true_assertions = Boolean_true
 #define SHOULD_NOT_PRINT_TRUE_ASSERTIONS() testing_library_data.should_print_true_assertions = Boolean_false
 
-#define DEFINE_LIST_OF_TESTS(TEST_LIST) static testing_library_test_type * const TEST_LIST[] = 
+#define DEFINE_LIST_OF_TESTS(TEST_LIST) testing_library_test_type * const TEST_LIST[] = 
 
 #define RUN_TEST(test) testing_library_run_test(0U, test, &testing_library_data)
 #define RUN_TESTS(list_of_tests) testing_library_run_tests(&list_of_tests[0], SIZEOF_ARRAY(list_of_tests), &testing_library_data)

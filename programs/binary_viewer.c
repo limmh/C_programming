@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
 	dynamic_array_type(unsigned char) bytes = dynamic_array_create(unsigned char, 8U);
 	for (int i = 1; i < argc; ++i) {
 		errno = 0;
+		int error_code = 0;
 		size_t file_size = 0U;
 		FILE *fp = fopen(argv[i], "rb");
 		if (fp != NULL) {
@@ -98,12 +99,14 @@ int main(int argc, char *argv[])
 			fclose(fp);
 			fp = NULL;
 		} else {
-			const int error_code = errno;
+			error_code = errno;
 			printf("%s: %s\n", argv[i], ((error_code != 0) ? strerror(error_code) : "Cannot open file."));
 		}
-		printf("%s: %lu byte%s\n", argv[i], (unsigned long)(file_size), ((file_size > 1U) ? "s" : ""));
-		print_binary_data(stdout, &dynamic_array_element(unsigned char, bytes, 0U), dynamic_array_size(bytes));
-		printf("\n");
+		if (error_code == 0) {
+			printf("%s: %lu byte%s\n", argv[i], (unsigned long)(file_size), ((file_size > 1U) ? "s" : ""));
+			print_binary_data(stdout, &dynamic_array_element(unsigned char, bytes, 0U), dynamic_array_size(bytes));
+			printf("\n");
+		}
 	}
 	dynamic_array_delete(bytes);
 	return 0;

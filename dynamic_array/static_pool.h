@@ -8,14 +8,16 @@ extern "C" {
 #endif
 
 struct static_pool_type {
-	unsigned char chunk1[128];
-	unsigned char chunk2[64];
-	unsigned char chunk3[32];
-	unsigned char chunk4[16];
-	unsigned char chunk5[8];
-	unsigned char chunk6[4];
-	unsigned char chunk7[2];
-	unsigned char chunk8[1];
+	unsigned char chunk10[512];
+	unsigned char chunk9[256];
+	unsigned char chunk8[128];
+	unsigned char chunk7[64];
+	unsigned char chunk6[32];
+	unsigned char chunk5[16];
+	unsigned char chunk4[8];
+	unsigned char chunk3[4];
+	unsigned char chunk2[2];
+	unsigned char chunk1[1];
 	unsigned char padding;
 };
 
