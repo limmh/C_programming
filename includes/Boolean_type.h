@@ -6,7 +6,7 @@ typedef bool Boolean_type;
 #define Boolean_false false
 #define Boolean_true true
 #else
-#if defined(_STDC_VERSION_) && (_STDC_VERSION_ >= 199901L)
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
 #include <stdbool.h>
 typedef bool Boolean_type;
 #define Boolean_false false

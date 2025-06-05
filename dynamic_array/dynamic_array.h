@@ -128,7 +128,22 @@ dynamic_array_check_(
 		dynamic_array_check_(&(array), s_debug_info) \
 	)
 
-/* Returns the number of element of the dynamic array */
+/* Returns the number of elements that can be stored without reallocation */
+size_t
+dynamic_array_capacity_(
+	const dynamic_array_type_ *dynamic_array,
+	dynamic_array_debug_info_type debug_info
+);
+
+#define dynamic_array_capacity(array) \
+	( \
+		s_debug_info.file_name = __FILE__, \
+		s_debug_info.line_number = (size_t)__LINE__, \
+		s_debug_info.struct_size = sizeof(array), \
+		dynamic_array_capacity_(&(array), s_debug_info) \
+	)
+
+/* Returns the actual number of elements of the dynamic array */
 size_t
 dynamic_array_size_(
 	const dynamic_array_type_ *dynamic_array,

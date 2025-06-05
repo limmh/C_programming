@@ -9,7 +9,7 @@ Note:
 */
 
 #ifndef STATIC_ASSERT_AVAILABLE
-#if defined(__cplusplus) && ( __cplusplus >= 201103L)
+#if defined(__cplusplus) && (__cplusplus >= 201103L)
 #define STATIC_ASSERT_AVAILABLE 1
 #elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
 #include <assert.h>

@@ -377,6 +377,23 @@ dynamic_array_delete_(
 	array->allocator = NULL;
 }
 
+size_t
+dynamic_array_capacity_(
+	const dynamic_array_type_ *dynamic_array,
+	dynamic_array_debug_info_type debug_info
+)
+{
+#ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
+	const dynamic_array_debug_info_type internal_debug_info = INTERNAL_DEBUG_INFO();
+	const dynamic_array_error_type error =
+		dynamic_array_check_and_report_error(dynamic_array, debug_info, internal_debug_info);
+	if (error != dynamic_array_error_none) {
+		dynamic_array_handle_exception(error);
+		return 0U;
+	}
+#endif
+	return ((const dynamic_array_internal_type*) dynamic_array)->capacity;
+}
 
 size_t
 dynamic_array_size_(
