@@ -95,7 +95,7 @@ dynamic_array_create_(
 		s_debug_info.struct_size = sizeof(dynamic_array_type_), \
 		dynamic_array_create_(size, sizeof(type), &(allocator), s_debug_info) \
 	)
- 
+
 /* Performs cleanup and releases the memory occupied by the dynamic array */
 void
 dynamic_array_delete_(
@@ -109,6 +109,21 @@ dynamic_array_delete_(
 					DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
 		dynamic_array_delete_(&(array), debug_info); \
 	} while (0)
+
+/* Retrieves the allocator */
+const dynamic_array_allocator_type*
+dynamic_array_get_allocator_(
+	const dynamic_array_type_ *dynamic_array,
+	dynamic_array_debug_info_type debug_info
+);
+
+#define dynamic_array_get_allocator(array) \
+	( \
+		s_debug_info.file_name = __FILE__, \
+		s_debug_info.line_number = (size_t)__LINE__, \
+		s_debug_info.struct_size = sizeof(array), \
+		dynamic_array_get_allocator_(&(array), debug_info) \
+	)
 
 /*
 Checks the dynamic array for any error
@@ -298,7 +313,7 @@ dynamic_array_resize_(
 /* Provides an exception handler. */
 void
 dynamic_array_set_exception_handler(
-	void (*exception_handler)(int)
+	void (*exception_handler)(dynamic_array_error_type)
 );
 
 /* Provides an error reporting handler.

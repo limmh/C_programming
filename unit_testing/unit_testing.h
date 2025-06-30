@@ -6,6 +6,7 @@
 #include "sizeof_array.h"
 
 #include <stddef.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,6 +56,7 @@ typedef struct testing_library_test_statistics_type {
 	size_t number_of_true_assertions;
 } testing_library_test_statistics_type;
 
+void testing_library_set_file(FILE *pfile);
 void testing_library_set_test_status_passed_text(const char *text);
 void testing_library_set_test_status_failed_text(const char *text);
 void testing_library_set_test_without_assertion_warning_text(const char *text);
@@ -99,7 +101,7 @@ void testing_library_print_LHS_and_RHS_as_unsigned_long_integers(unsigned long L
 #define TEST_NUMBER_OF_FALSE_ASSERTIONS(test) (const size_t) ((test)->number_of_false_assertions)
 #define TEST_NUMBER_OF_TRUE_ASSERTIONS(test)  (const size_t) ((test)->number_of_true_assertions)
 
-#ifndef UNIT_TESTING_LIBRARY_BUILD_FOR_LIBRARY
+#ifndef UNIT_TESTING_LIBRARY_BUILD_LIBRARY
 static testing_library_data_type testing_library_data = {
 #if UNIT_TESTING_LIBRARY_USE_C99_DESIGNATED_INITIALIZERS != 0
 	.number_of_false_assertions = 0U,
@@ -178,6 +180,8 @@ static testing_library_data_type testing_library_data = {
 #define ASSERT_LESS(LHS, RHS) ASSERT_INT_LESS(LHS, RHS)
 #define ASSERT_LESS_OR_EQUAL(LHS, RHS) ASSERT_INT_LESS_OR_EQUAL(LHS, RHS)
 
+#define SET_OUTPUT_FILE(FILE_POINTER) testing_library_set_file(FILE_POINTER)
+
 #define SET_TEST_SUCCESS_STATUS_TEXT(TEXT) testing_library_set_test_status_passed_text(TEXT)
 #define SET_TEST_FAILURE_STATUS_TEXT(TEXT) testing_library_set_test_status_failed_text(TEXT)
 #define SET_NO_ASSERTION_WARNING_TEXT(TEXT) testing_library_set_test_without_assertion_warning_text(TEXT)
@@ -198,7 +202,7 @@ static testing_library_data_type testing_library_data = {
 			(const testing_library_test_type * const *)&list_of_tests[0], SIZEOF_ARRAY(list_of_tests)); \
 		testing_library_print_test_statistics(&stats); \
 	} while (Boolean_false)
-#endif /* UNIT_TESTING_LIBRARY_BUILD_FOR_LIBRARY */
+#endif /* UNIT_TESTING_LIBRARY_BUILD_LIBRARY */
 
 #ifdef __cplusplus
 }

@@ -7,7 +7,7 @@ static Boolean_type is_leap_year(int year)
 {
 	Boolean_type result = Boolean_false;
 	if (year % 400 == 0) {
-		result = Boolean_true;	
+		result = Boolean_true;
 	} else if (year % 100 == 0) {
 		result = Boolean_false;
 	} else if (year % 4 == 0) {
