@@ -18,7 +18,7 @@ static void print_LHS_and_RHS_as_addresses(size_t LHS, size_t RHS)
 TEST(from_0_byte_to_more_bytes, "Initial size: 0")
 {
 	const unsigned char byte_value = 'A';
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
 
 	memory = static_pool_allocate(&pool, 0U);
@@ -36,9 +36,8 @@ TEST(from_1_byte_to_more_bytes, "Initial size: 1")
 {
 	const unsigned char byte_value = 'A';
 	const unsigned char zero_byte = 0U;
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
-	size_t index = 0U;
 
 	memory = static_pool_allocate(&pool, 1U);
 	ASSERT_ADDRESSES_EQUAL(memory, pool.chunk1);
@@ -56,9 +55,8 @@ TEST(from_2_bytes_to_more_bytes, "Initial size: 2")
 {
 	const unsigned char byte_values[2] = {'A', 'B'};
 	const unsigned char zero_bytes[2] = {0U};
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
-	size_t index = 0U;
 
 	memory = static_pool_allocate(&pool, 2U);
 	ASSERT_ADDRESSES_EQUAL(memory, pool.chunk2);
@@ -76,7 +74,7 @@ TEST(from_4_bytes_to_more_bytes, "Initial size: 4")
 {
 	const unsigned char byte_values[4] = {'A','B','C','D'};
 	const unsigned char zero_bytes[4] = {0U};
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
 
 	memory = static_pool_allocate(&pool, 4U);
@@ -95,7 +93,7 @@ TEST(from_8_bytes_to_more_bytes, "Initial size: 8")
 {
 	const unsigned char byte_values[8] = {'A','B','C','D','E','F','G','H'};
 	const unsigned char zero_bytes[8] = {0U};
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
 
 	memory = static_pool_allocate(&pool, 8U);
@@ -117,7 +115,7 @@ TEST(from_16_bytes_to_more_bytes, "Initial size: 16")
 		'I','J','K','L','M','N','O','P'
 	};
 	const unsigned char zero_bytes[16] = {0U};
-	static_pool_type pool = {{0}};
+	static_pool_type pool = {0};
 	void *memory = NULL;
 
 	memory = static_pool_allocate(&pool, 16U);
@@ -141,7 +139,7 @@ TEST(from_32_bytes_to_more_bytes, "Initial size: 32")
 		'Y','Z','a','b','c','d','e','f'
 	};
 	const unsigned char zero_bytes[32] = {0U};
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
 
 	memory = static_pool_allocate(&pool, 32U);
@@ -169,7 +167,7 @@ TEST(from_64_bytes_to_more_bytes, "Initial size: 64")
 		'4','5','6','7','8','9',',','.'
 	};
 	const unsigned char zero_bytes[64] = {0U};
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
 
 	memory = static_pool_allocate(&pool, 64U);
@@ -197,7 +195,7 @@ TEST(from_128_bytes_to_more_bytes, "Initial size: 128")
 		'4','5','6','7','8','9',',','.'
 	};
 	const unsigned char zero_bytes[128] = {0U};
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
 
 	memory = static_pool_allocate(&pool, 128U);
@@ -225,7 +223,7 @@ TEST(from_256_bytes_to_more_bytes, "Initial size: 256")
 		'4','5','6','7','8','9',',','.'
 	};
 	const unsigned char zero_bytes[256] = {0U};
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
 
 	memory = static_pool_allocate(&pool, 256U);
@@ -252,7 +250,7 @@ TEST(from_512_bytes_to_more_bytes, "Initial size: 512 [Use case with failure]")
 		'w','x','y','z','0','1','2','3',
 		'4','5','6','7','8','9',',','.'
 	};
-	static_pool_type pool = {{0U}};
+	static_pool_type pool = {0U};
 	void *memory = NULL;
 	void *new_memory = NULL;
 

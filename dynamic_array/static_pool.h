@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 struct static_pool_type {
+	size_t index_of_chunk_occupied;
 	unsigned char chunk10[512];
 	unsigned char chunk9[256];
 	unsigned char chunk8[128];
@@ -18,7 +19,7 @@ struct static_pool_type {
 	unsigned char chunk3[4];
 	unsigned char chunk2[2];
 	unsigned char chunk1[1];
-	unsigned char padding;
+	unsigned char zero_padding;
 };
 
 typedef struct static_pool_type static_pool_type;

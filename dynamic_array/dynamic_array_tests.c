@@ -8,17 +8,19 @@
 #include <setjmp.h>
 #include <string.h>
 
-static static_pool_type static_pool = {{0U}};
+static static_pool_type static_pool = {0U};
 
 static void *unit_test_allocate(size_t number_of_bytes)
 {
 	return static_pool_allocate(&static_pool, number_of_bytes);
 }
 
-static void *unit_test_reallocate(void *ptr, size_t new_size)
+#ifndef DYNAMIC_ARRAY_TESTS_DO_NOT_USE_REALLOCATION_FUNCTION
+static void *unit_test_reallocate(void *ptr, size_t number_of_bytes)
 {
-	return static_pool_reallocate(&static_pool, ptr, new_size);
+	return static_pool_reallocate(&static_pool, ptr, number_of_bytes);
 }
+#endif
 
 static void unit_test_deallocate(void *ptr)
 {
@@ -37,7 +39,11 @@ static void unit_test_pool_deinit(void)
 
 static dynamic_array_allocator_type unit_test_allocator = {
 	&unit_test_allocate,
+#ifndef DYNAMIC_ARRAY_TESTS_DO_NOT_USE_REALLOCATION_FUNCTION
 	&unit_test_reallocate,
+#else
+	NULL,
+#endif
 	&unit_test_deallocate
 };
 
@@ -54,7 +60,7 @@ TEST(char_dynamic_array_with_no_buffer, "A character dynamic array with no buffe
 {
 	dynamic_array_type(char) array = {0};
 	const dynamic_array_error_type error = dynamic_array_check(array);
-	ASSERT_EQUAL(error, dynamic_array_error_array_does_not_contain_buffer);
+	ASSERT_EQUAL(error, dynamic_array_error_no_buffer);
 	dynamic_array_delete(array);
 }
 
@@ -89,7 +95,7 @@ TEST(out_of_bounds_access_to_char_dynamic_array_with_no_element, "A character dy
 		exception_has_occurred = Boolean_true;
 	}
 	ASSERT(exception_has_occurred);
-	ASSERT_EQUAL(s_error_code, (int)dynamic_array_error_index_is_out_of_range);
+	ASSERT_EQUAL(s_error_code, (int) dynamic_array_error_index_out_of_range);
 
 	s_error_code = 0;
 	exception_has_occurred = Boolean_false;
@@ -99,7 +105,7 @@ TEST(out_of_bounds_access_to_char_dynamic_array_with_no_element, "A character dy
 		exception_has_occurred = Boolean_true;
 	}
 	ASSERT(exception_has_occurred);
-	ASSERT_EQUAL(s_error_code, (int)dynamic_array_error_index_is_out_of_range);
+	ASSERT_EQUAL(s_error_code, (int) dynamic_array_error_index_out_of_range);
 
 	dynamic_array_delete(array);
 	s_error_code = 0;
