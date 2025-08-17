@@ -6,18 +6,18 @@ This repository contains a collection of portable libraries and sample programs 
 
 ## Features
 
-- **Header files implementing new C features for C89 and C99**
+- **Header files implementing new C features for C89 and C99**  
   A Boolean type for C89, static_assert and alignof for C89 and C99, string references, etc.
-- **Dynamic array**
+- **Dynamic array**  
   A dynamic array library which supports per-instance custom allocator, common dynamic array operations and debugging.
   Macros are used for dynamic array operations.
-- **Simple tokenizer**
+- **Simple tokenizer**  
   A tokenizer library for splitting text into simple tokens.
-- **Terminal text color**
+- **Terminal text color**  
   A library for configuring the color of text on the terminal.
-- **Unit testing library**
+- **Unit testing library**  
   A simple unit testing library for C code.
-- **Sample programs**
+- **Sample programs**  
   Small programs demonstrating the use of the libraries.
 
 ## Getting Started
