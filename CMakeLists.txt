@@ -79,7 +79,7 @@ endif()
 target_include_directories(static_pool_tests PRIVATE "${DIR}/includes" "${DIR}/dynamic_array" "${DIR}/unit_testing")
 target_link_libraries(static_pool_tests terminal_text_color unit_testing)
 
-add_executable(unit_testing_example unit_testing/unit_testing_example.c)
+add_executable(unit_testing_example "${DIR}/unit_testing/unit_testing_example.c")
 if(COMPILER_IS_POSIX_COMPLIANT)
 	target_compile_options(unit_testing_example PRIVATE -std=${PROGRAM_C_STANDARD})
 endif()

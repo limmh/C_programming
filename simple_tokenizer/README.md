@@ -23,7 +23,7 @@ size_t token_count = simple_tokenizer_tokenize("hello 123!", 10, tokens, 64);
 for (size_t i = 0; i < token_count; ++i) {
     printf("Token %zu: Type=%s, Value=%.*s\n", i,
         simple_tokenizer_token_type_name(tokens[i].type),
-        (int)tokens[i].value.length, tokens[i].value.ptr);
+        (int)tokens[i].value.length, tokens[i].value.string);
 }
 ```
 

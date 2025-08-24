@@ -23,7 +23,12 @@ typedef struct dynamic_array_debug_info_type
 {
 	const char *file_name;
 	size_t line_number;
+	const char *library_file_name;
+	size_t library_line_number;
 	size_t struct_size;
+	size_t internal_struct_size;
+	size_t info_1;
+	size_t info_2;
 } dynamic_array_debug_info_type;
 
 typedef enum dynamic_array_error_type
@@ -72,15 +77,11 @@ report_error_funcptr: A pointer to an error report function.
 Return value: None.
 
 Function signature of error reporting handler:
-void report_error(dynamic_array_error_type error, dynamic_array_debug_info_type debug_info, dynamic_array_debug_info_type internal_debug_info,
-	size_t info_1, size_t info_2);
+void report_error(dynamic_array_error_type error, dynamic_array_debug_info_type debug_info);
 
 Parameters:
 error              : Error code as defined by dynamic_array_error_type
-debug_info         : External debug information.
-internal_debug_info: Internal debug information.
-info_1             : Additional debug info 1
-info_2             : Additional debug info 2
+debug_info         : Debug information.
 
 Return value: None.
 
@@ -101,7 +102,7 @@ Errors and additional debug info:
 14. dynamic_array_error_no_memory_deallocation_function: no additional info
  */
 void dynamic_array_set_error_reporting_handler(
-	void (*report_error_funcptr)(dynamic_array_error_type, dynamic_array_debug_info_type, dynamic_array_debug_info_type, size_t, size_t)
+	void (*report_error_funcptr)(dynamic_array_error_type, dynamic_array_debug_info_type)
 );
 
 /*
@@ -109,12 +110,6 @@ Function declarations and macros
 Most functions will invoke the exception handler on error.
 If no exception handler is provided, the program will be terminated when an error is detected.
 */
-
-#if !defined(__cplusplus) && defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
-#define DYNAMIC_ARRAY_DEBUG_INFO_INIT(array) {.file_name = __FILE__, .line_number = (size_t)__LINE__, .struct_size = sizeof(array)}
-#else
-#define DYNAMIC_ARRAY_DEBUG_INFO_INIT(array) {__FILE__, (size_t)__LINE__, sizeof(array)}
-#endif
 
 /*
 Creates a dynamic array and returns a dynamic_array_type_ variable.
@@ -159,21 +154,21 @@ Performs cleanup and releases the memory occupied by the dynamic array.
 
 Paramters
 dynamic_array: A pointer to a valid dynamic_array_type_ variable. Must not be a null pointer.
-debug_info   : Debug information data structure.
+file_name    : The name or path of the source file which calls the function. For debugging purpose.
+line_number  : The line number of the source file at which the function is called. For debugging purpose.
+struct_size  : The number of bytes of a dynamic_array_type_. For debugging purpose.
 
 Return value: None.
 */
-void
-dynamic_array_delete_(
+void dynamic_array_delete_(
 	dynamic_array_type_ *dynamic_array,
-	dynamic_array_debug_info_type debug_info
+	const char *file_name,
+	size_t line_number,
+	size_t struct_size
 );
 
 #define dynamic_array_delete(array) \
-	do { \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
-		dynamic_array_delete_(&(array), debug_info); \
-	} while (0)
+	dynamic_array_delete_(&(array), __FILE__, (size_t)__LINE__, sizeof(array))
 
 /*
 Retrieves the allocator
@@ -233,8 +228,7 @@ struct_size  : The number of bytes of dynamic_array_type_. For debugging purpose
 Return value:
 The number of elements that can be stored without reallocation
 */
-size_t
-dynamic_array_capacity_(
+size_t dynamic_array_capacity_(
 	const dynamic_array_type_ *dynamic_array,
 	const char *file_name,
 	size_t line_number,
@@ -256,8 +250,7 @@ struct_size  : The number of bytes of dynamic_array_type_. For debugging purpose
 Return value:
 The number of elements in the dynamic array
 */
-size_t
-dynamic_array_size_(
+size_t dynamic_array_size_(
 	const dynamic_array_type_ *dynamic_array,
 	const char *file_name,
 	size_t line_number,
@@ -285,8 +278,7 @@ struct_size  : The number of bytes of dynamic_array_type_. For debugging purpose
 Return value:
 A pointer to an element in the internal buffer.
 */
-void *
-dynamic_array_element_ptr_(
+void *dynamic_array_element_ptr_(
 	const dynamic_array_type_ *dynamic_array,
 	size_t index,
 	size_t element_size,
@@ -309,7 +301,9 @@ index               : The index which corresponds to the position where the firs
 ptr_to_first_element: A pointer to the first element to be added.
 number_of_elements  : The number of elements to be added.
 element_size        : The number of bytes of each element. The value will be compared with the element size stored internally.
-debug_info          : External debug information.
+file_name           : The name or path of the source file which calls the function. For debugging purpose.
+line_number         : The line number of the source file at which the function is called. For debugging purpose.
+struct_size         : The number of bytes of a dynamic_array_type_. For debugging purpose.
 
 Return value: None.
 
@@ -317,44 +311,45 @@ Possible errors and reasons:
 1. dynamic_array_error_memory_reallocation_failure: No enough memory for reallocation.
 2. Other errors in the dynamic array data structure.
 */
-void
-dynamic_array_add_elements_at_index_(
+void dynamic_array_add_elements_at_index_(
 	dynamic_array_type_ *dynamic_array,
 	size_t index,
 	const void *ptr_to_first_element,
 	size_t number_of_elements,
 	size_t element_size,
-	dynamic_array_debug_info_type debug_info
+	const char *file_name,
+	size_t line_number,
+	size_t struct_size
 );
 
 #define dynamic_array_add_element_at_index(type, array, index, element) \
 	do { \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
 		type tmp = element; \
-		dynamic_array_add_elements_at_index_(&(array), index, &tmp, 1U, sizeof(tmp), debug_info); \
+		dynamic_array_add_elements_at_index_(&(array), index, &tmp, 1U, sizeof(tmp), \
+			 __FILE__, (size_t)__LINE__, sizeof(array)); \
 	} while (0)
 
 #define dynamic_array_add_elements_at_index(type, array, index, elements, element_count) \
 	do { \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
 		assert(sizeof(type) == sizeof((elements)[0])); \
-		dynamic_array_add_elements_at_index_(&(array), index, elements, element_count, sizeof((elements)[0]), debug_info); \
+		dynamic_array_add_elements_at_index_(&(array), index, elements, element_count, sizeof((elements)[0]), \
+			__FILE__, (size_t)__LINE__, sizeof(array)); \
 	} while (0)
 
 #define dynamic_array_append_element(type, array, element) \
 	do { \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
 		type tmp = element; \
-		dynamic_array_add_elements_at_index_(&(array), dynamic_array_size(array), &tmp, 1U, sizeof(tmp), debug_info); \
+		dynamic_array_add_elements_at_index_(&(array), dynamic_array_size(array), &tmp, 1U, sizeof(tmp), \
+			__FILE__, (size_t)__LINE__, sizeof(array)); \
 	} while (0)
 
 #define dynamic_array_push_back(type, array, element) dynamic_array_append_element(type, array, element)
 
 #define dynamic_array_append_elements(type, array, elements, element_count) \
 	do { \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
 		assert(sizeof(type) == sizeof((elements)[0])); \
-		dynamic_array_add_elements_at_index_(&(array), dynamic_array_size(array), elements, element_count, sizeof((elements)[0]), debug_info); \
+		dynamic_array_add_elements_at_index_(&(array), dynamic_array_size(array), elements, element_count, sizeof((elements)[0]), \
+			__FILE__, (size_t)__LINE__, sizeof(array)); \
 	} while (0)
 
 /*
@@ -370,49 +365,48 @@ output buffer     : A pointer to the first element of an external buffer to stor
                     Can be NULL if the removed elements need not be stored in any external buffer.
 number_of_elements: The number of elements to be removed.
 element_size      : The number of bytes of each element. The value will be compared with the element size stored internally.
-debug_info        : External debug information.
+file_name         : The name or path of the source file which calls the function. For debugging purpose.
+line_number       : The line number of the source file at which the function is called. For debugging purpose.
+struct_size       : The number of bytes of a dynamic_array_type_. For debugging purpose.
 
 Return value: None.
 */
-void
-dynamic_array_remove_elements_starting_from_index_(
+void dynamic_array_remove_elements_starting_from_index_(
 	dynamic_array_type_ *dynamic_array,
 	size_t index,
 	void *output_buffer,
 	size_t number_of_elements,
 	size_t element_size,
-	dynamic_array_debug_info_type debug_info
+	const char *file_name,
+	size_t line_number,
+	size_t struct_size
 );
 
 #define dynamic_array_remove_element_at_index(type, array, index) \
-	do { \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
-		dynamic_array_remove_elements_starting_from_index_(&(array), index, NULL, 1U, sizeof(type), debug_info); \
-	} while (0)
+	dynamic_array_remove_elements_starting_from_index_(&(array), index, NULL, 1U, sizeof(type), \
+		__FILE__, (size_t)__LINE__, sizeof(array))
 
 #define dynamic_array_remove_elements_starting_from_index(type, array, index, number_of_elements) \
-	do { \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
-		dynamic_array_remove_elements_starting_from_index_(&(array), index, NULL, number_of_elements, sizeof(type), debug_info); \
-	} while (0)
+	dynamic_array_remove_elements_starting_from_index_(&(array), index, NULL, number_of_elements, sizeof(type), \
+		__FILE__, (size_t)__LINE__, sizeof(array))
 
 #define dynamic_array_move_elements_starting_from_index_to_buffer(type, array, index, buffer, number_of_elements) \
 	do { \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
 		assert(buffer != NULL); \
 		assert(sizeof(type) == sizeof((buffer)[0])); \
-		dynamic_array_remove_elements_starting_from_index_(&(array), index, buffer, number_of_elements, sizeof((buffer)[0]), debug_info); \
+		dynamic_array_remove_elements_starting_from_index_(&(array), index, buffer, number_of_elements, sizeof((buffer)[0]), \
+			__FILE__, (size_t)__LINE__, sizeof(array)); \
 	} while (0)
 
 #define dynamic_array_pop_back(type, array, variable) \
 	do { \
 		size_t last_element_index = 0U, array_length = 0U; \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
 		assert(sizeof(type) == sizeof(variable)); \
 		array_length = dynamic_array_size(array); \
 		assert(array_length >= 1U); \
 		last_element_index = (array_length >= 1U) ? (array_length - 1U) : 0U; \
-		dynamic_array_remove_elements_starting_from_index_(&(array), last_element_index, &(variable), 1U, sizeof(variable), debug_info); \
+		dynamic_array_remove_elements_starting_from_index_(&(array), last_element_index, &(variable), 1U, sizeof(variable), \
+			__FILE__, (size_t)__LINE__, sizeof(array)); \
 	} while (0)
 
 /*
@@ -424,23 +418,23 @@ Parameters
 dynamic_array: A pointer to a valid dynamic_array_type_variable. Must not be a null pointer.
 new size     : The new number of array elements.
 element_size : The number of bytes of each element. The value will be compared with the element size stored internally.
-debug_info   : External debug information.
+file_name    : The name or path of the source file which calls the function. For debugging purpose.
+line_number  : The line number of the source file at which the function is called. For debugging purpose.
+struct_size  : The number of bytes of a dynamic_array_type_. For debugging purpose.
 
 Return value: None.
 */
-void
-dynamic_array_resize_(
+void dynamic_array_resize_(
 	dynamic_array_type_ *dynamic_array,
 	size_t new_size,
 	size_t element_size,
-	dynamic_array_debug_info_type debug_info
+	const char *file_name,
+	size_t line_number,
+	size_t struct_size
 );
 
 #define dynamic_array_resize(type, array, new_size) \
-	do { \
-		const dynamic_array_debug_info_type debug_info = DYNAMIC_ARRAY_DEBUG_INFO_INIT(array); \
-		dynamic_array_resize_(&(array), new_size, sizeof(type), debug_info); \
-	} while (0)
+	dynamic_array_resize_(&(array), new_size, sizeof(type), __FILE__, (size_t)__LINE__, sizeof(array))
 
 #ifdef __cplusplus
 }
