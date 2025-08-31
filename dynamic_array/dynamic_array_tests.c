@@ -339,7 +339,7 @@ TEST(user_defined_type_test, "User-defined type")
 	typedef struct date_type {short year; unsigned char month; unsigned char day;} date_type;
 	typedef struct person_type {const char *first_name; const char *last_name; date_type date_of_birth;} person_type;
 	const size_t initial_size = 0U;
-	dynamic_array_type(char) array = {0};
+	dynamic_array_type(person_type) array = {0};
 	const person_type John_Smith = {"John", "Smith", {1990, 1, 1}};
 	const person_type Rebecca_Parker = {"Rebecca", "Parker", {1987, 12, 20}};
 	const person_type people[] = {
