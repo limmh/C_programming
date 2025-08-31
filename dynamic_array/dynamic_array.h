@@ -19,18 +19,6 @@ typedef struct dynamic_array_type_
 /* This macro is only for annotation.*/
 #define dynamic_array_type(element_type) dynamic_array_type_
 
-typedef struct dynamic_array_debug_info_type
-{
-	const char *file_name;
-	size_t line_number;
-	const char *library_file_name;
-	size_t library_line_number;
-	size_t struct_size;
-	size_t internal_struct_size;
-	size_t info_1;
-	size_t info_2;
-} dynamic_array_debug_info_type;
-
 typedef enum dynamic_array_error_type
 {
 	dynamic_array_error_none = 0,
@@ -41,13 +29,27 @@ typedef enum dynamic_array_error_type
 	dynamic_array_error_incorrect_element_size,
 	dynamic_array_error_index_out_of_range,
 	dynamic_array_error_element_size_mismatch,
-	dynamic_array_error_calculation_overflow_detected,
+	dynamic_array_error_addition_overflow_detected,
+	dynamic_array_error_multiplication_overflow_detected,
 	dynamic_array_error_no_allocator,
 	dynamic_array_error_memory_allocation_failure,
 	dynamic_array_error_memory_reallocation_failure,
 	dynamic_array_error_no_memory_allocation_function,
 	dynamic_array_error_no_memory_deallocation_function
 } dynamic_array_error_type;
+
+typedef struct dynamic_array_debug_info_type
+{
+	const char *file_name; /* application source file */
+	const char *library_file_name; /* library source file */
+	size_t line_number; /* application source file */
+	size_t library_line_number; /* library source file */
+	size_t struct_size;
+	size_t internal_struct_size;
+	size_t info_1;
+	size_t info_2;
+	dynamic_array_error_type error;
+} dynamic_array_debug_info_type;
 
 typedef struct dynamic_array_allocator_type
 {
@@ -57,7 +59,7 @@ typedef struct dynamic_array_allocator_type
 } dynamic_array_allocator_type;
 
 /*
-Provides an exception handler.
+Provides an exception handler callback function.
 
 Parameter:
 exception_handler: A pointer to an exception handler function
@@ -65,11 +67,11 @@ exception_handler: A pointer to an exception handler function
 Return value: None.
 */
 void dynamic_array_set_exception_handler(
-	void (*exception_handler)(dynamic_array_error_type)
+	void (*exception_handler_funcptr)(dynamic_array_error_type)
 );
 
 /*
-Provides an error reporting handler.
+Provides an error reporting handler callback function.
  
 Parameter:
 report_error_funcptr: A pointer to an error report function.
@@ -80,7 +82,6 @@ Function signature of error reporting handler:
 void report_error(dynamic_array_error_type error, dynamic_array_debug_info_type debug_info);
 
 Parameters:
-error              : Error code as defined by dynamic_array_error_type
 debug_info         : Debug information.
 
 Return value: None.
@@ -94,15 +95,16 @@ Errors and additional debug info:
 6.  dynamic_array_error_incorrect_element_size: info_1 == element size
 7.  dynamic_array_error_index_out_of_range: info_1 == index, info_2 == number of array elements
 8.  dynamic_array_error_element_size_mismatch: info_1 == external element size, info_2 == internal element size
-9.  dynamic_array_error_calculation_overflow_detected: info_1 == operand 1, info_2 == operand 2
-10. dynamic_array_error_no_allocator: no additional info
-11. dynamic_array_error_memory_allocation_failure: info_1 == number of bytes requested, info_2 == 0
-12. dynamic_array_error_memory_reallocation_failure: info_1 == number of bytes requested, info_2 == 0
-13. dynamic_array_error_no_memory_allocation_function: no additional info
-14. dynamic_array_error_no_memory_deallocation_function: no additional info
+9.  dynamic_array_error_addition_overflow_detected: info_1 == operand 1, info_2 == operand 2
+10. dynamic_array_error_multiplication_overflow_detected: info_1 == operand 1, info_2 == operand 2
+11. dynamic_array_error_no_allocator: no additional info
+12. dynamic_array_error_memory_allocation_failure: info_1 == number of bytes requested, info_2 == 0
+13. dynamic_array_error_memory_reallocation_failure: info_1 == number of bytes requested, info_2 == 0
+14. dynamic_array_error_no_memory_allocation_function: no additional info
+15. dynamic_array_error_no_memory_deallocation_function: no additional info
  */
 void dynamic_array_set_error_reporting_handler(
-	void (*report_error_funcptr)(dynamic_array_error_type, dynamic_array_debug_info_type)
+	void (*report_error_funcptr)(dynamic_array_debug_info_type)
 );
 
 /*

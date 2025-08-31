@@ -56,6 +56,7 @@ static void exception_handler(dynamic_array_error_type error_code)
 	longjmp(s_execution_context, error_code);
 }
 
+#ifndef DYNAMIC_ARRAY_EXCEPTION_TESTS_DISABLED
 TEST(char_dynamic_array_with_no_buffer, "A character dynamic array with no buffer")
 {
 	dynamic_array_type(char) array = {0};
@@ -64,14 +65,37 @@ TEST(char_dynamic_array_with_no_buffer, "A character dynamic array with no buffe
 	dynamic_array_delete(array);
 }
 
-TEST(size_test_for_char_dynamic_array_with_no_element, "A character dynamic array with no element has a size of zero.")
+TEST(allocation_and_reallocation_failure, "Allocation and reallocation failure")
 {
-	const size_t initial_size = 0U;
+	const size_t largest_memory_size = static_pool_largest_chunk_size();
 	dynamic_array_type(char) array = {0};
+	dynamic_array_error_type error = dynamic_array_error_none;
+	Boolean_type exception_has_occurred = Boolean_false;
 
 	unit_test_pool_init();
-	array = dynamic_array_create_with_allocator(char, initial_size, unit_test_allocator);
-	ASSERT_UINT_EQUAL(dynamic_array_size(array), 0U);
+	dynamic_array_set_exception_handler(&exception_handler);
+	s_error_code = 0;
+
+	if (setjmp(s_execution_context) == 0) {
+		array = dynamic_array_create_with_allocator(char, largest_memory_size + 1U, unit_test_allocator);
+	} else {
+		exception_has_occurred = Boolean_true;
+	}
+	ASSERT(exception_has_occurred);
+	ASSERT_EQUAL(s_error_code, (int) dynamic_array_error_memory_allocation_failure);
+
+	array = dynamic_array_create_with_allocator(char, largest_memory_size, unit_test_allocator);
+	error = dynamic_array_check(array);
+	ASSERT_EQUAL(error, (int) dynamic_array_error_none);
+
+	if (setjmp(s_execution_context) == 0) {
+		dynamic_array_resize(char, array, largest_memory_size + 1U);
+	} else {
+		exception_has_occurred = Boolean_true;
+	}
+	ASSERT(exception_has_occurred);
+	ASSERT_EQUAL(s_error_code, (int) dynamic_array_error_memory_reallocation_failure);
+
 	dynamic_array_delete(array);
 	unit_test_pool_deinit();
 }
@@ -110,6 +134,19 @@ TEST(out_of_bounds_access_to_char_dynamic_array_with_no_element, "A character dy
 	dynamic_array_delete(array);
 	s_error_code = 0;
 	dynamic_array_set_exception_handler(NULL);
+	unit_test_pool_deinit();
+}
+#endif
+
+TEST(size_test_for_char_dynamic_array_with_no_element, "A character dynamic array with no element has a size of zero.")
+{
+	const size_t initial_size = 0U;
+	dynamic_array_type(char) array = {0};
+
+	unit_test_pool_init();
+	array = dynamic_array_create_with_allocator(char, initial_size, unit_test_allocator);
+	ASSERT_UINT_EQUAL(dynamic_array_size(array), 0U);
+	dynamic_array_delete(array);
 	unit_test_pool_deinit();
 }
 
@@ -372,9 +409,12 @@ TEST(user_defined_type_test, "User-defined type")
 int main(void)
 {
 	DEFINE_LIST_OF_TESTS(list_of_tests) {
+#ifndef DYNAMIC_ARRAY_EXCEPTION_TESTS_DISABLED
 		char_dynamic_array_with_no_buffer,
-		size_test_for_char_dynamic_array_with_no_element,
+		allocation_and_reallocation_failure,
 		out_of_bounds_access_to_char_dynamic_array_with_no_element,
+#endif
+		size_test_for_char_dynamic_array_with_no_element,
 		test_for_char_dynamic_array_initialized_with_one_element,
 		value_test_for_char_dynamic_array_with_one_element,
 		char_dynamic_array_with_one_element_and_a_new_element_is_added_to_the_back,

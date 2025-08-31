@@ -265,6 +265,12 @@ TEST(from_512_bytes_to_more_bytes, "Initial size: 512 [Use case with failure]")
 	static_pool_deallocate(&pool, memory);
 }
 
+TEST(largest_chunk_size, "Largest chunk size")
+{
+	const size_t largest_chunk_size = static_pool_largest_chunk_size();
+	ASSERT_EQUAL(largest_chunk_size, 512U);
+}
+
 int main(void)
 {
 	DEFINE_LIST_OF_TESTS(tests) {
@@ -279,6 +285,7 @@ int main(void)
 		from_128_bytes_to_more_bytes,
 		from_256_bytes_to_more_bytes,
 		from_512_bytes_to_more_bytes,
+		largest_chunk_size
 	};
 
 	PRINT_FILE_NAME();

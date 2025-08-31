@@ -198,3 +198,9 @@ void static_pool_deallocate(static_pool_type *pool, void *ptr)
 		pool->index_of_chunk_occupied = 0U;
 	}
 }
+
+size_t static_pool_largest_chunk_size(void)
+{
+	static static_pool_type pool = {0};
+	return sizeof(pool.chunk10);
+}

@@ -8,8 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-Notes:
+/* Notes:
 - All runtime assertions (assert) can be disabled by defining NDEBUG when compiling the source file, e.g. gcc -DNDEBUG -c dynamic_array.c
 - Code for runtime checks can be disabled by defining DYNAMIC_ARRAY_NO_RUNTIME_CHECKS when compiling the source file, e.g. gcc -DDYNAMIC_ARRAY_NO_RUNTIME_CHECKS -c dynamic_array.c
 - Avoid changing size variables from size_t to a signed integer type
@@ -34,12 +33,11 @@ STATIC_ASSERT(ALIGNOF(dynamic_array_type_) == ALIGNOF(dynamic_array_internal_typ
 
 static dynamic_array_allocator_type default_allocator = {&malloc, &realloc, &free};
 
-static void dynamic_array_report_error_default(dynamic_array_error_type, dynamic_array_debug_info_type);
-static void (*s_report_error_funcptr)(dynamic_array_error_type, dynamic_array_debug_info_type) = &dynamic_array_report_error_default;
+static void dynamic_array_report_error_default(dynamic_array_debug_info_type);
+static void (*s_report_error_funcptr)(dynamic_array_debug_info_type) = &dynamic_array_report_error_default;
 static void (*s_exception_handler_funcptr)(dynamic_array_error_type) = NULL;
 
 static void dynamic_array_report_error_default(
-	dynamic_array_error_type error,
 	dynamic_array_debug_info_type debug_info
 )
 {
@@ -48,8 +46,12 @@ static void dynamic_array_report_error_default(
 	const char *library_file_name = (debug_info.library_file_name != NULL) ? debug_info.library_file_name : "Unknown library file name";
 	const unsigned long info_1 = (unsigned long) debug_info.info_1;
 	const unsigned long info_2 = (unsigned long) debug_info.info_2;
+	if (debug_info.error != dynamic_array_error_none) {
+		fprintf(output, "%s (line %lu): Please refer to the code here for more details.\n",
+			file_name, (unsigned long) debug_info.line_number);
+	}
 	fprintf(output, "%s (line %lu): ", library_file_name, (unsigned long) debug_info.library_line_number);
-	switch (error) {
+	switch (debug_info.error) {
 	case dynamic_array_error_none:
 		fprintf(output, "No error.\n");
 		break;
@@ -63,7 +65,7 @@ static void dynamic_array_report_error_default(
 		fprintf(output, "There is no valid buffer for the internal array.\n");
 		break;
 	case dynamic_array_error_incorrect_capacity:
-		fprintf(output, "The capacity of the array (%lu) is incorrect.\n", info_1);
+		fprintf(output, "The capacity of the array (%lu) is incorrect. Number of elements: %lu\n", info_1, info_2);
 		break;
 	case dynamic_array_error_incorrect_element_size:
 		fprintf(output, "The element size of the array (%lu) is incorrect.\n", info_1);
@@ -74,8 +76,11 @@ static void dynamic_array_report_error_default(
 	case dynamic_array_error_element_size_mismatch:
 		fprintf(output, "The size of a source element (%lu) is not the same as that of an array element (%lu).\n", info_1, info_2);
 		break;
-	case dynamic_array_error_calculation_overflow_detected:
-		fprintf(output,  "The calculation overflows. Operand 1: %lu, Operand 2: %lu\n", info_1, info_2);
+	case dynamic_array_error_addition_overflow_detected:
+		fprintf(output,  "Addition overflow detected: operand 1 = %lu, operand 2 = %lu\n", info_1, info_2);
+		break;
+	case dynamic_array_error_multiplication_overflow_detected:
+		fprintf(output, "Multiplication overflow detected: operand 1 = %lu, operand 2 = %lu\n", info_1, info_2);
 		break;
 	case dynamic_array_error_no_allocator:
 		fprintf(output, "There is no allocator.\n");
@@ -93,24 +98,19 @@ static void dynamic_array_report_error_default(
 		fprintf(output, "The memory deallocation function is not available.\n");
 		break;
 	default:
-		fprintf(output, "Unknown error (%d)\n", (int) error);
+		fprintf(output, "Unknown error (%d)\n", (int) debug_info.error);
 		break;
-	}
-	if (error != dynamic_array_error_none) {
-		fprintf(output, "%s (line %lu): Please refer to the code here for more details.\n",
-			file_name, (unsigned long) debug_info.line_number);
 	}
 }
 
 static void dynamic_array_report_error(
-	dynamic_array_error_type error,
 	dynamic_array_debug_info_type debug_info
 )
 {
 	if (s_report_error_funcptr != NULL) {
-		s_report_error_funcptr(error, debug_info);
+		s_report_error_funcptr(debug_info);
 	} else {
-		dynamic_array_report_error_default(error, debug_info);
+		dynamic_array_report_error_default(debug_info);
 	}
 }
 
@@ -126,78 +126,85 @@ static void dynamic_array_terminate(void)
 	exit(EXIT_FAILURE);
 }
 
-static dynamic_array_error_type
-dynamic_array_check_error_internal(
+static Boolean_type dynamic_array_addition_overflow_detected(size_t a, size_t b)
+{
+	return (b > (SIZE_MAX - a));
+}
+
+static Boolean_type dynamic_array_multiplication_overflow_detected(size_t a, size_t b)
+{
+	if (a == 0U or b == 0U) {
+		return Boolean_false;
+	} else {
+		const size_t quotient  = SIZE_MAX / a;
+		const size_t remainder = SIZE_MAX % a;
+		return ((b > quotient) or (b == quotient and remainder != 0U));
+	}
+}
+
+static void dynamic_array_check_error_internal(
 	const dynamic_array_type_ *dynamic_array,
 	dynamic_array_debug_info_type *pdebug_info
 )
 {
 	const dynamic_array_internal_type *array = NULL;
-	dynamic_array_error_type error = dynamic_array_error_none;
 	assert(dynamic_array != NULL);
 	assert(pdebug_info != NULL);
+	pdebug_info->info_1 = 0U;
+	pdebug_info->info_2 = 0U;
+
 	if (dynamic_array == NULL) {
-		error = dynamic_array_error_null_pointer_exception;
+		pdebug_info->error = dynamic_array_error_null_pointer_exception;
 	}
+
 	if (pdebug_info->struct_size != sizeof(dynamic_array_internal_type)) {
-		error = dynamic_array_error_struct_size_mismatch;
+		pdebug_info->error = dynamic_array_error_struct_size_mismatch;
 		pdebug_info->info_1 = pdebug_info->struct_size;
 		pdebug_info->info_2 = pdebug_info->internal_struct_size;
 	}
+
 	array = (const dynamic_array_internal_type*) dynamic_array;
+
 	if (array->ptr == NULL) {
-		error = dynamic_array_error_no_buffer;
+		pdebug_info->error = dynamic_array_error_no_buffer;
 	} else if (array->capacity < array->number_of_elements) {
-		error = dynamic_array_error_incorrect_capacity;
+		pdebug_info->error = dynamic_array_error_incorrect_capacity;
 		pdebug_info->info_1 = array->capacity;
 		pdebug_info->info_2 = array->number_of_elements;
 	} else if (array->element_size < 1U) {
-		error = dynamic_array_error_incorrect_element_size;
+		pdebug_info->error = dynamic_array_error_incorrect_element_size;
 		pdebug_info->info_1 = array->element_size;
-	} else if (array->element_size >= 1U) {
-		const size_t max_capacity = SIZE_MAX / array->element_size;
-		const size_t remainder = SIZE_MAX % array->element_size;
-		if ((max_capacity < array->number_of_elements) or
-			((max_capacity == array->number_of_elements) and (remainder > 0U))) {
-			error = dynamic_array_error_calculation_overflow_detected;
-			pdebug_info->info_1 = array->element_size;
-			pdebug_info->info_2 = array->number_of_elements;
-		}
 	} else if (array->allocator == NULL) {
-		error = dynamic_array_error_no_allocator;
-	} else if (array->allocator != NULL) {
-		if (array->allocator->allocate_funcptr == NULL) {
-			error = dynamic_array_error_no_memory_allocation_function;
-		} else if (array->allocator->deallocate_funcptr == NULL) {
-			error = dynamic_array_error_no_memory_deallocation_function;
-		}
+		pdebug_info->error = dynamic_array_error_no_allocator;
+	} else if (array->allocator->allocate_funcptr == NULL) {
+		pdebug_info->error = dynamic_array_error_no_memory_allocation_function;
+	} else if (array->allocator->deallocate_funcptr == NULL) {
+		pdebug_info->error = dynamic_array_error_no_memory_deallocation_function;
+	} else {
+		pdebug_info->error = dynamic_array_error_none;
 	}
-	return error;
 }
 
-static dynamic_array_error_type
-dynamic_array_check_and_report_error(
+static void dynamic_array_check_and_report_error(
 	const dynamic_array_type_ *dynamic_array,
-	dynamic_array_debug_info_type debug_info
+	dynamic_array_debug_info_type *pdebug_info
 )
 {
-	dynamic_array_error_type error = dynamic_array_error_none;
-	error = dynamic_array_check_error_internal(dynamic_array, &debug_info);
-	if (error != dynamic_array_error_none) {
-		dynamic_array_report_error(error, debug_info);
+	dynamic_array_check_error_internal(dynamic_array, pdebug_info);
+	if (pdebug_info->error != dynamic_array_error_none) {
+		dynamic_array_report_error(*pdebug_info);
 	}
-	return error;
 }
 
 void dynamic_array_set_exception_handler(
-	void (*exception_handler)(dynamic_array_error_type)
+	void (*exception_handler_funcptr)(dynamic_array_error_type)
 )
 {
-	s_exception_handler_funcptr = exception_handler;
+	s_exception_handler_funcptr = exception_handler_funcptr;
 }
 
 void dynamic_array_set_error_reporting_handler(
-	void (*report_error_funcptr)(dynamic_array_error_type, dynamic_array_debug_info_type)
+	void (*report_error_funcptr)(dynamic_array_debug_info_type)
 )
 {
 	s_report_error_funcptr = report_error_funcptr;
@@ -218,7 +225,8 @@ dynamic_array_check_(
 	debug_info.library_line_number = (size_t)__LINE__;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
-	return dynamic_array_check_error_internal(dynamic_array, &debug_info);
+	dynamic_array_check_error_internal(dynamic_array, &debug_info);
+	return debug_info.error;
 }
 
 dynamic_array_type_
@@ -232,13 +240,11 @@ dynamic_array_create_(
 )
 {
 	size_t initial_capacity = 1U;
-	size_t total_bytes = 0U;
+	size_t number_of_bytes = 0U;
 	void *ptr = NULL;
 	Boolean_type multiplication_overflow_detected = Boolean_false;
 	dynamic_array_internal_type array = {0U};
 	dynamic_array_type_ dyn_array = {0U};
-	size_t max_allowed_element_size = 0U;
-	dynamic_array_error_type error = dynamic_array_error_none;
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
 	debug_info.file_name = __FILE__;
@@ -249,11 +255,11 @@ dynamic_array_create_(
 	assert(element_size > 0U);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (element_size < 1U) {
-		error = dynamic_array_error_incorrect_element_size;
+		debug_info.error = dynamic_array_error_incorrect_element_size;
 		debug_info.library_line_number = (size_t)__LINE__;
 		debug_info.info_1 = element_size;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
@@ -266,22 +272,16 @@ dynamic_array_create_(
 		initial_capacity += initial_capacity;
 	}
 
-	max_allowed_element_size = SIZE_MAX / initial_capacity;
-	multiplication_overflow_detected = not (max_allowed_element_size > element_size);
-	if (multiplication_overflow_detected and initial_capacity > initial_size) {
-		initial_capacity = (initial_size < 1U) ? 1U : initial_size;
-		max_allowed_element_size = SIZE_MAX / initial_capacity;
-		multiplication_overflow_detected = not (max_allowed_element_size > element_size);
-	}
+	multiplication_overflow_detected = dynamic_array_multiplication_overflow_detected(initial_capacity, element_size);
 	assert(not multiplication_overflow_detected);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (multiplication_overflow_detected) {
-		error = dynamic_array_error_calculation_overflow_detected;
+		debug_info.error = dynamic_array_error_multiplication_overflow_detected;
 		debug_info.library_line_number = (size_t)__LINE__;
-		debug_info.info_1 = element_size;
-		debug_info.info_2 = initial_capacity;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		debug_info.info_1 = initial_capacity;
+		debug_info.info_2 = element_size;
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
@@ -290,20 +290,19 @@ dynamic_array_create_(
 		const Boolean_type use_custom_allocator = (allocator->allocate_funcptr != NULL and allocator->deallocate_funcptr != NULL);
 		assert(allocator->allocate_funcptr != NULL);
 		assert(allocator->deallocate_funcptr != NULL);
-
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 		if (allocator->allocate_funcptr == NULL) {
-			error = dynamic_array_error_no_memory_allocation_function;
+			debug_info.error = dynamic_array_error_no_memory_allocation_function;
 			debug_info.library_line_number = (size_t)__LINE__;
-			dynamic_array_report_error(error, debug_info);
-			dynamic_array_handle_exception(error);
+			dynamic_array_report_error(debug_info);
+			dynamic_array_handle_exception(debug_info.error);
 			dynamic_array_terminate();
 		}
 		if (allocator->deallocate_funcptr == NULL) {
-			error = dynamic_array_error_no_memory_deallocation_function;
+			debug_info.error = dynamic_array_error_no_memory_deallocation_function;
 			debug_info.library_line_number = (size_t)__LINE__;
-			dynamic_array_report_error(error, debug_info);
-			dynamic_array_handle_exception(error);
+			dynamic_array_report_error(debug_info);
+			dynamic_array_handle_exception(debug_info.error);
 			dynamic_array_terminate();
 		}
 #endif
@@ -315,17 +314,17 @@ dynamic_array_create_(
 	}
 
 	assert(allocator != NULL);
-	total_bytes = initial_capacity * element_size;
-	ptr = allocator->allocate_funcptr(total_bytes);
+	number_of_bytes = initial_capacity * element_size;
+	ptr = allocator->allocate_funcptr(number_of_bytes);
 	if (ptr != NULL) {
-		memset(ptr, 0, total_bytes);
+		memset(ptr, 0, number_of_bytes);
 	} else {
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-		error = dynamic_array_error_memory_allocation_failure;
+		debug_info.error = dynamic_array_error_memory_allocation_failure;
 		debug_info.library_line_number = (size_t)__LINE__;
-		debug_info.info_1 = total_bytes;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		debug_info.info_1 = number_of_bytes;
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 #endif
 		initial_capacity = initial_size = 0U;
 	}
@@ -348,7 +347,6 @@ void dynamic_array_delete_(
 {
 	dynamic_array_internal_type *array = NULL;
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-	dynamic_array_error_type error = dynamic_array_error_none;
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
 	debug_info.library_file_name = __FILE__;
@@ -356,9 +354,9 @@ void dynamic_array_delete_(
 	debug_info.library_line_number = (size_t)__LINE__;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
-	error = dynamic_array_check_and_report_error(dynamic_array, debug_info);
-	if (error != dynamic_array_error_none and error != dynamic_array_error_no_buffer) {
-		dynamic_array_handle_exception(error);
+	dynamic_array_check_and_report_error(dynamic_array, &debug_info);
+	if (debug_info.error != dynamic_array_error_none and debug_info.error != dynamic_array_error_no_buffer) {
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
@@ -383,7 +381,6 @@ dynamic_array_get_allocator_(
 )
 {
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-	dynamic_array_error_type error = dynamic_array_error_none;
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
 	debug_info.library_file_name = __FILE__;
@@ -391,9 +388,9 @@ dynamic_array_get_allocator_(
 	debug_info.library_line_number = (size_t)__LINE__;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
-	error = dynamic_array_check_and_report_error(dynamic_array, debug_info);
-	if (error != dynamic_array_error_none) {
-		dynamic_array_handle_exception(error);
+	dynamic_array_check_and_report_error(dynamic_array, &debug_info);
+	if (debug_info.error != dynamic_array_error_none) {
+		dynamic_array_handle_exception(debug_info.error);
 		return NULL;
 	}
 #endif
@@ -408,7 +405,6 @@ size_t dynamic_array_capacity_(
 )
 {
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-	dynamic_array_error_type error = dynamic_array_error_none;
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
 	debug_info.library_file_name = __FILE__;
@@ -416,9 +412,9 @@ size_t dynamic_array_capacity_(
 	debug_info.library_line_number = (size_t)__LINE__;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
-	error = dynamic_array_check_and_report_error(dynamic_array, debug_info);
-	if (error != dynamic_array_error_none) {
-		dynamic_array_handle_exception(error);
+	dynamic_array_check_and_report_error(dynamic_array, &debug_info);
+	if (debug_info.error != dynamic_array_error_none) {
+		dynamic_array_handle_exception(debug_info.error);
 		return 0U;
 	}
 #endif
@@ -433,7 +429,6 @@ size_t dynamic_array_size_(
 )
 {
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-	dynamic_array_error_type error = dynamic_array_error_none;
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
 	debug_info.library_file_name = __FILE__;
@@ -441,9 +436,9 @@ size_t dynamic_array_size_(
 	debug_info.library_line_number = (size_t)__LINE__;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
-	error = dynamic_array_check_and_report_error(dynamic_array, debug_info);
-	if (error != dynamic_array_error_none) {
-		dynamic_array_handle_exception(error);
+	dynamic_array_check_and_report_error(dynamic_array, &debug_info);
+	if (debug_info.error != dynamic_array_error_none) {
+		dynamic_array_handle_exception(debug_info.error);
 		return 0U;
 	}
 #endif
@@ -461,9 +456,9 @@ void *dynamic_array_element_ptr_(
 {
 	const dynamic_array_internal_type *array = NULL;
 	size_t offset = 0U;
-	unsigned char *ptr = NULL;
+	unsigned char *ptr = NULL;	
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-	dynamic_array_error_type error = dynamic_array_error_none;
+	Boolean_type multiplication_overflow_detected = Boolean_false;
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
 	debug_info.library_file_name = __FILE__;
@@ -471,38 +466,48 @@ void *dynamic_array_element_ptr_(
 	debug_info.library_line_number = (size_t)__LINE__;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
-	error = dynamic_array_check_and_report_error(dynamic_array, debug_info);
-	if (error != dynamic_array_error_none) {
-		dynamic_array_handle_exception(error);
+	dynamic_array_check_and_report_error(dynamic_array, &debug_info);
+	if (debug_info.error != dynamic_array_error_none) {
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
 	array = (const dynamic_array_internal_type*) dynamic_array;
 	assert(element_size == array->element_size);
 	assert(index < array->number_of_elements);
-
+	assert(not dynamic_array_multiplication_overflow_detected(index, array->number_of_elements));
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (element_size != array->element_size) {
-		error = dynamic_array_error_element_size_mismatch;
+		debug_info.error = dynamic_array_error_element_size_mismatch;
 		debug_info.library_line_number = (size_t)__LINE__;
 		debug_info.info_1 = element_size;
 		debug_info.info_2 = array->element_size;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 
 	if (index >= array->number_of_elements) {
-		error = dynamic_array_error_index_out_of_range;
+		debug_info.error = dynamic_array_error_index_out_of_range;
 		debug_info.library_line_number = (size_t)__LINE__;
 		debug_info.info_1 = index;
 		debug_info.info_2 = array->number_of_elements;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
+		dynamic_array_terminate();
+	}
+
+	multiplication_overflow_detected = dynamic_array_multiplication_overflow_detected(index, array->element_size);
+	if (multiplication_overflow_detected) {
+		debug_info.error = dynamic_array_error_multiplication_overflow_detected;
+		debug_info.library_line_number = (size_t)__LINE__;
+		debug_info.info_1 = index;
+		debug_info.info_2 = array->element_size;
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
 	offset = index * array->element_size;
 	ptr = (unsigned char*) array->ptr;
 	return &ptr[offset];
@@ -521,8 +526,8 @@ void dynamic_array_add_elements_at_index_(
 {
 	size_t new_number_of_elements = 0U; 
 	dynamic_array_internal_type *array = NULL;
+	Boolean_type addition_overflow_detected = Boolean_false;
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-	dynamic_array_error_type error = dynamic_array_error_none;
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
 	debug_info.library_file_name = __FILE__;
@@ -530,88 +535,83 @@ void dynamic_array_add_elements_at_index_(
 	debug_info.library_line_number = (size_t)__LINE__;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
-	error = dynamic_array_check_and_report_error(dynamic_array, debug_info);
-	if (error != dynamic_array_error_none) {
-		dynamic_array_handle_exception(error);
+	dynamic_array_check_and_report_error(dynamic_array, &debug_info);
+	if (debug_info.error != dynamic_array_error_none) {
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
 	assert(ptr_to_first_element != NULL);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (ptr_to_first_element == NULL) {
-		error = dynamic_array_error_null_pointer_exception;
+		debug_info.error = dynamic_array_error_null_pointer_exception;
 		debug_info.library_line_number = (size_t)__LINE__;
-		dynamic_array_report_error(error, debug_info);
+		dynamic_array_report_error(debug_info);
 		dynamic_array_terminate();
 	}
 #endif
-
 	array = (dynamic_array_internal_type*) dynamic_array;
 	assert(element_size == array->element_size);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (element_size != array->element_size) {
-		error = dynamic_array_error_element_size_mismatch;
+		debug_info.error = dynamic_array_error_element_size_mismatch;
 		debug_info.library_line_number = (size_t)__LINE__;
 		debug_info.info_1 = element_size;
 		debug_info.info_2 = array->element_size;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
 	assert(index <= array->number_of_elements);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (index > array->number_of_elements) {
-		error = dynamic_array_error_index_out_of_range;
+		debug_info.error = dynamic_array_error_index_out_of_range;
 		debug_info.library_line_number = (size_t)__LINE__;
 		debug_info.info_1 = index;
 		debug_info.info_2 = array->number_of_elements;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
-	new_number_of_elements = array->number_of_elements + number_of_elements;
-	assert(new_number_of_elements >= number_of_elements);
+	addition_overflow_detected = dynamic_array_addition_overflow_detected(array->number_of_elements, number_of_elements);
+	assert(not addition_overflow_detected);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-	if (new_number_of_elements < number_of_elements) {
-		error = dynamic_array_error_calculation_overflow_detected;
+	if (addition_overflow_detected) {
+		debug_info.error = dynamic_array_error_addition_overflow_detected;
 		debug_info.library_line_number = (size_t)__LINE__;
 		debug_info.info_1 = array->number_of_elements;
 		debug_info.info_2 = number_of_elements;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
+	new_number_of_elements = array->number_of_elements + number_of_elements;
 	if (new_number_of_elements > array->capacity) {
 		void *ptr = NULL;
 		size_t new_byte_count = 0U;
-		const size_t max_allowed_capacity = SIZE_MAX / array->element_size;
 		size_t new_capacity = array->capacity;
+		Boolean_type multiplication_overflow_detected = Boolean_false;
 
 		while (new_capacity < new_number_of_elements) {
-			Boolean_type multiplication_overflow_detected = Boolean_false;
 			new_capacity += new_capacity;
-			multiplication_overflow_detected = not (max_allowed_capacity > new_capacity);
-			assert(not multiplication_overflow_detected);
-#ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-			if (multiplication_overflow_detected) {
-				error = dynamic_array_error_calculation_overflow_detected;
-				debug_info.library_line_number = (size_t)__LINE__;
-				debug_info.info_1 = new_capacity;
-				debug_info.info_2 = array->element_size;
-				dynamic_array_report_error(error, debug_info);
-				dynamic_array_handle_exception(error);
-				dynamic_array_terminate();
-			}
-#endif
 		}
 
+		multiplication_overflow_detected = dynamic_array_multiplication_overflow_detected(new_capacity, array->element_size);
+		assert(not multiplication_overflow_detected);
+#ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
+		if (multiplication_overflow_detected) {
+			debug_info.error = dynamic_array_error_multiplication_overflow_detected;
+			debug_info.library_line_number = (size_t)__LINE__;
+			debug_info.info_1 = new_capacity;
+			debug_info.info_2 = array->element_size;
+			dynamic_array_report_error(debug_info);
+			dynamic_array_handle_exception(debug_info.error);
+			dynamic_array_terminate();
+		}
+#endif
 		new_byte_count = new_capacity * array->element_size;
 		if (array->allocator->reallocate_funcptr != NULL) {
 			ptr = array->allocator->reallocate_funcptr(array->ptr, new_byte_count);
@@ -629,11 +629,11 @@ void dynamic_array_add_elements_at_index_(
 			array->capacity = new_capacity;
 		} else {
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-			error = dynamic_array_error_memory_reallocation_failure;
+			debug_info.error = dynamic_array_error_memory_reallocation_failure;
 			debug_info.library_line_number = (size_t)__LINE__;
 			debug_info.info_1 = new_byte_count;
-			dynamic_array_report_error(error, debug_info);
-			dynamic_array_handle_exception(error);
+			dynamic_array_report_error(debug_info);
+			dynamic_array_handle_exception(debug_info.error);
 #endif
 			return;
 		}
@@ -643,17 +643,15 @@ void dynamic_array_add_elements_at_index_(
 		const size_t offset = array->number_of_elements * array->element_size;
 		unsigned char *ptr = (unsigned char*) array->ptr;
 		const size_t total_bytes_to_copy = number_of_elements * element_size;
-
 		memcpy(&ptr[offset], ptr_to_first_element, total_bytes_to_copy);
 		array->number_of_elements = new_number_of_elements;
-    	} else if (index < array->number_of_elements) {
+	} else if (index < array->number_of_elements) {
 		const size_t src_offset = index * array->element_size;
 		const size_t dst_offset = (index + number_of_elements) * array->element_size;
 		const size_t total_elements_to_move = array->number_of_elements - index;
 		const size_t total_bytes_to_move = total_elements_to_move * array->element_size;
 		const size_t total_bytes_to_copy = number_of_elements * element_size;
 		unsigned char *ptr = (unsigned char*) array->ptr;
-
 		memmove(&ptr[dst_offset], &ptr[src_offset], total_bytes_to_move);
 		memcpy(&ptr[src_offset], ptr_to_first_element, total_bytes_to_copy);
 		array->number_of_elements = new_number_of_elements;
@@ -673,7 +671,6 @@ void dynamic_array_remove_elements_starting_from_index_(
 {
 	dynamic_array_internal_type *array = NULL;
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-	dynamic_array_error_type error = dynamic_array_error_none;
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
 	debug_info.library_file_name = __FILE__;
@@ -681,40 +678,37 @@ void dynamic_array_remove_elements_starting_from_index_(
 	debug_info.library_line_number = (size_t)__LINE__;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
-	error = dynamic_array_check_and_report_error(dynamic_array, debug_info);
-	if (error != dynamic_array_error_none) {
-		dynamic_array_handle_exception(error);
+	dynamic_array_check_and_report_error(dynamic_array, &debug_info);
+	if (debug_info.error != dynamic_array_error_none) {
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
 	array = (dynamic_array_internal_type*) dynamic_array;
 	assert(element_size == array->element_size);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (element_size != array->element_size) {
-		error = dynamic_array_error_element_size_mismatch;
+		debug_info.error = dynamic_array_error_element_size_mismatch;
 		debug_info.library_line_number = (size_t)__LINE__;
 		debug_info.info_1 = element_size;
 		debug_info.info_2 = array->element_size;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
 	assert(index < array->number_of_elements);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (index >= array->number_of_elements) {
-		error = dynamic_array_error_index_out_of_range;
+		debug_info.error = dynamic_array_error_index_out_of_range;
 		debug_info.library_line_number = (size_t)__LINE__;
 		debug_info.info_1 = index;
 		debug_info.info_2 = array->number_of_elements;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
 	if (number_of_elements > 0U) {
 		unsigned char *ptr = NULL;
 		size_t offset = 0U, total_bytes_to_zero = 0U;
@@ -760,7 +754,6 @@ void dynamic_array_resize_(
 	const size_t new_number_of_elements = new_size;
 	dynamic_array_internal_type *array = NULL;
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-	dynamic_array_error_type error = dynamic_array_error_none;
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
 	debug_info.library_file_name = __FILE__;
@@ -768,27 +761,25 @@ void dynamic_array_resize_(
 	debug_info.library_line_number = (size_t)__LINE__;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
-	error = dynamic_array_check_and_report_error(dynamic_array, debug_info);
-	if (error != dynamic_array_error_none) {
-		dynamic_array_handle_exception(error);
+	dynamic_array_check_and_report_error(dynamic_array, &debug_info);
+	if (debug_info.error != dynamic_array_error_none) {
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
 	array = (dynamic_array_internal_type*) dynamic_array;
 	assert(element_size == array->element_size);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (element_size != array->element_size) {
-		error = dynamic_array_error_element_size_mismatch;
+		debug_info.error = dynamic_array_error_element_size_mismatch;
 		debug_info.library_line_number = (size_t)__LINE__;
 		debug_info.info_1 = element_size;
 		debug_info.info_2 = array->element_size;
-		dynamic_array_report_error(error, debug_info);
-		dynamic_array_handle_exception(error);
+		dynamic_array_report_error(debug_info);
+		dynamic_array_handle_exception(debug_info.error);
 		dynamic_array_terminate();
 	}
 #endif
-
 	if (new_number_of_elements > array->number_of_elements) {
 		size_t extra_number_of_elements = 0U;
 		size_t offset = 0U;
@@ -796,30 +787,28 @@ void dynamic_array_resize_(
 		unsigned char *ptr = NULL;
 
 		if (new_number_of_elements > array->capacity) {
-			size_t max_allowed_capacity = 0U;
 			size_t new_byte_count = 0U;
 			void *ptr = NULL;
 			size_t new_capacity = array->capacity;
+			Boolean_type multiplication_overflow_detected = Boolean_false;
 
-			max_allowed_capacity = SIZE_MAX / array->element_size;
 			while (new_capacity < new_number_of_elements) {
-				Boolean_type multiplication_overflow_detected = Boolean_false; 
 				new_capacity += new_capacity;
-				multiplication_overflow_detected = not (max_allowed_capacity > new_capacity);
-				assert(not multiplication_overflow_detected);
-#ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-				if (multiplication_overflow_detected) {
-					error = dynamic_array_error_calculation_overflow_detected;
-					debug_info.library_line_number = (size_t)__LINE__;
-					debug_info.info_1 = new_capacity;
-					debug_info.info_2 = array->element_size;
-					dynamic_array_report_error(error, debug_info);
-					dynamic_array_handle_exception(error);
-					dynamic_array_terminate();
-				}
-#endif
 			}
 
+			multiplication_overflow_detected = dynamic_array_multiplication_overflow_detected(new_capacity, array->element_size);
+			assert(not multiplication_overflow_detected);
+#ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
+			if (multiplication_overflow_detected) {
+				debug_info.error = dynamic_array_error_multiplication_overflow_detected;
+				debug_info.library_line_number = (size_t)__LINE__;
+				debug_info.info_1 = new_capacity;
+				debug_info.info_2 = array->element_size;
+				dynamic_array_report_error(debug_info);
+				dynamic_array_handle_exception(debug_info.error);
+				dynamic_array_terminate();
+			}
+#endif
 			new_byte_count = new_capacity * array->element_size;
 			if (array->allocator->reallocate_funcptr != NULL) {
 				ptr = array->allocator->reallocate_funcptr(array->ptr, new_byte_count);
@@ -837,11 +826,11 @@ void dynamic_array_resize_(
 				array->capacity = new_capacity;
 			} else {
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-				error = dynamic_array_error_memory_reallocation_failure;
+				debug_info.error = dynamic_array_error_memory_reallocation_failure;
 				debug_info.library_line_number = (size_t)__LINE__;
 				debug_info.info_1 = new_byte_count;
-				dynamic_array_report_error(error, debug_info);
-				dynamic_array_handle_exception(error);
+				dynamic_array_report_error(debug_info);
+				dynamic_array_handle_exception(debug_info.error);
 #endif
 				return;
 			}

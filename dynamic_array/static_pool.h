@@ -30,6 +30,8 @@ void *static_pool_reallocate(static_pool_type *pool, void *ptr, size_t new_size)
 
 void static_pool_deallocate(static_pool_type *pool, void *ptr);
 
+size_t static_pool_largest_chunk_size(void);
+
 #ifdef __cplusplus
 }
 #endif

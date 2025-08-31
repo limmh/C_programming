@@ -2,7 +2,6 @@
 #define STRING_REFERENCE_H
 
 #include "Boolean_type.h"
-#include "inline_or_static.h"
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
