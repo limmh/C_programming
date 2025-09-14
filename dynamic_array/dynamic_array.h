@@ -16,7 +16,7 @@ typedef struct dynamic_array_type_
 	unsigned char do_not_access_this_array[4 * sizeof(size_t)];
 } dynamic_array_type_;
 
-/* This macro is only for annotation.*/
+/* This macro is only for annotation. */
 #define dynamic_array_type(element_type) dynamic_array_type_
 
 typedef enum dynamic_array_error_type
@@ -62,7 +62,7 @@ typedef struct dynamic_array_allocator_type
 Provides an exception handler callback function.
 
 Parameter:
-exception_handler: A pointer to an exception handler function
+exception_handler_funcptr: A pointer to an exception handler function
 
 Return value: None.
 */
@@ -79,7 +79,7 @@ report_error_funcptr: A pointer to an error report function.
 Return value: None.
 
 Function signature of error reporting handler:
-void report_error(dynamic_array_error_type error, dynamic_array_debug_info_type debug_info);
+void report_error(dynamic_array_debug_info_type debug_info);
 
 Parameters:
 debug_info         : Debug information.
@@ -117,19 +117,21 @@ If no exception handler is provided, the program will be terminated when an erro
 Creates a dynamic array and returns a dynamic_array_type_ variable.
 
 Parameters
-initial_size: The number of elements that the dynamic array will contain when it is first created.
-element_size: The number of bytes of each element in the array.
-allocator   : A pointer to an allocator. The allocator must have a longer life time than the dynamic array. If it is a null pointer, a default allocator will be used.
-file_name   : The name or path of the source file which calls the function. For debugging purpose.
-line_number : The line number of the source file at which the function is called. For debugging purpose.
-struct_size : The number of bytes of a dynamic_array_type_. For debugging purpose.
+source            : The source of data to be copied when the dynamic array is first created. 'source' points to the first element of the source array. [Optional, can be NULL]
+number_of_elements: The number of elements that the dynamic array will contain when it is first created.
+                    If source is not NULL, then number_of_elements shall not exceed the number of elements that the source array contains.
+element_size      : The number of bytes of each element in the array.
+allocator         : A pointer to an allocator. The allocator must have a longer life time than the dynamic array. If it is a null pointer, a default allocator will be used.
+file_name         : The name or path of the source file which calls the function. For debugging purpose.
+line_number       : The line number of the source file at which the function is called. For debugging purpose.
+struct_size       : The number of bytes of a dynamic_array_type_. For debugging purpose.
 
 Return value
 A copy of dynamic_array_type_. The return value shall be assigned to a variable of compatible dynamic_array_type_ to prevent a memory leak.
 
 Possible errors and reasons:
 1. dynamic_array_error_memory_allocation_failure: No memory block can be acquired.
-2. dynamic_array_error_calculation_overflow_detected: (Element size times initial capacity) is greater than the maximum allowed number of bytes.
+2. dynamic_array_error_multiplication_overflow_detected: (Element size times initial capacity) is greater than the maximum allowed number of bytes.
 3. dynamic_array_error_no_memory_allocation_function: A user allocator is provided, but the pointer to memory allocation function is NULL.
 4. dynamic_array_error_no_memory_deallocation_function: A user allocator is provided, but the pointer to memory deallocation function is NULL.
 
@@ -137,7 +139,8 @@ Depending on the implementation, only the first error detected may be reported.
 */
 dynamic_array_type_
 dynamic_array_create_(
-	size_t initial_size,
+	const void *source,
+	size_t number_of_elements,
 	size_t element_size,
 	dynamic_array_allocator_type *allocator,
 	const char *file_name,
@@ -145,11 +148,19 @@ dynamic_array_create_(
 	size_t struct_size
 );
 
-#define dynamic_array_create(type, size) \
-	dynamic_array_create_(size, sizeof(type), NULL, __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_))
+#define dynamic_array_create(type, initial_size) \
+	dynamic_array_create_(NULL, initial_size, sizeof(type), NULL, __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_))
 
-#define dynamic_array_create_with_allocator(type, size, allocator) \
-	dynamic_array_create_(size, sizeof(type), &(allocator), __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_))
+#define dynamic_array_create_with_allocator(type, initial_size, allocator) \
+	dynamic_array_create_(NULL, initial_size, sizeof(type), &(allocator), __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_))
+
+#define dynamic_array_create_from_source(type, source, source_size) \
+	(assert(sizeof(type) == sizeof((source)[0])), \
+	dynamic_array_create_(source, source_size, sizeof(type), NULL, __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_)))
+
+#define dynamic_array_create_from_source_with_allocator(type, source, source_size, allocator) \
+	(assert(sizeof(type) == sizeof((source)[0])), \
+	dynamic_array_create_(source, source_size, sizeof(type), &(allocator), __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_)))
 
 /*
 Performs cleanup and releases the memory occupied by the dynamic array.
@@ -204,8 +215,7 @@ file_name    : The name of path of the source file which calls the function. For
 line_number  : The line of the source file at which the function is called. For debugging purpose.
 struct_size  : The number of bytes of dynamic_array_type_. For debugging purpose.
 
-Return value:
-The first error detected.
+Return value: The first error detected.
 */
 dynamic_array_error_type
 dynamic_array_check_(

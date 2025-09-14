@@ -234,6 +234,32 @@ TEST(char_dynamic_array_with_one_element_and_a_new_element_is_added_to_the_front
 	unit_test_pool_deinit();
 }
 
+TEST(char_dynamic_array_initialized_from_static_array, "Initialize a char dynamic array from a static array")
+{
+	const char buffer[] = "Hello World";	
+	dynamic_array_type(char) array = {0};
+
+	unit_test_pool_init();
+	array = dynamic_array_create_from_source_with_allocator(char, buffer, sizeof_array(buffer), unit_test_allocator);
+
+	ASSERT_UINT_EQUAL(dynamic_array_size(array), 12U); /* including NUL */
+	ASSERT_EQUAL(dynamic_array_element(char, array, 0U), 'H');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 1U), 'e');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 2U), 'l');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 3U), 'l');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 4U), 'o');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 5U), ' ');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 6U), 'W');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 7U), 'o');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 8U), 'r');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 9U), 'l');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 10U), 'd');
+	ASSERT_EQUAL(dynamic_array_element(char, array, 11U), '\0');
+
+	dynamic_array_delete(array);
+	unit_test_pool_deinit();
+}
+
 TEST(string_operations_on_char_dynamic_array, "String operations")
 {
 	const char buffer[] = "Hello World";
@@ -419,6 +445,7 @@ int main(void)
 		value_test_for_char_dynamic_array_with_one_element,
 		char_dynamic_array_with_one_element_and_a_new_element_is_added_to_the_back,
 		char_dynamic_array_with_one_element_and_a_new_element_is_added_to_the_front,
+		char_dynamic_array_initialized_from_static_array,
 		string_operations_on_char_dynamic_array,
 		dynamic_integer_array,
 		user_defined_type_test

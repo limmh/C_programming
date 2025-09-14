@@ -231,7 +231,8 @@ dynamic_array_check_(
 
 dynamic_array_type_
 dynamic_array_create_(
-	size_t initial_size,
+	const void *source,
+	size_t number_of_elements,
 	size_t element_size,
 	dynamic_array_allocator_type *allocator,
 	const char *file_name,
@@ -240,6 +241,7 @@ dynamic_array_create_(
 )
 {
 	size_t initial_capacity = 1U;
+	size_t initial_size = number_of_elements;
 	size_t number_of_bytes = 0U;
 	void *ptr = NULL;
 	Boolean_type multiplication_overflow_detected = Boolean_false;
@@ -317,7 +319,15 @@ dynamic_array_create_(
 	number_of_bytes = initial_capacity * element_size;
 	ptr = allocator->allocate_funcptr(number_of_bytes);
 	if (ptr != NULL) {
-		memset(ptr, 0, number_of_bytes);
+		if (source != NULL) {
+			const size_t number_of_bytes_to_copy = initial_size * element_size;
+			const size_t number_of_bytes_to_zero = number_of_bytes - number_of_bytes_to_copy;
+			unsigned char *dest = (unsigned char*) ptr;
+			memcpy(dest, source, number_of_bytes_to_copy);
+			memset((dest + number_of_bytes_to_copy), 0, number_of_bytes_to_zero); 
+		} else {
+			memset(ptr, 0, number_of_bytes);
+		}
 	} else {
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 		debug_info.error = dynamic_array_error_memory_allocation_failure;
