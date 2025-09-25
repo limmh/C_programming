@@ -187,7 +187,7 @@ void dynamic_array_delete_(
 Retrieves the allocator
 
 Parameters
-dynamic_array: A pointer to a valid dynamic_array_type_variable. Must not be a null pointer.
+dynamic_array: A pointer to a valid dynamic_array_type_ variable. Must not be a null pointer.
 file_name    : The name of path of the source file which calls the function. For debugging purpose.
 line_number  : The line of the source file at which the function is called. For debugging purpose.
 struct_size  : The number of bytes of dynamic_array_type_. For debugging purpose.
@@ -210,7 +210,7 @@ dynamic_array_get_allocator_(
 Checks the dynamic array for any error. The returned error is the first error detected.
 
 Parameters
-dynamic_array: A pointer to a valid dynamic_array_type_variable. Must not be a null pointer.
+dynamic_array: A pointer to a valid dynamic_array_type_ variable. Must not be a null pointer.
 file_name    : The name of path of the source file which calls the function. For debugging purpose.
 line_number  : The line of the source file at which the function is called. For debugging purpose.
 struct_size  : The number of bytes of dynamic_array_type_. For debugging purpose.
@@ -232,7 +232,7 @@ dynamic_array_check_(
 Returns the number of elements that can be stored without reallocation
 
 Parameters
-dynamic_array: A pointer to a valid dynamic_array_type_variable. Must not be a null pointer.
+dynamic_array: A pointer to a valid dynamic_array_type_ variable. Must not be a null pointer.
 file_name    : The name of path of the source file which calls the function. For debugging purpose.
 line_number  : The line of the source file at which the function is called. For debugging purpose.
 struct_size  : The number of bytes of dynamic_array_type_. For debugging purpose.
@@ -254,7 +254,7 @@ size_t dynamic_array_capacity_(
 Returns the actual number of elements of the dynamic array
 
 Parameters
-dynamic_array: A pointer to a valid dynamic_array_type_variable. Must not be a null pointer.
+dynamic_array: A pointer to a valid dynamic_array_type_ variable. Must not be a null pointer.
 file_name    : The name of path of the source file which calls the function. For debugging purpose.
 line_number  : The line of the source file at which the function is called. For debugging purpose.
 struct_size  : The number of bytes of dynamic_array_type_. For debugging purpose.
@@ -280,7 +280,7 @@ The pointer is a void pointer and must be cast to the proper type of each elemen
 NOTE: Do not call this function directly. Use the provided macro dynamic_array_element to access an array element.
 
 Parameters
-dynamic_array: A pointer to a valid dynamic_array_type_variable. Must not be a null pointer.
+dynamic_array: A pointer to a valid dynamic_array_type_ variable. Must not be a null pointer.
 index        : An array index which should be less than the number of array elements.
 element_size : The number of bytes of each element. The value will be compared with the element size stored internally.
 file_name    : The name of path of the source file which calls the function. For debugging purpose.
@@ -308,7 +308,7 @@ Valid index values: from 0 to one past the last index, i.e. [0, array_size]
 The function will perform reallocation if there is no enough capacity.
 
 Parameters
-dynamic_array       : A pointer to a valid dynamic_array_type_variable. Must not be a null pointer.
+dynamic_array       : A pointer to a valid dynamic_array_type_ variable. Must not be a null pointer.
 index               : The index which corresponds to the position where the first new element is to be added.
 ptr_to_first_element: A pointer to the first element to be added.
 number_of_elements  : The number of elements to be added.
@@ -371,7 +371,7 @@ Only the available elements will be removed.
 The function will not perform any reallocation.
 
 Parameters
-dynamic_array     : A pointer to a valid dynamic_array_type_variable. Must not be a null pointer.
+dynamic_array     : A pointer to a valid dynamic_array_type_ variable. Must not be a null pointer.
 index             : The index which corresponds to the position of the first element to be removed.
 output buffer     : A pointer to the first element of an external buffer to store the removed elements.
                     Can be NULL if the removed elements need not be stored in any external buffer.
@@ -427,7 +427,7 @@ If the new size is larger than the old size, reallocation may be performed and a
 If the new size is smaller than the old size, there will be no reallocation. Old elements which are no longer valid will be zeroed.
 
 Parameters
-dynamic_array: A pointer to a valid dynamic_array_type_variable. Must not be a null pointer.
+dynamic_array: A pointer to a valid dynamic_array_type_ variable. Must not be a null pointer.
 new size     : The new number of array elements.
 element_size : The number of bytes of each element. The value will be compared with the element size stored internally.
 file_name    : The name or path of the source file which calls the function. For debugging purpose.
