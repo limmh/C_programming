@@ -5,7 +5,7 @@
 #define INLINE_OR_STATIC inline
 #else
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
-#define INLINE_OR_STATIC inline
+#define INLINE_OR_STATIC static inline
 #else
 #define INLINE_OR_STATIC static
 #endif
