@@ -2,6 +2,7 @@
 #define STRING_REFERENCE_H
 
 #include "Boolean_type.h"
+#include "inline_or_static.h"
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
@@ -29,7 +30,7 @@ typedef struct const_stringref_type
 	size_t length;
 } const_stringref_type;
 
-static const_stringref_type  stringref_to_const_stringref(stringref_type stringref)
+INLINE_OR_STATIC const_stringref_type  stringref_to_const_stringref(stringref_type stringref)
 {
 	const_stringref_type const_stringref = {NULL, 0U};
 	const_stringref.string = stringref.string;
@@ -37,17 +38,17 @@ static const_stringref_type  stringref_to_const_stringref(stringref_type stringr
 	return const_stringref;
 }
 
-static Boolean_type stringref_is_valid(stringref_type stringref)
+INLINE_OR_STATIC Boolean_type stringref_is_valid(stringref_type stringref)
 {
 	return (stringref.string != NULL);
 }
 
-static Boolean_type const_stringref_is_valid(const_stringref_type const_stringref)
+INLINE_OR_STATIC Boolean_type const_stringref_is_valid(const_stringref_type const_stringref)
 {
 	return (const_stringref.string != NULL);
 }
 
-static stringref_type  string_to_stringref(char *string, size_t length)
+INLINE_OR_STATIC stringref_type  string_to_stringref(char *string, size_t length)
 {
 	stringref_type stringref = {NULL, 0U};
 	stringref.string = string;
@@ -55,7 +56,7 @@ static stringref_type  string_to_stringref(char *string, size_t length)
 	return stringref;
 }
 
-static const_stringref_type  string_to_const_stringref(const char *string, size_t length)
+INLINE_OR_STATIC const_stringref_type  string_to_const_stringref(const char *string, size_t length)
 {
 	const_stringref_type const_stringref = {NULL, 0U};
 	const_stringref.string = string;
@@ -63,7 +64,7 @@ static const_stringref_type  string_to_const_stringref(const char *string, size_
 	return const_stringref;
 }
 
-static void const_stringref_to_string(const_stringref_type stringref, char *buffer, size_t buffer_size)
+INLINE_OR_STATIC void const_stringref_to_string(const_stringref_type stringref, char *buffer, size_t buffer_size)
 {
 	assert(stringref.string != NULL);
 	assert(buffer != NULL);
@@ -76,7 +77,7 @@ static void const_stringref_to_string(const_stringref_type stringref, char *buff
 	}
 }
 
-static void stringref_to_string(stringref_type stringref, char *buffer, size_t buffer_size)
+INLINE_OR_STATIC void stringref_to_string(stringref_type stringref, char *buffer, size_t buffer_size)
 {
 	const_stringref_to_string(stringref_to_const_stringref(stringref), buffer, buffer_size);
 }
