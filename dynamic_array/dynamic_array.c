@@ -15,7 +15,7 @@
 */
 
 #ifndef SIZE_MAX
-#define SIZE_MAX ((size_t) -1)
+#define SIZE_MAX ((size_t)0U -1U)
 #endif
 
 typedef struct {
@@ -133,13 +133,13 @@ static Boolean_type dynamic_array_addition_overflow_detected(size_t a, size_t b)
 
 static Boolean_type dynamic_array_multiplication_overflow_detected(size_t a, size_t b)
 {
-	if (a == 0U or b == 0U) {
-		return Boolean_false;
-	} else {
+	Boolean_type overflow_detected = Boolean_false;
+	if (a > 0U and b > 0U) {
 		const size_t quotient  = SIZE_MAX / a;
 		const size_t remainder = SIZE_MAX % a;
-		return ((b > quotient) or (b == quotient and remainder != 0U));
+		overflow_detected = ((b > quotient) or (b == quotient and remainder != 0U));
 	}
+	return overflow_detected;
 }
 
 static void dynamic_array_check_error_internal(
@@ -147,41 +147,38 @@ static void dynamic_array_check_error_internal(
 	dynamic_array_debug_info_type *pdebug_info
 )
 {
-	const dynamic_array_internal_type *array = NULL;
 	assert(dynamic_array != NULL);
 	assert(pdebug_info != NULL);
 	pdebug_info->info_1 = 0U;
 	pdebug_info->info_2 = 0U;
 
-	if (dynamic_array == NULL) {
-		pdebug_info->error = dynamic_array_error_null_pointer_exception;
-	}
+	if (dynamic_array != NULL) {
+		const dynamic_array_internal_type *array = (const dynamic_array_internal_type*) dynamic_array;
 
-	if (pdebug_info->struct_size != sizeof(dynamic_array_internal_type)) {
-		pdebug_info->error = dynamic_array_error_struct_size_mismatch;
-		pdebug_info->info_1 = pdebug_info->struct_size;
-		pdebug_info->info_2 = pdebug_info->internal_struct_size;
-	}
-
-	array = (const dynamic_array_internal_type*) dynamic_array;
-
-	if (array->ptr == NULL) {
-		pdebug_info->error = dynamic_array_error_no_buffer;
-	} else if (array->capacity < array->number_of_elements) {
-		pdebug_info->error = dynamic_array_error_incorrect_capacity;
-		pdebug_info->info_1 = array->capacity;
-		pdebug_info->info_2 = array->number_of_elements;
-	} else if (array->element_size < 1U) {
-		pdebug_info->error = dynamic_array_error_incorrect_element_size;
-		pdebug_info->info_1 = array->element_size;
-	} else if (array->allocator == NULL) {
-		pdebug_info->error = dynamic_array_error_no_allocator;
-	} else if (array->allocator->allocate_funcptr == NULL) {
-		pdebug_info->error = dynamic_array_error_no_memory_allocation_function;
-	} else if (array->allocator->deallocate_funcptr == NULL) {
-		pdebug_info->error = dynamic_array_error_no_memory_deallocation_function;
+		if (array->ptr == NULL) {
+			pdebug_info->error = dynamic_array_error_no_buffer;
+		} else if (pdebug_info->struct_size != sizeof(dynamic_array_internal_type)) {
+			pdebug_info->error = dynamic_array_error_struct_size_mismatch;
+			pdebug_info->info_1 = pdebug_info->struct_size;
+			pdebug_info->info_2 = pdebug_info->internal_struct_size;
+		} else if (array->capacity < array->number_of_elements) {
+			pdebug_info->error = dynamic_array_error_incorrect_capacity;
+			pdebug_info->info_1 = array->capacity;
+			pdebug_info->info_2 = array->number_of_elements;
+		} else if (array->element_size < 1U) {
+			pdebug_info->error = dynamic_array_error_incorrect_element_size;
+			pdebug_info->info_1 = array->element_size;
+		} else if (array->allocator == NULL) {
+			pdebug_info->error = dynamic_array_error_no_allocator;
+		} else if (array->allocator->allocate_funcptr == NULL) {
+			pdebug_info->error = dynamic_array_error_no_memory_allocation_function;
+		} else if (array->allocator->deallocate_funcptr == NULL) {
+			pdebug_info->error = dynamic_array_error_no_memory_deallocation_function;
+		} else {
+			pdebug_info->error = dynamic_array_error_none;
+		}
 	} else {
-		pdebug_info->error = dynamic_array_error_none;
+		pdebug_info->error = dynamic_array_error_null_pointer_exception;
 	}
 }
 
@@ -249,7 +246,7 @@ dynamic_array_create_(
 	dynamic_array_type_ dyn_array = {0U};
 	dynamic_array_debug_info_type debug_info = {0};
 	debug_info.file_name = file_name;
-	debug_info.file_name = __FILE__;
+	debug_info.library_file_name = __FILE__;
 	debug_info.line_number = line_number;
 	debug_info.struct_size = struct_size;
 	debug_info.internal_struct_size = sizeof(dynamic_array_internal_type);
