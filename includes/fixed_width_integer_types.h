@@ -30,7 +30,7 @@
 #define INT8_MAX   (0x7F)
 #define INT8_MIN   (-INT8_MAX - 1)
 #define UINT8_MAX  (0xFFU)
-#define INT16_MAX  (0x7FFFU)
+#define INT16_MAX  (0x7FFF)
 #define INT16_MIN  (-INT16_MAX - 1)
 #define UINT16_MAX (0xFFFFU)
 #define INT32_MAX  (0x7FFFFFFF)
@@ -240,33 +240,63 @@ typedef size_t uintptr_t;
 #if defined(_WIN64) || defined(WIN64)
 STATIC_ASSERT((sizeof(void*) * CHAR_BIT) == 64U, "Windows 64-bit: A pointer type is supposed to be 64-bit.");
 #pragma message("Windows 64-bit: The size of a pointer type is 64-bit.")
+#ifndef PTRDIFF_MIN
 #define PTRDIFF_MIN INT64_MIN
+#endif
+#ifndef PTRDIFF_MAX
 #define PTRDIFF_MAX INT64_MAX
+#endif
+#ifndef SIZE_MAX
 #define SIZE_MAX UINT64_MAX
+#endif
 #elif defined(_WIN32) || defined(WIN32)
 STATIC_ASSERT((sizeof(void*) * CHAR_BIT) == 32U, "Windows 32-bit: A pointer type is supposed to be 32-bit.");
 #pragma message("Windows 32-bit: The size of a pointer type is 32-bit.")
+#ifndef PTRDIFF_MIN
 #define PTRDIFF_MIN INT32_MIN
+#endif
+#ifndef PTRDIFF_MAX
 #define PTRDIFF_MAX INT32_MAX
+#endif
+#ifndef SIZE_MAX
 #define SIZE_MAX UINT32_MAX
+#endif
 #elif (LONG_MIN == INT64_MIN) && (LONG_MAX == INT64_MAX) && (ULONG_MAX == UINT64_MAX)
 STATIC_ASSERT((sizeof(void*) * CHAR_BIT) == 64U, "A pointer type is supposed to be 64-bit.");
 #pragma message("The size of a pointer type is 64-bit.")
+#ifndef PTRDIFF_MIN
 #define PTRDIFF_MIN INT64_MIN
+#endif
+#ifndef PTRDIFF_MAX
 #define PTRDIFF_MAX INT64_MAX
+#endif
+#ifndef SIZE_MAX
 #define SIZE_MAX UINT64_MAX
+#endif
 #elif (INT_MIN == INT32_MIN) && (INT_MAX == INT32_MAX) && (UINT_MAX == UINT32_MAX)
 STATIC_ASSERT((sizeof(void*) * CHAR_BIT) == 32U, "A pointer type is supposed to be 32-bit.");
 #pragma message("The size of a pointer type is 32-bit.")
+#ifndef PTRDIFF_MIN
 #define PTRDIFF_MIN INT32_MIN
+#endif
+#ifndef PTRDIFF_MAX
 #define PTRDIFF_MAX INT32_MAX
+#endif
+#ifndef SIZE_MAX
 #define SIZE_MAX UINT32_MAX
+#endif
 #elif (INT_MIN == INT16_MIN) && (INT_MAX == INT16_MAX) && (UINT_MAX == UINT16_MAX)
 STATIC_ASSERT((sizeof(void*) * CHAR_BIT) == 16U, "A pointer type is supposed to be 16-bit.");
 #pragma message("The size of a pointer type is 16-bit.")
+#ifndef PTRDIFF_MIN
 #define PTRDIFF_MIN INT16_MIN
+#endif
+#ifndef PTRDIFF_MAX
 #define PTRDIFF_MAX INT16_MAX
+#endif
+#ifndef SIZE_MAX
 #define SIZE_MAX UINT16_MAX
+#endif
 #else
 #error "Please determine the width of the address space of your computer architecture and modify this part to implement PTRDIFF_MIN, PTRDIFF_MAX and SIZE_MAX."
 #endif
