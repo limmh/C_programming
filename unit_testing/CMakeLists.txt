@@ -1,17 +1,7 @@
-if (NOT DEFINED COMPILER_SUPPORTS_GNU_COMPILER_FLAGS)
-	if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang|IntelLLVM|XLClang|IBMClang")
-		set(COMPILER_SUPPORTS_GNU_COMPILER_FLAGS YES)
-	else()
-		set(COMPILER_SUPPORTS_GNU_COMPILER_FLAGS NO)
-	endif()
-endif()
-
 if (NOT DEFINED LIBRARY_C_STANDARD)
-	set(LIBRARY_C_STANDARD "c89")
-endif()
-
-if (NOT DEFINED PROGRAM_C_STANDARD)
-	set(PROGRAM_C_STANDARD "c99")
+	message("LIBRARY_C_STANDARD was not defined for unit_testing.")
+	set(LIBRARY_C_STANDARD "90")
+	message("LIBRARY_C_STANDARD is defined as ${LIBRARY_C_STANDARD}.")
 endif()
 
 # library
@@ -20,12 +10,12 @@ add_library(
 	"${CMAKE_CURRENT_SOURCE_DIR}/unit_testing.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/unit_testing.h"
 )
-if(COMPILER_SUPPORTS_GNU_COMPILER_FLAGS)
-	target_compile_options(
-		unit_testing PRIVATE
-		-std=${LIBRARY_C_STANDARD}
-	)
-endif()
+set_target_properties(
+	unit_testing PROPERTIES
+	C_STANDARD ${LIBRARY_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS NO
+)
 target_include_directories(
 	unit_testing PRIVATE
 	"${CMAKE_CURRENT_SOURCE_DIR}"
@@ -42,12 +32,12 @@ add_executable(
 	unit_testing_example
 	"${CMAKE_CURRENT_SOURCE_DIR}/unit_testing_example.c"
 )
-if(COMPILER_SUPPORTS_GNU_COMPILER_FLAGS)
-	target_compile_options(
-		unit_testing_example PRIVATE
-		-std=${PROGRAM_C_STANDARD}
-	)
-endif()
+set_target_properties(
+	unit_testing_example PROPERTIES
+	C_STANDARD ${LIBRARY_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS NO
+)
 target_include_directories(
 	unit_testing_example PRIVATE
 	"${CMAKE_CURRENT_SOURCE_DIR}"
