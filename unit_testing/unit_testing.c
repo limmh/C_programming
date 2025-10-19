@@ -1,6 +1,7 @@
-#ifndef UINT_TESTING_LIBRARY_BUILD_LIBRARY
+#ifndef UNIT_TESTING_LIBRARY_BUILD_LIBRARY
 #define UNIT_TESTING_LIBRARY_BUILD_LIBRARY
 #endif
+
 #include "unit_testing.h"
 #include "terminal_text_color.h"
 
@@ -21,7 +22,8 @@ void testing_library_set_file(FILE *pfile)
 	file_pointer = pfile;
 }
 
-static FILE *testing_library_get_file(void)
+/* non-null guarantee */
+FILE *testing_library_get_file(void)
 {
 	return (file_pointer != NULL) ? file_pointer : stdout;
 }
@@ -80,8 +82,7 @@ void testing_library_assert(int line_number, Boolean_type condition, const char 
 }
 
 void testing_library_run_test(size_t sequence_number, testing_library_test_type *ptest, testing_library_data_type *pdata)
-{
-	FILE *file = testing_library_get_file();
+{	
 	assert(ptest != NULL);
 	assert(ptest->func_ptr != NULL);
 	assert(ptest->id != NULL);
@@ -94,6 +95,9 @@ void testing_library_run_test(size_t sequence_number, testing_library_test_type 
 		const char *status_message = "";
 		terminal_color_code_type color_code = terminal_color_code_default;
 		testing_library_test_result_type test_result = test_result_test_fails;
+		FILE *file = testing_library_get_file();
+
+		terminal_text_color_set(color_code);
 
 		if (0U == ptest->sequence_number) {
 			ptest->sequence_number = sequence_number;
@@ -119,6 +123,20 @@ void testing_library_run_test(size_t sequence_number, testing_library_test_type 
 			}
 		}
 
+		if (sequence_number > 0U) {
+			if (ptest->name_or_description[0] != '\0') {
+				fprintf(file, "(%lu) %s (%s)\n", (unsigned long) sequence_number, ptest->id, ptest->name_or_description);
+			} else {
+				fprintf(file, "(%lu) %s\n", (unsigned long) sequence_number, ptest->id);
+			}
+		} else {
+			if (ptest->name_or_description[0] != '\0') {
+				fprintf(file, "%s (%s)\n", ptest->id, ptest->name_or_description);
+			} else {
+				fprintf(file, "%s\n", ptest->id);
+			}
+		}
+	
 		(*(ptest->func_ptr))();
 		++(ptest->run_count);
 
@@ -144,14 +162,13 @@ void testing_library_run_test(size_t sequence_number, testing_library_test_type 
 		} else if (test_result_test_has_no_assertion == test_result) {
 			status_message = test_without_assertion_warning_text();
 			color_code = terminal_color_code_yellow;
+		} else {
+			status_message = "Unknown status";
+			color_code = terminal_color_code_yellow;
 		}
 
 		terminal_text_color_set(color_code);
-		if (sequence_number > 0U) {
-			fprintf(file, "(%lu) %s (%s) [%s]\n", (unsigned long) sequence_number, ptest->id, ptest->name_or_description, status_message);
-		} else {
-			fprintf(file, "%s (%s) [%s]\n", ptest->id, ptest->name_or_description, status_message);
-		}
+		fprintf(file, "Status of %s: %s\n", ptest->id, status_message);
 		terminal_text_color_set(terminal_color_code_default);
 	}
 }
@@ -165,10 +182,7 @@ void testing_library_run_tests(testing_library_test_type * const *ptests, size_t
 	}
 	for (; i < number_of_tests; ++i) {
 		const size_t sequence_number = i + 1U;
-		assert(ptests[i] != NULL);
-		if (ptests[i] != NULL) {
-			testing_library_run_test(sequence_number, ptests[i], pdata);
-		}
+		testing_library_run_test(sequence_number, ptests[i], pdata);
 	}
 }
 
@@ -281,7 +295,6 @@ void testing_library_print_test_statistics(const testing_library_test_statistics
 void testing_library_print_file_name(const char *file_name)
 {
 	FILE *file = testing_library_get_file();
-	assert(file_name != NULL);
 	fprintf(file, "%s\n", file_name);
 }
 
