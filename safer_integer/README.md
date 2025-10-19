@@ -69,7 +69,7 @@ The Safer Integer API offers:
 
 ### 1. Result Type Data Structure
 
-Each safer integer arithmetic operation has the following return type.
+Each safer integer arithmetic operation has a return type of the following form.
 
 ```c
 struct int_result_type {
@@ -133,54 +133,85 @@ On overflow/underflow, arithmetic functions clip the result:
 
 Note: `long long` and `unsigned long long` are available since C99 for most compilers or as a C89/C90 extension for some compilers.
 
+### 7. When to use the API
+
+Consider using the API if you have one of the following situations.
+- Arithmetic operations are to be performed on operands without obvious upper bound or lower bound, and you want to start with a smaller integer type first.
+- When a larger integer type is not available or supported, e.g. arithmetic operations are performed on integers of long long type.
+  Intermediate arithmetic operations may overflow, but casting to larger type (e.g. 128-bit integer type) is not possible on many platforms due to lack of 128-bit support.
+- Integer overflows in arithmetic operations have to be detected and reported by your C or C++ applications, but you do not want to implement overflow detection by yourself.
+
 ## Example
 
 ```c
 #include "safer_integer_short_macros.h"
 #include <stdio.h>
 
+/* Assume there is no integer type wider than long long */
+long long llong_average(long long a, long long b) {
+	llong_result_type result = slladd(a, b);
+	if (result.error == integer_operation_error_none) {
+		result.value /= 2LL; /* OK: division by a positive integer will not cause widening of result */
+	} else {
+		/* Try a less accurate calculation */
+		result.value = (a / 2LL) + (b / 2LL); /* OK */
+		/* report the error */
+		fprintf(stderr, "%s\n", integer_operation_error_message(result.error));
+		fprintf(stderr, "Operation: addition, operand 1: %lld, operand 2: %lld\n", a, a);
+				
+	}
+	return result.value;
+}
+
 int main(void) {
-    int_result_type result = siadd(INT_MAX, 1);
-    if (result.error != integer_operation_error_none) {
-        printf("Overflow! Clipped value: %d\n", result.value);
-    }
-    return 0;
+	long long a = 5000LL, b = 10000LL;
+	long long c = LLONG_MIN, d = LLONG_MIN;
+	long long e = LLONG_MAX, f = LLONG_MAX;
+	long long result = 0LL;
+	result = llong_average(a, b); /* No error */
+	printf("average(%lld, %lld) = %lld\n", a, b, result);
+	result = llong_average(c, d); /* Error will be printed */
+	printf("average(%lld, %lld) = %lld\n", c, d, result);
+	result = llong_average(e, f); /* Error will be printed */
+	printf("average(%lld, %lld) = %lld\n", e, f, result);
+	return 0;
 }
 ```
+
 ## Macros
 
-|Macro                  |Function               |Operand Type       |Return Type        |
-|---------------------|---------------------|------------------|-----------------|
-|siadd                  |safer_int_add          |int                |int_result_type    |
-|sisub (or siminus)     |safer_int_minus        |int                |int_result_type    |
-|simul                  |safer_int_multiply     |int                |int_result_type    |
-|sidiv                  |safer_int_divide       |int                |int_result_type    |
-|suiadd                 |safer_uint_add         |unsigned int       |uint_result_type   |
-|suisub (or suiminus)   |safer_uint_minus       |unsigned int       |uint_result_type   |
-|suimul                 |safer_uint_multiply    |unsigned int       |uint_result_type   |
-|suidiv                 |safer_uint_divide      |unsigned int       |uint_result_type   |
-|sladd                  |safer_long_add         |long               |long_result_type   |
-|slsub (or slminus)     |safer_long_minus       |long               |long_result_type   |
-|slmul                  |safer_long_multiply    |long               |long_result_type   |
-|sldiv                  |safer_long_divide      |long               |long_result_type   |
-|suladd                 |safer_ulong_add        |unslgned long      |ulong_result_type  |
-|sulsub (or sulminus)   |safer_ulong_minus      |unslgned long      |ulong_result_type  |
-|sulmul                 |safer_ulong_multiply   |unslgned long      |ulong_result_type  |
-|suldiv                 |safer_ulong_divide     |unslgned long      |ulong_result_type  |
-|slladd                 |safer_llong_add        |long long          |long_result_type   |
-|sllsub (or sllminus)   |safer_llong_minus      |long long          |llong_result_type  |
-|sllmul                 |safer_llong_multiply   |long long          |llong_result_type  |
-|slldiv                 |safer_llong_divide     |long long          |llong_result_type  |
-|sulladd                |safer_ullong_add       |unslgned long long |ullong_result_type |
-|sullsub (or sullminus) |safer_ullong_minus     |unslgned long long |ullong_result_type |
-|sullmul                |safer_ullong_multiply  |unslgned long long |ullong_result_type |
-|sulldiv                |safer_ullong_divide    |unslgned long long |ullong_result_type |
+|Macro                  |Function              |Integer Operation |Operand Type       |Return Type        |
+|---------------------|--------------------|-----------------|-----------------|------------------|
+|siadd                  |safer_int_add         |Addition          |int                |int_result_type    |
+|sisub (or siminus)     |safer_int_minus       |Subtraction       |int                |int_result_type    |
+|simul                  |safer_int_multiply    |Multiplication    |int                |int_result_type    |
+|sidiv                  |safer_int_divide      |Division          |int                |int_result_type    |
+|suiadd                 |safer_uint_add        |Addition          |unsigned int       |uint_result_type   |
+|suisub (or suiminus)   |safer_uint_minus      |Subtraction       |unsigned int       |uint_result_type   |
+|suimul                 |safer_uint_multiply   |Multiplication    |unsigned int       |uint_result_type   |
+|suidiv                 |safer_uint_divide     |Division          |unsigned int       |uint_result_type   |
+|sladd                  |safer_long_add        |Addition          |long               |long_result_type   |
+|slsub (or slminus)     |safer_long_minus      |Subtraction       |long               |long_result_type   |
+|slmul                  |safer_long_multiply   |Multiplication    |long               |long_result_type   |
+|sldiv                  |safer_long_divide     |Division          |long               |long_result_type   |
+|suladd                 |safer_ulong_add       |Addition          |unsigned long      |ulong_result_type  |
+|sulsub (or sulminus)   |safer_ulong_minus     |Subtraction       |unsigned long      |ulong_result_type  |
+|sulmul                 |safer_ulong_multiply  |Multiplication    |unsigned long      |ulong_result_type  |
+|suldiv                 |safer_ulong_divide    |Division          |unsigned long      |ulong_result_type  |
+|slladd                 |safer_llong_add       |Addition          |long long          |llong_result_type  |
+|sllsub (or sllminus)   |safer_llong_minus     |Subtraction       |long long          |llong_result_type  |
+|sllmul                 |safer_llong_multiply  |Multiplication    |long long          |llong_result_type  |
+|slldiv                 |safer_llong_divide    |Division          |long long          |llong_result_type  |
+|sulladd                |safer_ullong_add      |Addition          |unsigned long long |ullong_result_type |
+|sullsub (or sullminus) |safer_ullong_minus    |Subtraction       |unsigned long long |ullong_result_type |
+|sullmul                |safer_ullong_multiply |Multiplication    |unsigned long long |ullong_result_type |
+|sulldiv                |safer_ullong_divide   |Division          |unsigned long long |ullong_result_type |
 
 Notes:
 - The macros will perform runtime assertions to check whether their operand values can fit into the function operands.
 - If either or both operands of of smaller types, e.g. signed char or short, the int version should be used.  
-  The safe implicit conversion (from an integer type smaller than int to int) emulates the integer promotion behavior that C usually performs.  
-  Because of this, operations that support smaller types are covered by the int variants.
+  The safe implicit conversion (from an integer type smaller than int to int) emulates the integer promotion behavior that C usually performs.
+  Because of this, operations on integer types smaller than int are already handled by the int variants.
 
 ## Limitations
 
