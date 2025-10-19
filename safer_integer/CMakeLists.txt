@@ -14,7 +14,7 @@ set_target_properties(
 	safer_integer PROPERTIES
 	C_STANDARD ${LIBRARY_C_STANDARD}
 	C_STANDARD_REQUIRED YES
-	C_EXTENSIONS NO
+	C_EXTENSIONS YES
 )
 target_include_directories(
 	safer_integer PRIVATE
@@ -31,7 +31,7 @@ set_target_properties(
 	safer_integer_tests PROPERTIES
 	C_STANDARD ${LIBRARY_C_STANDARD}
 	C_STANDARD_REQUIRED YES
-	C_EXTENSIONS NO
+	C_EXTENSIONS YES
 )
 target_include_directories(
 	safer_integer_tests PRIVATE
