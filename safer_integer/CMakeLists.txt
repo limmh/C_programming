@@ -9,6 +9,8 @@ add_library(
 	safer_integer STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integers.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integers.h"
 )
 set_target_properties(
 	safer_integer PROPERTIES
