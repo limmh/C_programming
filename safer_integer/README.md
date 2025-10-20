@@ -56,6 +56,7 @@ The safer arithmetic operations make use of the checking functions.
 The Safer Integer API offers:
 
 - **Checked arithmetic** for built-in integer types such as `int`, `long`, `long long`, and their unsigned variants.
+- **Support for fixed width integer types**, such as `int8_t`, `int16_t`, `int32_t`, `int64_t` and their unsigned variants.
 - **Error reporting** via enums and result structs.
 - **Comprehensive error codes**: Explicitly distinguishes between overflow, underflow, division by zero and other error conditions.
 - **Value semantics**: Results are returned as structs, not via pointer output.
@@ -180,6 +181,8 @@ int main(void) {
 
 ## Macros
 
+### Macros wrapping safer functions for built-in integer types
+
 |Macro                  |Function              |Integer Operation |Operand Type       |Return Type        |
 |---------------------|--------------------|-----------------|-----------------|------------------|
 |siadd                  |safer_int_add         |Addition          |int                |int_result_type    |
@@ -207,6 +210,78 @@ int main(void) {
 |sullmul                |safer_ullong_multiply |Multiplication    |unsigned long long |ullong_result_type |
 |sulldiv                |safer_ullong_divide   |Division          |unsigned long long |ullong_result_type |
 
+### Macros wrapping safer functions for fixed width integer types
+
+|Macro                  |Function              |Integer Operation |Operand Type   |Return Type        |
+|---------------------|--------------------|-----------------|-------------|------------------|
+|si8add                 |safer_i8_add          |Addition          |int8_t         |i8_result_type     |
+|si8sub (or si8minus)   |safer_i8_minus        |Subtraction       |int8_t         |i8_result_type     |
+|si8mul                 |safer_i8_multiply     |Multiplication    |int8_t         |i8_result_type     |
+|si8div                 |safer_i8_divide       |Division          |int8_t         |i8_result_type     |
+|su8add                 |safer_u8_add          |Addition          |uint8_t        |u8_result_type     |
+|su8sub (or su8minus)   |safer_u8_minus        |Subtraction       |uint8_t        |u8_result_type     |
+|su8mul                 |safer_u8_multiply     |Multiplication    |uint8_t        |u8_result_type     |
+|su8div                 |safer_u8_divide       |Division          |uint8_t        |u8_result_type     |
+|si16add                |safer_i16_add         |Addition          |int16_t        |i16_result_type    |
+|si16sub (or si16minus) |safer_i16_minus       |Subtraction       |int16_t        |i16_result_type    |
+|si16mul                |safer_i16_multiply    |Multiplication    |int16_t        |i16_result_type    |
+|si16div                |safer_i16_divide      |Division          |int16_t        |i16_result_type    |
+|su16add                |safer_u16_add         |Addition          |uint16_t       |u16_result_type    |
+|su16sub (or su16minus) |safer_u16_minus       |Subtraction       |uint16_t       |u16_result_type    |
+|su16mul                |safer_u16_multiply    |Multiplication    |uint16_t       |u16_result_type    |
+|su16div                |safer_u16_divide      |Division          |uint16_t       |u16_result_type    |
+|si32add                |safer_i32_add         |Addition          |int32_t        |i32_result_type    |
+|si32sub (or si32minus) |safer_i32_minus       |Subtraction       |int32_t        |i32_result_type    |
+|si32mul                |safer_i32_multiply    |Multiplication    |int32_t        |i32_result_type    |
+|si32div                |safer_i32_divide      |Division          |int32_t        |i32_result_type    |
+|su32add                |safer_u32_add         |Addition          |uint32_t       |u32_result_type    |
+|su32sub (or su32minus) |safer_u32_minus       |Subtraction       |uint32_t       |u32_result_type    |
+|su32mul                |safer_u32_multiply    |Multiplication    |uint32_t       |u32_result_type    |
+|su32div                |safer_u32_divide      |Division          |uint32_t       |u32_result_type    |
+|si64add                |safer_i64_add         |Addition          |int64_t        |i64_result_type    |
+|si64sub (or si64minus) |safer_i64_minus       |Subtraction       |int64_t        |i64_result_type    |
+|si64mul                |safer_i64_multiply    |Multiplication    |int64_t        |i64_result_type    |
+|si64div                |safer_i64_divide      |Division          |int64_t        |i64_result_type    |
+|su64add                |safer_u64_add         |Addition          |uint64_t       |u64_result_type    |
+|su64sub (or su64minus) |safer_u64_minus       |Subtraction       |uint64_t       |u64_result_type    |
+|su64mul                |safer_u64_multiply    |Multiplication    |uint64_t       |u64_result_type    |
+|su64div                |safer_u64_divide      |Division          |uint64_t       |u64_result_type    |
+
+### Macros wrapping safe and less safe functions for fixed width integer types
+
+|Macro               |Function                |Integer Operation |Operand Type   |Return Type |
+|------------------|----------------------|----------------|--------------|-----------|
+|i8add               |safe_i8_add             |Addition          |int8_t         |int16_t     |
+|i8ub (or i8minus)   |safe_i8_minus           |Subtraction       |int8_t         |int16_t     |
+|i8mul               |safe_i8_multiply        |Multiplication    |int8_t         |int16_t     |
+|i8div               |less_safe_i8_divide     |Division          |int8_t         |int16_t     |
+|i8rem               |less_safe_i8_remainder  |Remainder         |int8_t         |int8_t      |
+|u8add               |safe_u8_add             |Addition          |uint8_t        |uint16_t    |
+|u8ub (or u8minus)   |safe_u8_minus           |Subtraction       |uint8_t        |int16_t     |
+|u8mul               |safe_u8_multiply        |Multiplication    |uint8_t        |uint16_t    |
+|u8div               |less_safe_u8_divide     |Division          |uint8_t        |uint8_t     |
+|u8rem               |less_safe_u8_remainder  |Remainder         |uint8_t        |uint8_t     |
+|i16add              |safe_i16_add            |Addition          |int16_t        |int32_t     |
+|i16ub (or i16minus) |safe_i16_minus          |Subtraction       |int16_t        |int32_t     |
+|i16mul              |safe_i16_multiply       |Multiplication    |int16_t        |int32_t     |
+|i16div              |less_safe_i16_divide    |Division          |int16_t        |int32_t     |
+|i16rem              |less_safe_i16_remainder |Remainder         |int16_t        |int16_t     |
+|u16add              |safe_u16_add            |Addition          |uint16_t       |uint32_t    |
+|u16ub (or u16minus) |safe_u16_minus          |Subtraction       |uint16_t       |int32_t     |
+|u16mul              |safe_u16_multiply       |Multiplication    |uint16_t       |uint32_t    |
+|u16div              |less_safe_u16_divide    |Division          |uint16_t       |uint16_t    |
+|u16rem              |less_safe_u16_remainder |Remainder         |uint16_t       |uint16_t    |
+|i32add              |safe_i32_add            |Addition          |int32_t        |int64_t     |
+|i32ub (or i32minus) |safe_i32_minus          |Subtraction       |int32_t        |int64_t     |
+|i32mul              |safe_i32_multiply       |Multiplication    |int32_t        |int64_t     |
+|i32div              |less_safe_i32_divide    |Division          |int32_t        |int64_t     |
+|i32rem              |less_safe_i32_remainder |Remainder         |int32_t        |int32_t     |
+|u32add              |safe_u32_add            |Addition          |uint32_t       |uint64_t    |
+|u32ub (or u32minus) |safe_u32_minus          |Subtraction       |uint32_t       |int64_t     |
+|u32mul              |safe_u32_multiply       |Multiplication    |uint32_t       |uint64_t    |
+|u32div              |less_safe_u32_divide    |Division          |uint32_t       |uint32_t    |
+|u32rem              |less_safe_u32_remainder |Remainder         |uint32_t       |uint32_t    |
+
 Notes:
 - The macros will perform runtime assertions to check whether their operand values can fit into the function operands.
 - If either or both operands of of smaller types, e.g. signed char or short, the int version should be used.  
@@ -223,7 +298,6 @@ Notes:
   so it makes more sense to directly use native bitwise operators on unsigned integers for bitwise operations.
 - No hardware intrinsics, hence not suitable for certain applications, e.g. applications which need to perform a lot of integer calculations within a very short time.  
   **Reason for no support**: The implementation is more portable without hardware intrinsics.
-- No support for fixed width integer types yet. Work in progress.
 
 ## License
 

@@ -516,7 +516,7 @@ u32_result_type safer_u32_divide(uint32_t a, uint32_t b)
 
 #if defined(INT64_MIN) && defined(INT64_MAX) && defined(UINT64_MAX)
 
-STATIC_ASSERT(sizeof(int64_t) == sizeof(long) or sizeof(int32_t) == sizeof(long long),
+STATIC_ASSERT(sizeof(int64_t) == sizeof(long) or sizeof(int64_t) == sizeof(long long),
 	"The size of int64_t shall be the size of long int or the size of unsigned long int.");
 STATIC_ASSERT(sizeof(uint64_t) == sizeof(unsigned long) or sizeof(uint64_t) == sizeof(unsigned long long),
 	"The size of uint64_t shall be the size of unsigned long int or the size of unsigned long long int.");
