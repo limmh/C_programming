@@ -21,9 +21,7 @@ TEST(safer_int_subtraction_check_tests, "Check underflow and normal cases for in
 	ASSERT_EQUAL(safer_int_subtraction_check(INT_MAX, -1), integer_operation_error_signed_integer_result_greater_than_maximum);
 	ASSERT_EQUAL(safer_int_subtraction_check(INT_MIN, INT_MAX), integer_operation_error_signed_integer_result_smaller_than_minimum);
 	ASSERT_EQUAL(safer_int_subtraction_check(INT_MAX, INT_MIN), integer_operation_error_signed_integer_result_greater_than_maximum);
-#if INT_MIN < -INT_MAX
 	ASSERT_EQUAL(safer_int_subtraction_check(0, INT_MIN), integer_operation_error_signed_integer_result_greater_than_maximum);
-#endif
 }
 
 TEST(safer_int_multiplication_check_tests, "Check overflow and normal cases for int multiplication")
@@ -37,9 +35,7 @@ TEST(safer_int_multiplication_check_tests, "Check overflow and normal cases for 
 	ASSERT_EQUAL(safer_int_multiplication_check(INT_MAX, INT_MAX), integer_operation_error_signed_integer_result_greater_than_maximum);
 	ASSERT_EQUAL(safer_int_multiplication_check(INT_MIN, INT_MAX), integer_operation_error_signed_integer_result_smaller_than_minimum);
 	ASSERT_EQUAL(safer_int_multiplication_check(INT_MAX, INT_MIN), integer_operation_error_signed_integer_result_smaller_than_minimum);
-#if INT_MIN < -INT_MAX
 	ASSERT_EQUAL(safer_int_multiplication_check(INT_MIN, -1), integer_operation_error_signed_integer_result_greater_than_maximum);
-#endif
 }
 
 TEST(safer_int_division_check_tests, "Check division by zero and edge cases for int division")
@@ -56,9 +52,7 @@ TEST(safer_int_division_check_tests, "Check division by zero and edge cases for 
 	ASSERT_EQUAL(safer_int_division_check(10, 0), integer_operation_error_division_of_signed_integer_by_zero);
 	ASSERT_EQUAL(safer_int_division_check(INT_MIN, 0), integer_operation_error_division_of_signed_integer_by_zero);
 	ASSERT_EQUAL(safer_int_division_check(INT_MAX, 0), integer_operation_error_division_of_signed_integer_by_zero);
-#if INT_MIN < -INT_MAX
 	ASSERT_EQUAL(safer_int_division_check(INT_MIN, -1), integer_operation_error_division_of_minimum_signed_integer_by_minus_one);
-#endif
 }
 
 TEST(int_addition_tests, "int addition")
@@ -79,23 +73,11 @@ TEST(int_addition_tests, "int addition")
 
 	result = siadd(INT_MIN, INT_MAX);
 	ASSERT_EQUAL(result.error, integer_operation_error_none);
-#if INT_MIN == (-INT_MAX - 1)
 	ASSERT_INT_EQUAL(result.value, -1);
-#elif INT_MIN == -INT_MAX
-	ASSERT_INT_EQUAL(result.value, 0);
-#else
-	#error "Unsupported integer representation: neither one's complement nor two's complement."
-#endif
 
 	result = siadd(INT_MAX, INT_MIN);
 	ASSERT_EQUAL(result.error, integer_operation_error_none);
-#if INT_MIN == (-INT_MAX - 1)
 	ASSERT_INT_EQUAL(result.value, -1);
-#elif INT_MIN == -INT_MAX
-	ASSERT_INT_EQUAL(result.value, 0);
-#else
-	#error "Unsupported integer representation: neither one's complement nor two's complement."
-#endif
 }
 
 TEST(int_addition_edge_cases, "Edge cases for int addition")
@@ -202,11 +184,9 @@ TEST(int_multiplication_edge_cases, "Edge cases for int multiplication")
 {
 	int_result_type result = {0, 0, integer_operation_error_none};
 
-#if INT_MIN < -INT_MAX
 	result = simul(INT_MIN, -1);
 	ASSERT_INT_EQUAL(result.value, INT_MAX);
 	ASSERT_EQUAL(result.error, integer_operation_error_signed_integer_result_greater_than_maximum);
-#endif
 
 	result = simul(INT_MAX, -2);
 	ASSERT_INT_EQUAL(result.value, INT_MIN);
@@ -300,10 +280,8 @@ TEST(int_division_edge_cases, "Edge cases for int division")
 	result = sidiv(INT_MAX, 0);
 	ASSERT_EQUAL(result.error, integer_operation_error_division_of_signed_integer_by_zero);
 
-#if INT_MIN == (-INT_MAX - 1)
 	result = sidiv(INT_MIN, -1);
 	ASSERT_EQUAL(result.error, integer_operation_error_division_of_minimum_signed_integer_by_minus_one);
-#endif
 }
 
 TEST(safer_long_addition_check_tests, "Check overflow and normal cases for long addition")
@@ -326,9 +304,7 @@ TEST(safer_long_subtraction_check_tests, "Check underflow and normal cases for l
 	ASSERT_EQUAL(safer_long_subtraction_check(LONG_MAX, -1), integer_operation_error_signed_integer_result_greater_than_maximum);
 	ASSERT_EQUAL(safer_long_subtraction_check(LONG_MIN, LONG_MAX), integer_operation_error_signed_integer_result_smaller_than_minimum);
 	ASSERT_EQUAL(safer_long_subtraction_check(LONG_MAX, LONG_MIN), integer_operation_error_signed_integer_result_greater_than_maximum);
-#if LONG_MIN < -LONG_MAX
 	ASSERT_EQUAL(safer_long_subtraction_check(0, LONG_MIN), integer_operation_error_signed_integer_result_greater_than_maximum);
-#endif
 }
 
 TEST(safer_long_multiplication_check_tests, "Check overflow and normal cases for long multiplication")
@@ -342,9 +318,7 @@ TEST(safer_long_multiplication_check_tests, "Check overflow and normal cases for
 	ASSERT_EQUAL(safer_long_multiplication_check(LONG_MAX, LONG_MAX), integer_operation_error_signed_integer_result_greater_than_maximum);
 	ASSERT_EQUAL(safer_long_multiplication_check(LONG_MIN, LONG_MAX), integer_operation_error_signed_integer_result_smaller_than_minimum);
 	ASSERT_EQUAL(safer_long_multiplication_check(LONG_MAX, LONG_MIN), integer_operation_error_signed_integer_result_smaller_than_minimum);
-#if LONG_MIN < -LONG_MAX
 	ASSERT_EQUAL(safer_long_multiplication_check(LONG_MIN, -1), integer_operation_error_signed_integer_result_greater_than_maximum);
-#endif
 }
 
 TEST(safer_long_division_check_tests, "Check division by zero and edge cases for long division")
@@ -361,9 +335,7 @@ TEST(safer_long_division_check_tests, "Check division by zero and edge cases for
 	ASSERT_EQUAL(safer_long_division_check(10, 0), integer_operation_error_division_of_signed_integer_by_zero);
 	ASSERT_EQUAL(safer_long_division_check(LONG_MIN, 0), integer_operation_error_division_of_signed_integer_by_zero);
 	ASSERT_EQUAL(safer_long_division_check(LONG_MAX, 0), integer_operation_error_division_of_signed_integer_by_zero);
-#if LONG_MIN < -LONG_MAX
 	ASSERT_EQUAL(safer_long_division_check(LONG_MIN, -1), integer_operation_error_division_of_minimum_signed_integer_by_minus_one);
-#endif
 }
 
 TEST(long_addition_tests, "long addition")
@@ -384,23 +356,11 @@ TEST(long_addition_tests, "long addition")
 
 	result = sladd(LONG_MIN, LONG_MAX);
 	ASSERT_EQUAL(result.error, integer_operation_error_none);
-#if LONG_MIN == (-LONG_MAX - 1)
 	ASSERT_LONG_EQUAL(result.value, -1);
-#elif LONG_MIN == -LONG_MAX
-	ASSERT_LONG_EQUAL(result.value, 0);
-#else
-	#error "Unsupported integer representation: neither one's complement nor two's complement."
-#endif
 
 	result = sladd(LONG_MAX, LONG_MIN);
 	ASSERT_EQUAL(result.error, integer_operation_error_none);
-#if LONG_MIN == (-LONG_MAX - 1)
 	ASSERT_LONG_EQUAL(result.value, -1);
-#elif LONG_MIN == -LONG_MAX
-	ASSERT_LONG_EQUAL(result.value, 0);
-#else
-	#error "Unsupported integer representation: neither one's complement nor two's complement."
-#endif
 }
 
 TEST(long_addition_edge_cases, "Edge cases for long addition")
@@ -507,11 +467,9 @@ TEST(long_multiplication_edge_cases, "Edge cases for long multiplication")
 {
 	long_result_type result = {0, 0, integer_operation_error_none};
 
-#if LONG_MIN < -LONG_MAX
 	result = slmul(LONG_MIN, -1);
 	ASSERT_LONG_EQUAL(result.value, LONG_MAX);
 	ASSERT_EQUAL(result.error, integer_operation_error_signed_integer_result_greater_than_maximum);
-#endif
 
 	result = slmul(LONG_MAX, -2);
 	ASSERT_LONG_EQUAL(result.value, LONG_MIN);
@@ -605,13 +563,11 @@ TEST(long_division_edge_cases, "Edge cases for long division")
 	result = sldiv(LONG_MAX, 0);
 	ASSERT_EQUAL(result.error, integer_operation_error_division_of_signed_integer_by_zero);
 
-#if LONG_MIN == (-LONG_MAX - 1)
 	result = sldiv(LONG_MIN, -1);
 	ASSERT_EQUAL(result.error, integer_operation_error_division_of_minimum_signed_integer_by_minus_one);
-#endif
 }
 
-#if LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
+#if defined(LLONG_MIN) && defined(LLONG_MAX)
 TEST(safer_llong_addition_check_tests, "Check overflow and normal cases for long long addition")
 {
 	ASSERT_EQUAL(safer_llong_addition_check(1, 2), integer_operation_error_none);
@@ -632,9 +588,7 @@ TEST(safer_llong_subtraction_check_tests, "Check underflow and normal cases for 
 	ASSERT_EQUAL(safer_llong_subtraction_check(LLONG_MAX, -1), integer_operation_error_signed_integer_result_greater_than_maximum);
 	ASSERT_EQUAL(safer_llong_subtraction_check(LLONG_MIN, LLONG_MAX), integer_operation_error_signed_integer_result_smaller_than_minimum);
 	ASSERT_EQUAL(safer_llong_subtraction_check(LLONG_MAX, LLONG_MIN), integer_operation_error_signed_integer_result_greater_than_maximum);
-#if LLONG_MIN < -LLONG_MAX
 	ASSERT_EQUAL(safer_llong_subtraction_check(0, LLONG_MIN), integer_operation_error_signed_integer_result_greater_than_maximum);
-#endif
 }
 
 TEST(safer_llong_multiplication_check_tests, "Check overflow and normal cases for long long multiplication")
@@ -648,9 +602,7 @@ TEST(safer_llong_multiplication_check_tests, "Check overflow and normal cases fo
 	ASSERT_EQUAL(safer_llong_multiplication_check(LLONG_MAX, LLONG_MAX), integer_operation_error_signed_integer_result_greater_than_maximum);
 	ASSERT_EQUAL(safer_llong_multiplication_check(LLONG_MIN, LLONG_MAX), integer_operation_error_signed_integer_result_smaller_than_minimum);
 	ASSERT_EQUAL(safer_llong_multiplication_check(LLONG_MAX, LLONG_MIN), integer_operation_error_signed_integer_result_smaller_than_minimum);
-#if LLONG_MIN < -LLONG_MAX
 	ASSERT_EQUAL(safer_llong_multiplication_check(LLONG_MIN, -1), integer_operation_error_signed_integer_result_greater_than_maximum);
-#endif
 }
 
 TEST(safer_llong_division_check_tests, "Check division by zero and edge cases for long long division")
@@ -667,9 +619,7 @@ TEST(safer_llong_division_check_tests, "Check division by zero and edge cases fo
 	ASSERT_EQUAL(safer_llong_division_check(10, 0), integer_operation_error_division_of_signed_integer_by_zero);
 	ASSERT_EQUAL(safer_llong_division_check(LLONG_MIN, 0), integer_operation_error_division_of_signed_integer_by_zero);
 	ASSERT_EQUAL(safer_llong_division_check(LLONG_MAX, 0), integer_operation_error_division_of_signed_integer_by_zero);
-#if LLONG_MIN < -LLONG_MAX
 	ASSERT_EQUAL(safer_llong_division_check(LLONG_MIN, -1), integer_operation_error_division_of_minimum_signed_integer_by_minus_one);
-#endif
 }
 
 TEST(llong_addition_tests, "long long addition")
@@ -690,23 +640,11 @@ TEST(llong_addition_tests, "long long addition")
 
 	result = slladd(LLONG_MIN, LLONG_MAX);
 	ASSERT_EQUAL(result.error, integer_operation_error_none);
-#if LLONG_MIN == (-LLONG_MAX - 1)
 	ASSERT_LLONG_EQUAL(result.value, -1);
-#elif LLONG_MIN == -LLONG_MAX
-	ASSERT_LLONG_EQUAL(result.value, 0);
-#else
-	#error "Unsupported integer representation: neither one's complement nor two's complement."
-#endif
 
 	result = slladd(LLONG_MAX, LLONG_MIN);
 	ASSERT_EQUAL(result.error, integer_operation_error_none);
-#if LLONG_MIN == (-LLONG_MAX - 1)
 	ASSERT_LLONG_EQUAL(result.value, -1);
-#elif LLONG_MIN == -LLONG_MAX
-	ASSERT_LLONG_EQUAL(result.value, 0);
-#else
-	#error "Unsupported integer representation: neither one's complement nor two's complement."
-#endif
 }
 
 TEST(llong_addition_edge_cases, "Edge cases for long long addition")
@@ -813,11 +751,9 @@ TEST(llong_multiplication_edge_cases, "Edge cases for long long multiplication")
 {
 	llong_result_type result = {0, 0, integer_operation_error_none};
 
-#if LLONG_MIN < -LLONG_MAX
 	result = sllmul(LLONG_MIN, -1);
 	ASSERT_LLONG_EQUAL(result.value, LLONG_MAX);
 	ASSERT_EQUAL(result.error, integer_operation_error_signed_integer_result_greater_than_maximum);
-#endif
 
 	result = sllmul(LLONG_MAX, -2);
 	ASSERT_LLONG_EQUAL(result.value, LLONG_MIN);
@@ -911,12 +847,10 @@ TEST(llong_division_edge_cases, "Edge cases for long long division")
 	result = slldiv(LLONG_MAX, 0);
 	ASSERT_EQUAL(result.error, integer_operation_error_division_of_signed_integer_by_zero);
 
-#if LLONG_MIN == (-LLONG_MAX - 1)
 	result = slldiv(LLONG_MIN, -1);
 	ASSERT_EQUAL(result.error, integer_operation_error_division_of_minimum_signed_integer_by_minus_one);
-#endif
 }
-#endif /* LONG_LONG_INTEGER_TYPE_IS_AVAILABLE */
+#endif
 
 TEST(safer_uint_addition_check_tests, "Check overflow and normal cases for unsigned int addition")
 {
@@ -1349,6 +1283,7 @@ TEST(ulong_division_edge_cases, "Edge cases for unsigned long division")
 
 }
 
+#if defined(ULLONG_MAX)
 TEST(safer_ullong_addition_check_tests, "Check overflow and normal cases for unsigned long long addition")
 {
 	ASSERT_EQUAL(safer_ullong_addition_check(0U, 0U), integer_operation_error_none);
@@ -1564,6 +1499,7 @@ TEST(ullong_division_edge_cases, "Edge cases for unsigned long long division")
 	ASSERT_EQUAL(result.error, integer_operation_error_division_of_unsigned_integer_by_zero);
 
 }
+#endif
 
 int main(void)
 {
@@ -1592,7 +1528,7 @@ int main(void)
 		long_multiplication_edge_cases,
 		long_division_tests,
 		long_division_edge_cases,
-#if LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
+#if defined(LLONG_MIN) && defined(LLONG_MAX)
 		safer_llong_addition_check_tests,
 		safer_llong_subtraction_check_tests,
 		safer_llong_multiplication_check_tests,
@@ -1630,7 +1566,7 @@ int main(void)
 		ulong_multiplication_edge_cases,
 		ulong_division_tests,
 		ulong_division_edge_cases
-#if UNSIGNED_LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
+#if defined(ULLONG_MAX)
 		,
 		safer_ullong_addition_check_tests,
 		safer_ullong_subtraction_check_tests,

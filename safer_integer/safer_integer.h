@@ -69,15 +69,7 @@ long_result_type safer_long_minus(long a, long b);
 long_result_type safer_long_multiply(long a, long b);
 long_result_type safer_long_divide(long dividend, long divisor);
 
-#ifndef LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
 #if defined(LLONG_MIN) && defined(LLONG_MAX)
-#define LONG_LONG_INTEGER_TYPE_IS_AVAILABLE 1
-#else
-#define LONG_LONG_INTEGER_TYPE_IS_AVAILABLE 0
-#endif
-#endif
-
-#if LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
 /* Signed long long integers and safer operations */
 /* Checks whether the result of (a + b) is within the range of [LLONG_MIN, LLONG_MAX] */
 integer_operation_error_type safer_llong_addition_check(long long a, long long b);
@@ -102,7 +94,7 @@ llong_result_type safer_llong_multiply(long long a, long long b);
 llong_result_type safer_llong_divide(long long dividend, long long divisor);
 #else
 #pragma message("safer integer: long long type is not supported.")
-#endif /* LONG_LONG_INTEGER_TYPE_IS_AVAILABLE */
+#endif
 
 /* runtime checks for unsigned integer operations */
 integer_operation_error_type safer_uint_addition_check(unsigned int a, unsigned int b);
@@ -140,15 +132,7 @@ ulong_result_type safer_ulong_minus(unsigned long a , unsigned long b);
 ulong_result_type safer_ulong_multiply(unsigned long a, unsigned long b);
 ulong_result_type safer_ulong_divide(unsigned long dividend, unsigned long divisor);
 
-#ifndef UNSIGNED_LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
 #if defined(ULLONG_MAX)
-#define UNSIGNED_LONG_LONG_INTEGER_TYPE_IS_AVAILABLE 1
-#else
-#define UNSIGNED_LONG_LONG_INTEGER_TYPE_IS_AVAILABLE 0
-#endif
-#endif
-
-#if UNSIGNED_LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
 integer_operation_error_type safer_ullong_addition_check(unsigned long long a, unsigned long long b);
 integer_operation_error_type safer_ullong_subtraction_check(unsigned long long a, unsigned long long b);
 integer_operation_error_type safer_ullong_multiplication_check(unsigned long long a, unsigned long long b);
@@ -167,7 +151,7 @@ ullong_result_type safer_ullong_multiply(unsigned long long a, unsigned long lon
 ullong_result_type safer_ullong_divide(unsigned long long dividend, unsigned long long divisor);
 #else
 #pragma message("safer integer: unsigned long long type is not supported.")
-#endif /* UNSIGNED_LONG_LONG_INTEGER_TYPE_IS_AVAILABLE */
+#endif
 
 #ifdef __cplusplus
 }

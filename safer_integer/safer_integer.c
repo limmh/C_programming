@@ -45,8 +45,8 @@ maximum value: the most positive value that can be represented by a fixed number
 minimum value: the most negative value that can be represented by a fixed number of bits, e.g. 32 bits or 64 bits
 */
 
-STATIC_ASSERT((-INT_MAX == INT_MIN) or ((-INT_MAX - 1) == INT_MIN), "Only one's and two's complements are supported.");
-STATIC_ASSERT((-LONG_MAX == LONG_MIN) or ((-LONG_MAX - 1) == LONG_MIN), "Only one's and two's complements are supported.");
+STATIC_ASSERT(INT_MIN == (-INT_MAX - 1), "Only two's complement is supported.");
+STATIC_ASSERT(LONG_MIN == (-LONG_MAX - 1L), "Only two's complement is supported.");
 
 integer_operation_error_type safer_int_addition_check(int a, int b)
 {
@@ -407,9 +407,9 @@ long_result_type safer_long_divide(long dividend, long divisor)
 	return result;
 }
 
-#if LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
+#if defined(LLONG_MIN) && defined(LLONG_MAX)
 /* Signed long long integers */
-STATIC_ASSERT((-LLONG_MAX == LLONG_MIN) or ((-LLONG_MAX - 1) == LLONG_MIN), "Only one's and two's complements are supported.");
+STATIC_ASSERT(LLONG_MIN == (-LLONG_MAX - 1LL), "Only two's complement is supported.");
 
 integer_operation_error_type safer_llong_addition_check(long long a, long long b)
 {
@@ -831,7 +831,7 @@ ulong_result_type safer_ulong_divide(unsigned long dividend, unsigned long divis
 	return result;
 }
 
-#if UNSIGNED_LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
+#if defined(ULLONG_MAX)
 integer_operation_error_type safer_ullong_addition_check(unsigned long long a, unsigned long long b)
 {
 	const unsigned long long maximum_value = ULLONG_MAX;

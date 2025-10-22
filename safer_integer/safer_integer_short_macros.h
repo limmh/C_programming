@@ -111,7 +111,7 @@ static void safer_integer_assert(FILE *file, int Boolean_condition, const char *
 #endif
 
 
-#if LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
+#if defined(LLONG_MIN) && defined(LLONG_MAX)
 
 #ifndef slladd
 #define slladd(a, b) \
@@ -155,7 +155,7 @@ static void safer_integer_assert(FILE *file, int Boolean_condition, const char *
 #pragma message("slldiv has been defined in another file. It will not be redefined.")
 #endif
 
-#endif /* LONG_LONG_INTEGER_TYPE_IS_AVAILABLE */
+#endif /* Are LLONG_MIN and LLONG_MAX defined? */
 
 
 /* Short macros for unsigned integer operations */
@@ -245,10 +245,7 @@ static void safer_integer_assert(FILE *file, int Boolean_condition, const char *
 #endif
 
 
-#if UNSIGNED_LONG_LONG_INTEGER_TYPE_IS_AVAILABLE
-
-#define INTEGER_CAN_BE_SAFELY_CAST_TO_ULLONG(integer) \
-	((integer) >= 0 && (integer) <= ULLONG_MAX)
+#if defined(ULLONG_MAX)
 
 #ifndef sulladd
 #define sulladd(a, b) \
@@ -292,7 +289,7 @@ static void safer_integer_assert(FILE *file, int Boolean_condition, const char *
 #pragma message("sulldiv has been defined in another file. It will not be redefined.")
 #endif
 
-#endif /* UNSIGNED_LONG_LONG_INTEGER_TYPE_IS_AVAILABLE */
+#endif /* Is ULLONG_MAX defined? */
 
 
 /* int8_t */
