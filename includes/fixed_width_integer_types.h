@@ -45,7 +45,7 @@ STATIC_ASSERT((sizeof(long) * CHAR_BIT) == 64U, "The size of long must be 64-bit
 #elif defined(LLONG_MIN) && (LLONG_MIN < INT32_MIN) && defined(LLONG_MAX) && (LLONG_MAX > INT32_MAX)
 STATIC_ASSERT((sizeof(long long) * CHAR_BIT) == 64U, "The size of long long must be 64-bit.");
 #define INT64_MAX (0x7FFFFFFFFFFFFFFFLL)
-#defome INT64_MIN (-INT64_MAX - 1LL)
+#define INT64_MIN (-INT64_MAX - 1LL)
 #define FIXED_WIDTH_INTEGER_TYPE_INT64_IS_SUPPORTED 1
 #else
 #define FIXED_WIDTH_INTEGER_TYPE_INT64_IS_SUPPORTED 0

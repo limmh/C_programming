@@ -11,20 +11,20 @@ int main(void)
 {
 	enum { array_size = 5 };
 	int array[array_size] = {1, 2, 3, 4, 5};
-    iterator_type(int) it = iterator_init();
-    iterator_type(int) begin = iterator_begin(array);
-    iterator_type(int) end = iterator_end(begin, array_size);
-    printf("Printing the numbers\n");
-    foreach_iterator(it, begin, end) {
-        printf("%d\n", iterator_deref(it));
-    }
-    iterator_reset(it);
-    begin = iterator_reverse_begin(iterator_increment(begin, array_size - 1));
-    end = iterator_reverse_end(begin, array_size);
-    printf("Printing the numbers in reverse order\n");
-    foreach_iterator_in_reverse(it, begin, end) {
-        printf("%d\n", iterator_deref(it));
-    }
+	iterator_type(int) it = iterator_init();
+	iterator_type(int) begin = iterator_begin(array);
+	iterator_type(int) end = iterator_end(begin, array_size);
+	printf("Printing the numbers\n");
+	foreach_iterator(it, begin, end) {
+		printf("%d\n", iterator_deref(it));
+	}
+	iterator_reset(it);
+	begin = iterator_reverse_begin(iterator_increment(begin, array_size - 1));
+	end = iterator_reverse_end(begin, array_size);
+	printf("Printing the numbers in reverse order\n");
+	foreach_iterator_in_reverse(it, begin, end) {
+		printf("%d\n", iterator_deref(it));
+	}
 	return 0;
 }
 

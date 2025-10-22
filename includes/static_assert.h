@@ -29,13 +29,8 @@ Note:
 #define STATIC_ASSERT(condition, message) static const char * const CONCATENATE(static_assert_message_, __COUNTER__)[(condition) ? 1 : -1] = {message}
 #elif defined(__LINE__)
 #define STATIC_ASSERT(condition, message) static const char * const CONCATENATE(static_assert_message_, __LINE__)[(condition) ? 1 : -1] = {message}
-#ifndef _MSC_VER
-#warning "The STATIC_ASSERT macro cannot be implemented properly because __COUNTER__ is not defined by your compiler."
-#warning "Only one instance of STATIC_ASSERT is allowed on each line."
-#else
 #pragma message("The STATIC_ASSERT macro cannot be implemented properly because __COUNTER__ is not defined by your compiler.")
 #pragma message("Only one instance of STATIC_ASSERT is allowed on each line.")
-#endif
 #else
 #error "The STATIC_ASSERT macro cannot be implemented because neither __COUNTER__ nor __LINE__ is defined by your compiler."
 #endif
