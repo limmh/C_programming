@@ -132,7 +132,7 @@ u8_result_type safer_u8_minus(uint8_t a, uint8_t b)
 	if (a >= b) {
 		u8_result.value = (uint8_t) ((unsigned int) a - (unsigned int) b);
 	} else {
-		u8_result.error = integer_operation_error_unsigned_integer_result_wraparound_from_larger_to_smaller;
+		u8_result.error = integer_operation_error_unsigned_integer_result_wraparound_from_smaller_to_larger;
 	}
 	return u8_result;
 }
@@ -320,7 +320,7 @@ u16_result_type safer_u16_minus(uint16_t a, uint16_t b)
 	if (a >= b) {
 		u16_result.value = (uint16_t) ((unsigned int) a - (unsigned int) b);
 	} else {
-		u16_result.error = integer_operation_error_unsigned_integer_result_wraparound_from_larger_to_smaller;
+		u16_result.error = integer_operation_error_unsigned_integer_result_wraparound_from_smaller_to_larger;
 	}
 	return u16_result;
 }

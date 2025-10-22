@@ -158,7 +158,7 @@ long long llong_average(long long a, long long b) {
 		result.value = (a / 2LL) + (b / 2LL); /* OK */
 		/* report the error */
 		fprintf(stderr, "%s\n", integer_operation_error_message(result.error));
-		fprintf(stderr, "Operation: addition, operand 1: %lld, operand 2: %lld\n", a, a);
+		fprintf(stderr, "Operation: addition, operand 1: %lld, operand 2: %lld\n", a, b);
 				
 	}
 	return result.value;
