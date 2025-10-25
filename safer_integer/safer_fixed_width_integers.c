@@ -1,6 +1,5 @@
 #include "safer_fixed_width_integers.h"
 #include "safer_integer_short_macros.h"
-#include "static_assert.h"
 #include <assert.h>
 #include <iso646.h>
 
@@ -286,7 +285,7 @@ int32_t less_safe_i16_divide(int16_t a, int16_t b)
 	int32_t result = 0;
 	SAFER_INTEGER_ASSERT(b != 0);
 	if (b != 0) {
-		result = (int16_t) ((int32_t) a / (int32_t) b);
+		result = (int32_t) a / (int32_t) b;
 	}
 	return result;
 }

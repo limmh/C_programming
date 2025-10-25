@@ -1584,7 +1584,6 @@ int main(void)
 	};
 
 	PRINT_FILE_NAME();
-	SHOULD_PRINT_TRUE_ASSERTIONS();
 	RUN_TESTS(tests);
 	PRINT_TEST_STATISTICS(tests);
 	return 0;
