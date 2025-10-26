@@ -11,6 +11,8 @@ This repository contains a collection of portable libraries and sample programs 
 - **Dynamic array**  
   A dynamic array library which supports per-instance custom allocator, common dynamic array operations and debugging.
   Macros are used for dynamic array operations.
+- **Safer integer arithmetic**  
+  Safer integer arithmetic API for C code.
 - **Simple tokenizer**  
   A tokenizer library for splitting text into simple tokens.
 - **Terminal text color**  

@@ -4,6 +4,12 @@ if (NOT DEFINED LIBRARY_C_STANDARD)
 	message("LIBRARY_C_STANDARD is defined as ${LIBRARY_C_STANDARD}.")
 endif()
 
+if (NOT DEFINED PROGRAM_C_STANDARD)
+	message("PROGRAM_C_STANDARD was not defined for safer_integer.")
+	set(PROGRAM_C_STANDARD "99")
+	message("PROGRAM_C_STANDARD is defined as ${PROGRAM_C_STANDARD}.")
+endif()
+
 # library
 add_library(
 	safer_integer STATIC
@@ -11,6 +17,8 @@ add_library(
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integers.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integers.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer.h"
 )
 set_target_properties(
 	safer_integer PROPERTIES
@@ -69,4 +77,96 @@ target_link_libraries(
 	safer_integer
 	terminal_text_color
 	unit_testing
+)
+
+add_executable(
+	debug_mode_integer_runtime_tests
+	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer_runtime_tests.c"
+)
+set_target_properties(
+	debug_mode_integer_runtime_tests PROPERTIES
+	C_STANDARD ${PROGRAM_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS NO
+)
+target_include_directories(
+	debug_mode_integer_runtime_tests PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+)
+target_link_libraries(
+	debug_mode_integer_runtime_tests
+	safer_integer
+)
+
+add_executable(
+	debug_mode_integer_runtime_tests_saturation
+	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer_runtime_tests.c"
+)
+target_compile_options(
+	debug_mode_integer_runtime_tests_saturation PRIVATE
+	-DINTEGER_RESULT_MODE=INTEGER_RESULT_MODE_SATURATION
+)
+set_target_properties(
+	debug_mode_integer_runtime_tests_saturation PROPERTIES
+	C_STANDARD ${PROGRAM_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS NO
+)
+target_include_directories(
+	debug_mode_integer_runtime_tests_saturation PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+)
+target_link_libraries(
+	debug_mode_integer_runtime_tests_saturation
+	safer_integer
+)
+
+add_executable(
+	debug_mode_integer_runtime_tests_wraparound
+	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer_runtime_tests.c"
+)
+target_compile_options(
+	debug_mode_integer_runtime_tests_wraparound PRIVATE
+	-DINTEGER_RESULT_MODE=INTEGER_RESULT_MODE_WRAPAROUND
+)
+set_target_properties(
+	debug_mode_integer_runtime_tests_wraparound PROPERTIES
+	C_STANDARD ${PROGRAM_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS NO
+)
+target_include_directories(
+	debug_mode_integer_runtime_tests_wraparound PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+)
+target_link_libraries(
+	debug_mode_integer_runtime_tests_wraparound
+	safer_integer
+)
+
+add_executable(
+	debug_mode_integer_runtime_tests_unchecked
+	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer_runtime_tests.c"
+)
+target_compile_options(
+	debug_mode_integer_runtime_tests_unchecked PRIVATE
+	-DINTEGER_DEBUG_MODE_ENABLED=0
+)
+set_target_properties(
+	debug_mode_integer_runtime_tests_unchecked PROPERTIES
+	C_STANDARD ${PROGRAM_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS NO
+)
+target_include_directories(
+	debug_mode_integer_runtime_tests_unchecked PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+)
+target_link_libraries(
+	debug_mode_integer_runtime_tests_unchecked
+	safer_integer
 )

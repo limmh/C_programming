@@ -181,7 +181,7 @@ int main(void) {
 
 ## Macros
 
-### Macros wrapping safer functions for built-in integer types
+### Macros wrapping safer arithmetic functions for built-in integer types
 
 |Macro                  |Function              |Integer Operation |Operand Type       |Return Type        |
 |---------------------|--------------------|-----------------|-----------------|------------------|
@@ -210,7 +210,7 @@ int main(void) {
 |sullmul                |safer_ullong_multiply |Multiplication    |unsigned long long |ullong_result_type |
 |sulldiv                |safer_ullong_divide   |Division          |unsigned long long |ullong_result_type |
 
-### Macros wrapping safer functions for fixed width integer types
+### Macros wrapping safer arithmetic functions for fixed width integer types
 
 |Macro                  |Function              |Integer Operation |Operand Type   |Return Type        |
 |---------------------|--------------------|-----------------|-------------|------------------|
@@ -247,7 +247,7 @@ int main(void) {
 |su64mul                |safer_u64_multiply    |Multiplication    |uint64_t       |u64_result_type    |
 |su64div                |safer_u64_divide      |Division          |uint64_t       |u64_result_type    |
 
-### Macros wrapping safe and less safe functions for fixed width integer types
+### Macros wrapping safe and less safe arithmetic functions for fixed width integer types
 
 |Macro               |Function                |Integer Operation |Operand Type   |Return Type |
 |------------------|----------------------|----------------|--------------|-----------|
@@ -282,6 +282,73 @@ int main(void) {
 |u32div              |less_safe_u32_divide    |Division          |uint32_t       |uint32_t    |
 |u32rem              |less_safe_u32_remainder |Remainder         |uint32_t       |uint32_t    |
 
+### Macros wrapping debug mode arithmetic functions
+
+|Macro                 |Function                    |Integer Operation |Operand Type       |Return Type        |
+|--------------------|--------------------------|----------------|------------------|-----------------|
+|diadd                 |debug_mode_int_add          |Addition          |int                |int                |
+|disub (or diminus)    |debug_mode_int_minus        |Subtraction       |int                |int                |
+|dimul                 |debug_mode_int_multiply     |Multiplication    |int                |int                |
+|didiv                 |debug_mode_int_divide       |Division          |int                |int                |
+|duiadd                |debug_mode_uint_add         |Addition          |unsigned int       |unsigned int       |
+|duisub (or duiminus)  |debug_mode_uint_minus       |Subtraction       |unsigned int       |unsigned int       |
+|duimul                |debug_mode_uint_multiply    |Multiplication    |unsigned int       |unsigned int       |
+|duidiv                |debug_mode_uint_divide      |Division          |unsigned int       |unsigned int       |
+|dladd                 |debug_mode_long_add         |Addition          |long               |long               |
+|dlsub (or dlminus)    |debug_mode_long_minus       |Subtraction       |long               |long               |
+|dlmul                 |debug_mode_long_multiply    |Multiplication    |long               |long               |
+|dldiv                 |debug_mode_long_divide      |Division          |long               |long               |
+|duladd                |debug_mode_ulong_add        |Addition          |unsigned long      |unsigned long      |
+|dulsub (or dulminus)  |debug_mode_ulong_minus      |Subtraction       |unsigned long      |unsigned long      |
+|dulmul                |debug_mode_ulong_multiply   |Multiplication    |unsigned long      |unsigned long      |
+|duldiv                |debug_mode_ulong_divide     |Division          |unsigned long      |unsigned long      |
+|dlladd                |debug_mode_llong_add        |Addition          |long long          |long long          |
+|dllsub (or dllminus)  |debug_mode_llong_minus      |Subtraction       |long long          |long long          |
+|dllmul                |debug_mode_llong_multiply   |Multiplication    |long long          |long long          |
+|dlldiv                |debug_mode_llong_divide     |Division          |long long          |long long          |
+|dulladd               |debug_mode_ullong_add       |Addition          |unsigned long long |unsigned long long |
+|dullsub (or dullminus)|debug_mode_ullong_minus     |Subtraction       |unsigned long long |unsigned long long |
+|dullmul               |debug_mode_ullong_multiply  |Multiplication    |unsigned long long |unsigned long long |
+|dulldiv               |debug_mode_ullong_divide    |Division          |unsigned long long |unsigned long long |
+|di8add                |debug_mode_i8_add           |Addition          |int8_t             |int8_t             |
+|di8ub (or di8minus)   |debug_mode_i8_minus         |Subtraction       |int8_t             |int8_t             |
+|di8mul                |debug_mode_i8_multiply      |Multiplication    |int8_t             |int8_t             |
+|di8div                |debug_mode_i8_divide        |Division          |int8_t             |int8_t             |
+|di8rem                |debug_mode_i8_remainder     |Remainder         |int8_t             |int8_t             |
+|du8add                |debug_mode_u8_add           |Addition          |uint8_t            |uint8_t            |
+|du8ub (or du8minus)   |debug_mode_u8_minus         |Subtraction       |uint8_t            |uint8_t            |
+|du8mul                |debug_mode_u8_multiply      |Multiplication    |uint8_t            |uint8_t            |
+|du8div                |debug_mode_u8_divide        |Division          |uint8_t            |uint8_t            |
+|du8rem                |debug_mode_u8_remainder     |Remainder         |uint8_t            |uint8_t            |
+|di16add               |debug_mode_i16_add          |Addition          |int16_t            |int16_t            |
+|di16ub (or di16minus) |debug_mode_i16_minus        |Subtraction       |int16_t            |int16_t            |
+|di16mul               |debug_mode_i16_multiply     |Multiplication    |int16_t            |int16_t            |
+|di16div               |debug_mode_i16_divide       |Division          |int16_t            |int16_t            |
+|di16rem               |debug_mode_i16_remainder    |Remainder         |int16_t            |int16_t            |
+|du16add               |debug_mode_u16_add          |Addition          |uint16_t           |uint16_t           |
+|du16ub (or du16minus) |debug_mode_u16_minus        |Subtraction       |uint16_t           |uint16_t           |
+|du16mul               |debug_mode_u16_multiply     |Multiplication    |uint16_t           |uint16_t           |
+|du16div               |debug_mode_u16_divide       |Division          |uint16_t           |uint16_t           |
+|du16rem               |debug_mode_u16_remainder    |Remainder         |uint16_t           |uint16_t           |
+|di32add               |debug_mode_i32_add          |Addition          |int32_t            |int32_t            |
+|di32ub (or di32minus) |debug_mode_i32_minus        |Subtraction       |int32_t            |int32_t            |
+|di32mul               |debug_mode_i32_multiply     |Multiplication    |int32_t            |int32_t            |
+|di32div               |debug_mode_i32_divide       |Division          |int32_t            |int32_t            |
+|di32rem               |debug_mode_i32_remainder    |Remainder         |int32_t            |int32_t            |
+|du32add               |debug_mode_u32_add          |Addition          |uint32_t           |uint32_t           |
+|du32ub (or du32minus) |debug_mode_u32_minus        |Subtraction       |uint32_t           |uint32_t           |
+|du32mul               |debug_mode_u32_multiply     |Multiplication    |uint32_t           |uint32_t           |
+|du32div               |debug_mode_u32_divide       |Division          |uint32_t           |uint32_t           |
+|du32rem               |debug_mode_u32_remainder    |Remainder         |uint32_t           |uint32_t           |
+|dpdadd                |debug_mode_ptrdiff_add      |Addition          |ptrdiff_t          |ptrdiff_t          |
+|dpdsub (or dpdminus)  |debug_mode_ptrdiff_minus    |Subtraction       |ptrdiff_t          |ptrdiff_t          |
+|dpdmul                |debug_mode_ptrdiff_multiply |Multiplication    |ptrdiff_t          |ptrdiff_t          |
+|dpddiv                |debug_mode_ptrdiff_divide   |Division          |ptrdiff_t          |ptrdiff_t          |
+|dszadd                |debug_mode_size_add         |Addition          |size_t             |size_t             |
+|dszsub (or dszminus)  |debug_mode_size_minus       |Subtraction       |size_t             |size_t             |
+|dszmul                |debug_mode_size_multiply    |Multiplication    |size_t             |size_t             |
+|dszdiv                |debug_mode_size_divide      |Division          |size_t             |size_t             |
+
 Notes:
 - The macros will perform runtime assertions to check whether their operand values can fit into the function operands.
 - If either or both operands of of smaller types, e.g. signed char or short, the int version should be used.  
@@ -291,11 +358,13 @@ Notes:
 ## Limitations
 
 - Less friendly than native arithmetic operators like +,-,\*,/ and %.
-- No support for wraparound results.  
-  **Reason for no support**: Unsigned integer wraparounds are defined behavior in C and C++, so native operators can be used on unsigned integers to achieve wraparound behavior.
-- No support for bitwise operations.  
+- No support for wraparound results in safer and safe mode.  
+  **Reason for no support**: Unsigned integer wraparounds are defined behavior in C and C++, so native operators can be used on unsigned integers to achieve wraparound behavior.  
+  Note: Wraparound results are available in debug mode.
+- No support for bitwise operations.
   **Reason for no support**: Most operations on unsigned integers are defined, except bit shift operations where the number of bits to shift exceeds the width of the integer,
-  so it makes more sense to directly use native bitwise operators on unsigned integers for bitwise operations.
+  so it makes more sense to directly use native bitwise operators on unsigned integers for bitwise operations.  
+  Note: Support for safe functions wrapping bitwise operations for unsigned integers is being considered.
 - No hardware intrinsics, hence not suitable for certain applications, e.g. applications which need to perform a lot of integer calculations within a very short time.  
   **Reason for no support**: The implementation is more portable without hardware intrinsics.
 
