@@ -57,6 +57,8 @@ The Safer Integer API offers:
 
 - **Checked arithmetic** for built-in integer types such as `int`, `long`, `long long`, and their unsigned variants.
 - **Support for fixed width integer types**, such as `int8_t`, `int16_t`, `int32_t`, `int64_t` and their unsigned variants.
+- **Comparison** between signed integers and unsigned integers.
+- **Safe bitwise operations** for unsigned integers.
 - **Error reporting** via enums and result structs.
 - **Comprehensive error codes**: Explicitly distinguishes between overflow, underflow, division by zero and other error conditions.
 - **Value semantics**: Results are returned as structs, not via pointer output.
@@ -349,6 +351,34 @@ int main(void) {
 |dszmul                |debug_mode_size_multiply    |Multiplication    |size_t             |size_t             |
 |dszdiv                |debug_mode_size_divide      |Division          |size_t             |size_t             |
 
+### Macros wrapping functions which compare signed and unsigned integers
+
+- \*\_eq\_\*(a, b): (a == b)
+- \*\_ge\_\*(a, b): (a >= b)
+- \*\_gt\_\*(a, b): (a > b)
+- \*\_le\_\*(a, b): (a <= b)
+- \*\_lt\_\*(a, b): (a < b)
+
+Notes:
+- Supported values for \*: i, u, l, ul, ll, ul, i16, u16, i32, u32, i64 and u64
+- For comparisons between integers of different ranks, e.g. unsigned int and long, use a macro which supports the larger integer rank, e.g. ul\_xx\_l.
+- Comparison between signed and unsigned integers smaller than int, e.g. short and signed char, can be made using the int variant.
+- Comparison between two signed integers or between two unsigned integers can be made safely using native comparison operators.
+
+### Macros wrapping functions which perform safe unsigned bitwise operations
+
+- \*\_and   : bitwise AND
+- \*\_or    : bitwise OR
+- \*\_xor   : bitwise XOR
+- \*\_inv   : bitwise invert
+- \*\_lshift: bitwise left shift
+- \*\_rshift: bitwise right shift
+
+Notes:
+- Supported values for \*: uc, us, ui, ul, ull, u8, u16, u32 and u64
+- Only unsigned types are supported. If signed integers are used, they are implicitly converted to unsigned integers before bitwise operations are performed.
+- If the number of bits to shift is the same as or exceeds the number of bits of the operand, the result is always 0, i.e. all bits are zeros.
+
 Notes:
 - The macros will perform runtime assertions to check whether their operand values can fit into the function operands.
 - If either or both operands of of smaller types, e.g. signed char or short, the int version should be used.  
@@ -357,14 +387,11 @@ Notes:
 
 ## Limitations
 
-- Less friendly than native arithmetic operators like +,-,\*,/ and %.
+- Less friendly than native arithmetic operators such as +,-,\*,/ and %.  
+  **Workaround**: Short macros are provided for most functions.
 - No support for wraparound results in safer and safe mode.  
   **Reason for no support**: Unsigned integer wraparounds are defined behavior in C and C++, so native operators can be used on unsigned integers to achieve wraparound behavior.  
   Note: Wraparound results are available in debug mode.
-- No support for bitwise operations.
-  **Reason for no support**: Most operations on unsigned integers are defined, except bit shift operations where the number of bits to shift exceeds the width of the integer,
-  so it makes more sense to directly use native bitwise operators on unsigned integers for bitwise operations.  
-  Note: Support for safe functions wrapping bitwise operations for unsigned integers is being considered.
 - No hardware intrinsics, hence not suitable for certain applications, e.g. applications which need to perform a lot of integer calculations within a very short time.  
   **Reason for no support**: The implementation is more portable without hardware intrinsics.
 
