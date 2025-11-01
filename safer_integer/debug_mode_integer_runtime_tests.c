@@ -61,7 +61,7 @@ void test_integer_division_by_zero(void) {
 	const int a = 1;
 	const int b = 0;
 	const int result = didiv(a, b);
-	printf("The result of division by zero is undefined.\n");
+	printf("The result of division by zero is undefined. The result (%d) shall not be used.\n", result);
 }
 
 void test_division_of_minimum_integer_value_by_minus_one(void) {

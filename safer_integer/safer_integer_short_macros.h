@@ -966,354 +966,354 @@ static void safer_integer_assert(FILE *file, int Boolean_condition, const char *
 #define diadd(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT_MIN, INT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT_MIN, INT_MAX)), \
-	debug_mode_int_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_int_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define disub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT_MIN, INT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT_MIN, INT_MAX)), \
-	debug_mode_int_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_int_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define diminus(a, b) disub(a, b)
 #define dimul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT_MIN, INT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT_MIN, INT_MAX)), \
-	debug_mode_int_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_int_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define didiv(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT_MIN, INT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT_MIN, INT_MAX)), \
-	debug_mode_int_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_int_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define direm(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT_MIN, INT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT_MIN, INT_MAX)), \
-	debug_mode_int_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_int_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define duiadd(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT_MAX)), \
-	debug_mode_uint_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_uint_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define duisub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT_MAX)), \
-	debug_mode_uint_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_uint_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define duiminus(a, b) duisub(a, b)
 #define duimul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT_MAX)), \
-	debug_mode_uint_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_uint_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define duidiv(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT_MAX)), \
-	debug_mode_uint_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_uint_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define duirem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT_MAX)), \
-	debug_mode_uint_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_uint_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define dladd(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LONG_MIN, LONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LONG_MIN, LONG_MAX)), \
-	debug_mode_long_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_long_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dlsub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LONG_MIN, LONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LONG_MIN, LONG_MAX)), \
-	debug_mode_long_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_long_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dlminus(a, b) dlsub(a, b)
 #define dlmul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LONG_MIN, LONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LONG_MIN, LONG_MAX)), \
-	debug_mode_long_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_long_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dldiv(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LONG_MIN, LONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LONG_MIN, LONG_MAX)), \
-	debug_mode_long_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_long_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dlrem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LONG_MIN, LONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LONG_MIN, LONG_MAX)), \
-	debug_mode_long_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_long_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define duladd(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULONG_MAX)), \
-	debug_mode_ulong_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ulong_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dulsub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULONG_MAX)), \
-	debug_mode_ulong_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ulong_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dulminus(a, b) dulsub(a, b)
 #define dulmul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULONG_MAX)), \
-	debug_mode_ulong_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ulong_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define duldiv(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULONG_MAX)), \
-	debug_mode_ulong_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ulong_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dulrem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULONG_MAX)), \
-	debug_mode_ulong_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ulong_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define dlladd(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LLONG_MIN, LLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LLONG_MIN, LLONG_MAX)), \
-	debug_mode_llong_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_llong_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dllsub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LLONG_MIN, LLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LLONG_MIN, LLONG_MAX)), \
-	debug_mode_llong_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_llong_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dllminus(a, b) dllsub(a, b)
 #define dllmul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LLONG_MIN, LLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LLONG_MIN, LLONG_MAX)), \
-	debug_mode_llong_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_llong_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dlldiv(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LLONG_MIN, LLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LLONG_MIN, LLONG_MAX)), \
-	debug_mode_llong_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_llong_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dllrem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, LLONG_MIN, LLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, LLONG_MIN, LLONG_MAX)), \
-	debug_mode_llong_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_llong_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define dulladd(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULLONG_MAX)), \
-	debug_mode_ullong_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ullong_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dullsub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULLONG_MAX)), \
-	debug_mode_ullong_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ullong_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dullminus(a, b) dullsub(a, b)
 #define dullmul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULLONG_MAX)), \
-	debug_mode_ullong_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ullong_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dulldiv(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULLONG_MAX)), \
-	debug_mode_ullong_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ullong_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dullrem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, ULLONG_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, ULLONG_MAX)), \
-	debug_mode_ullong_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ullong_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define di8add(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT8_MIN, INT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT8_MIN, INT8_MAX)), \
-	debug_mode_i8_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i8_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di8sub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT8_MIN, INT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT8_MIN, INT8_MAX)), \
-	debug_mode_i8_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i8_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di8minus(a, b) di8sub(a, b)
 #define di8mul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT8_MIN, INT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT8_MIN, INT8_MAX)), \
-	debug_mode_i8_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i8_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di8div(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT8_MIN, INT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT8_MIN, INT8_MAX)), \
-	debug_mode_i8_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i8_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di8rem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT8_MIN, INT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT8_MIN, INT8_MAX)), \
-	debug_mode_i8_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i8_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define du8add(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT8_MAX)), \
-	debug_mode_u8_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u8_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du8sub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT8_MAX)), \
-	debug_mode_u8_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u8_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du8minus(a, b) du8sub(a, b)
 #define du8mul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT8_MAX)), \
-	debug_mode_u8_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u8_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du8div(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT8_MAX)), \
-	debug_mode_u8_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u8_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du8rem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT8_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT8_MAX)), \
-	debug_mode_u8_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u8_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define di16add(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT16_MIN, INT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT16_MIN, INT16_MAX)), \
-	debug_mode_i16_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i16_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di16sub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT16_MIN, INT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT16_MIN, INT16_MAX)), \
-	debug_mode_i16_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i16_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di16minus(a, b) di16sub(a, b)
 #define di16mul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT16_MIN, INT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT16_MIN, INT16_MAX)), \
-	debug_mode_i16_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i16_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di16div(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT16_MIN, INT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT16_MIN, INT16_MAX)), \
-	debug_mode_i16_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i16_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di16rem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT16_MIN, INT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT16_MIN, INT16_MAX)), \
-	debug_mode_i16_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i16_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define du16add(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT16_MAX)), \
-	debug_mode_u16_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u16_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du16sub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT16_MAX)), \
-	debug_mode_u16_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u16_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du16minus(a, b) du16sub(a, b)
 #define du16mul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT16_MAX)), \
-	debug_mode_u16_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u16_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du16div(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT16_MAX)), \
-	debug_mode_u16_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u16_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du16rem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT16_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT16_MAX)), \
-	debug_mode_u16_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u16_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define di32add(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT32_MIN, INT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT32_MIN, INT32_MAX)), \
-	debug_mode_i32_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i32_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di32sub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT32_MIN, INT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT32_MIN, INT32_MAX)), \
-	debug_mode_i32_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i32_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di32minus(a, b) di32sub(a, b)
 #define di32mul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT32_MIN, INT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT32_MIN, INT32_MAX)), \
-	debug_mode_i32_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i32_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di32div(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT32_MIN, INT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT32_MIN, INT32_MAX)), \
-	debug_mode_i32_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i32_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di32rem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT32_MIN, INT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT32_MIN, INT32_MAX)), \
-	debug_mode_i32_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i32_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define du32add(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT32_MAX)), \
-	debug_mode_u32_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u32_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du32sub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT32_MAX)), \
-	debug_mode_u32_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u32_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du32minus(a, b) du32sub(a, b)
 #define du32mul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT32_MAX)), \
-	debug_mode_u32_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u32_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du32div(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT32_MAX)), \
-	debug_mode_u32_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u32_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du32rem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT32_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT32_MAX)), \
-	debug_mode_u32_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u32_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define di64add(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT64_MIN, INT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT64_MIN, INT64_MAX)), \
-	debug_mode_i64_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i64_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di64sub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT64_MIN, INT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT64_MIN, INT64_MAX)), \
-	debug_mode_i64_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i64_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di64minus(a, b) di64sub(a, b)
 #define di64mul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT64_MIN, INT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT64_MIN, INT64_MAX)), \
-	debug_mode_i64_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i64_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di64div(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT64_MIN, INT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT64_MIN, INT64_MAX)), \
-	debug_mode_i64_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i64_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define di64rem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, INT64_MIN, INT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, INT64_MIN, INT64_MAX)), \
-	debug_mode_i64_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_i64_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define du64add(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT64_MAX)), \
-	debug_mode_u64_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u64_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du64sub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT64_MAX)), \
-	debug_mode_u64_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u64_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du64minus(a, b) du64sub(a, b)
 #define du64mul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT64_MAX)), \
-	debug_mode_u64_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u64_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du64div(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT64_MAX)), \
-	debug_mode_u64_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u64_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define du64rem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, UINT64_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, UINT64_MAX)), \
-	debug_mode_u64_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_u64_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define dpdadd(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, PTRDIFF_MIN, PTRDIFF_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, PTRDIFF_MIN, PTRDIFF_MAX)), \
-	debug_mode_ptrdiff_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ptrdiff_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dpdsub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, PTRDIFF_MIN, PTRDIFF_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, PTRDIFF_MIN, PTRDIFF_MAX)), \
-	debug_mode_ptrdiff_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ptrdiff_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dpdminus(a, b) dpdsub(a, b)
 #define dpdmul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, PTRDIFF_MIN, PTRDIFF_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, PTRDIFF_MIN, PTRDIFF_MAX)), \
-	debug_mode_ptrdiff_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ptrdiff_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dpddiv(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, PTRDIFF_MIN, PTRDIFF_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, PTRDIFF_MIN, PTRDIFF_MAX)), \
-	debug_mode_ptrdiff_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ptrdiff_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dpdrem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, PTRDIFF_MIN, PTRDIFF_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, PTRDIFF_MIN, PTRDIFF_MAX)), \
-	debug_mode_ptrdiff_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_ptrdiff_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #define dszadd(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, SIZE_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, SIZE_MAX)), \
-	debug_mode_size_add(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_size_add(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dszsub(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, SIZE_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, SIZE_MAX)), \
-	debug_mode_size_minus(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_size_minus(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dszminus(a, b) dszsub(a, b)
 #define dszmul(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, SIZE_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, SIZE_MAX)), \
-	debug_mode_size_multiply(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_size_multiply(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dszdiv(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, SIZE_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, SIZE_MAX)), \
-	debug_mode_size_divide(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_size_divide(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 #define dszrem(a, b) \
 	(SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(a, 0, SIZE_MAX)), \
 	 SAFER_INTEGER_ASSERT(INTEGER_IS_WITHIN_RANGE(b, 0, SIZE_MAX)), \
-	debug_mode_size_remainder(a, b, INTEGER_RESULT_MODE, __FILE__, __LINE__))
+	debug_mode_size_remainder(a, b, (integer_result_mode_type) INTEGER_RESULT_MODE, __FILE__, __LINE__))
 
 #else
 

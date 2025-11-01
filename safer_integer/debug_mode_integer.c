@@ -1180,7 +1180,7 @@ long long debug_mode_llong_add(long long a, long long b, integer_result_mode_typ
 	typedef llong_debug_info_type debug_info_type;
 	integer_type result = 0LL;
 	const integer_operation_type operation = integer_operation_addition;
-	const integer_operation_error_type error = safer_long_addition_check(a, b);
+	const integer_operation_error_type error = safer_llong_addition_check(a, b);
 	switch (error) {
 	case integer_operation_error_none:
 		result = a INTEGER_OPERATOR b;
@@ -1234,7 +1234,7 @@ long long debug_mode_llong_minus(long long a, long long b, integer_result_mode_t
 	typedef llong_debug_info_type debug_info_type;
 	integer_type result = 0LL;
 	const integer_operation_type operation = integer_operation_subtraction;
-	const integer_operation_error_type error = safer_long_subtraction_check(a, b);
+	const integer_operation_error_type error = safer_llong_subtraction_check(a, b);
 	switch (error) {
 	case integer_operation_error_none:
 		result = a INTEGER_OPERATOR b;
@@ -1288,7 +1288,7 @@ long long debug_mode_llong_multiply(long long a, long long b, integer_result_mod
 	typedef llong_debug_info_type debug_info_type;
 	integer_type result = 0LL;
 	const integer_operation_type operation = integer_operation_multiplication;
-	const integer_operation_error_type error = safer_long_multiplication_check(a, b);
+	const integer_operation_error_type error = safer_llong_multiplication_check(a, b);
 	switch (error) {
 	case integer_operation_error_none:
 		result = a INTEGER_OPERATOR b;
@@ -1342,7 +1342,7 @@ long long debug_mode_llong_divide(long long a, long long b, integer_result_mode_
 	const integer_type zero = 0LL;
 	integer_type result = zero;
 	const integer_operation_type operation = integer_operation_division;
-	const integer_operation_error_type error = safer_long_division_check(a, b);
+	const integer_operation_error_type error = safer_llong_division_check(a, b);
 	switch (error) {
 	case integer_operation_error_none:
 		result = a INTEGER_OPERATOR b;
@@ -1393,7 +1393,7 @@ long long debug_mode_llong_remainder(long long a, long long b, integer_result_mo
 	typedef llong_debug_info_type debug_info_type;
 	integer_type result = 0LL;
 	const integer_operation_type operation = integer_operation_remainder;
-	const integer_operation_error_type error = safer_long_division_check(a, b);
+	const integer_operation_error_type error = safer_llong_division_check(a, b);
 	switch (error) {
 	case integer_operation_error_none:
 		result = a INTEGER_OPERATOR b;

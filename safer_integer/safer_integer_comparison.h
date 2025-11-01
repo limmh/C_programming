@@ -9,7 +9,6 @@ Return values and comparison results:
 -1 : a < b
  0 : a == b
  1 : a > b
- 
 For short and unsigned short comparisons, use the int and unsigned version.
 For signed char and unsigned char comparisons, use the int and unsigned version too.
 For int8_t and uint8_t comparisons, use the int version or the int16_t and uint16_t version.
@@ -113,7 +112,7 @@ INLINE_OR_STATIC int safer_i16_and_u16_compare(int16_t a, uint16_t b) {
 		result = 1;
 	}
 #else
-	result = safer_int_and_uint_compare(a, b);
+	const int result = safer_int_and_uint_compare(a, b);
 #endif
 	return result;
 }
@@ -127,17 +126,16 @@ INLINE_OR_STATIC int safer_u16_and_i16_compare(uint16_t a, int16_t b) {
 		result = 1;
 	}
 #else
-	result = safer_uint_and_int_compare(a, b);
+	const int result = safer_uint_and_int_compare(a, b);
 #endif
 	return result;
 }
 
 INLINE_OR_STATIC int safer_i32_and_u32_compare(int32_t a, uint32_t b) {
-	int result = 0;
 #if (INT_MIN == INT32_MIN) && (INT_MAX == INT32_MAX) && (UINT_MAX == UINT32_MAX)
-	result = safer_int_and_uint_compare(a, b);
+	const int result = safer_int_and_uint_compare(a, b);
 #elif (LONG_MIN == INT32_MIN) && (LONG_MAX == INT32_MAX) && (ULONG_MAX == UINT32_MAX)
-	result = safer_long_and_ulong_compare(a, b);
+	const int result = safer_long_and_ulong_compare(a, b);
 #else
 #error "Error: The comparison function cannot be implemented properly."
 #endif
@@ -145,11 +143,10 @@ INLINE_OR_STATIC int safer_i32_and_u32_compare(int32_t a, uint32_t b) {
 }
 
 INLINE_OR_STATIC int safer_u32_and_i32_compare(uint32_t a, int32_t b) {
-	int result = 0;
 #if (INT_MIN == INT32_MIN) && (INT_MAX == INT32_MAX) && (UINT_MAX == UINT32_MAX)
-	result = safer_uint_and_int_compare(a, b);
+	const int result = safer_uint_and_int_compare(a, b);
 #elif (LONG_MIN == INT32_MIN) && (LONG_MAX == INT32_MAX) && (ULONG_MAX == UINT32_MAX)
-	result = safer_ulong_and_long_compare(a, b);
+	const int result = safer_ulong_and_long_compare(a, b);
 #else
 #error "Error: The comparison function cannot be implemented properly."
 #endif
@@ -157,11 +154,10 @@ INLINE_OR_STATIC int safer_u32_and_i32_compare(uint32_t a, int32_t b) {
 }
 
 INLINE_OR_STATIC int safer_i64_and_u64_compare(int64_t a, uint64_t b) {
-	int result = 0;
 #if (LONG_MIN == INT64_MIN) && (LONG_MAX == INT64_MAX) && (ULONG_MAX == UINT64_MAX)
-	result = safer_long_and_ulong_compare(a, b);
+	const int result = safer_long_and_ulong_compare(a, b);
 #elif (LLONG_MIN == INT64_MIN) && (LLONG_MAX == INT64_MAX) && (ULLONG_MAX == UINT64_MAX)
-	result = safer_llong_and_ullong_compare(a, b);
+	const int result = safer_llong_and_ullong_compare(a, b);
 #else
 #error "Error: The comparison function cannot be implemented properly."
 #endif
@@ -169,11 +165,10 @@ INLINE_OR_STATIC int safer_i64_and_u64_compare(int64_t a, uint64_t b) {
 }
 
 INLINE_OR_STATIC int safer_u64_and_i64_compare(uint64_t a, int64_t b) {
-	int result = 0;
 #if (LONG_MIN == INT64_MIN) && (LONG_MAX == INT64_MAX) && (ULONG_MAX == UINT64_MAX)
-	result = safer_ulong_and_long_compare(a, b);
+	const int result = safer_ulong_and_long_compare(a, b);
 #elif (LLONG_MIN == INT64_MIN) && (LLONG_MAX == INT64_MAX) && (ULLONG_MAX == UINT64_MAX)
-	result = safer_ullong_and_llong_compare(a, b);
+	const int result = safer_ullong_and_llong_compare(a, b);
 #else
 #error "Error: The comparison function cannot be implemented properly."
 #endif
