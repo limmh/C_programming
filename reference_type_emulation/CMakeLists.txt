@@ -1,0 +1,6 @@
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/c_lib")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/cpp_lib")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/c_app_and_c_lib")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/c_app_and_cpp_lib")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/cpp_app_and_c_lib")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/cpp_app_and_cpp_lib")
