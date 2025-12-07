@@ -5,7 +5,7 @@
 
 void test_sum_of_series(int n) {
 	int sum = 0;
-	for (int i = 1; i <= n; ++i) {
+	for (int i = 1; i <= n; i = diadd(i, 1)) {
 		sum = diadd(sum, i); // debug mode add
 	}
 	printf("Sum of 1..%d = %d\n", n, sum);
@@ -13,7 +13,7 @@ void test_sum_of_series(int n) {
 
 void test_factorial(int n) {
 	int result = 1;
-	for (int i = 2; i <= n; ++i) {
+	for (int i = 2; i <= n; i = diadd(i, 1)) {
 		result = dimul(result, i); // debug mode multiply
 	}
 	printf("Factorial of %d = %d\n", n, result);
@@ -21,7 +21,7 @@ void test_factorial(int n) {
 
 int test_power(int base, int exponent) {
 	int result = 1;
-	for (int i = 0; i < exponent; ++i) {
+	for (int i = 0; i < exponent; i = diadd(i, 1)) {
 		result = dimul(result, base); // debug mode multiply
 	}
 	printf("%d ^ %d = %d\n", base, exponent, result);

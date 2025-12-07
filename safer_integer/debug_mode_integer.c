@@ -64,10 +64,10 @@ static void debug_mode_default_int_handler(const int_debug_info_type* debug_info
 	error_message = integer_operation_error_message(debug_info->error);
 	fprintf(file, "%s (line %d)\n", debug_info->file_name, debug_info->line_number);
 	fprintf(file, "%s [Error code: %d]\n", error_message, (int) debug_info->error);
-	fprintf(file, "[Operand 1: " INTEGER_SPECIFIER "][Operand 2: " INTEGER_SPECIFIER
+	fprintf(file, "[Operand 1 (%s): " INTEGER_SPECIFIER "][Operand 2 (%s): " INTEGER_SPECIFIER
 		"][Result: " INTEGER_SPECIFIER "][Operand type: " INTEGER_TYPE_NAME
 		"][Minimum: " INTEGER_SPECIFIER "][Maximum: " INTEGER_SPECIFIER "][Result mode: %s][Operation: %s]\n",
-		debug_info->operand1, debug_info->operand2, debug_info->result,
+		debug_info->operand1_name, debug_info->operand1, debug_info->operand2_name, debug_info->operand2, debug_info->result,
 		debug_info->minimum_value, debug_info->maximum_value, result_mode_name, operation_name);
 #undef INTEGER_TYPE_NAME
 #undef INTEGER_SPECIFIER
@@ -93,7 +93,7 @@ void debug_mode_int_reset_handler(void)
 #define MINIMUM INT_MIN
 #define MAXIMUM INT_MAX
 
-int debug_mode_int_add(int a, int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int debug_mode_int_add(int a, int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR +
 	typedef int integer_type;
@@ -131,6 +131,8 @@ int debug_mode_int_add(int a, int b, integer_result_mode_type result_mode, const
 	if (error != integer_operation_error_none) {
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.line_number = line_number;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
@@ -147,7 +149,7 @@ int debug_mode_int_add(int a, int b, integer_result_mode_type result_mode, const
 #undef INTEGER_OPERATOR
 }
 
-int debug_mode_int_minus(int a, int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int debug_mode_int_minus(int a, int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR -
 	typedef int integer_type;
@@ -186,6 +188,8 @@ int debug_mode_int_minus(int a, int b, integer_result_mode_type result_mode, con
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -201,7 +205,7 @@ int debug_mode_int_minus(int a, int b, integer_result_mode_type result_mode, con
 #undef INTEGER_OPERATOR
 }
 
-int debug_mode_int_multiply(int a, int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int debug_mode_int_multiply(int a, int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR *
 	typedef int integer_type;
@@ -240,6 +244,8 @@ int debug_mode_int_multiply(int a, int b, integer_result_mode_type result_mode, 
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -255,7 +261,7 @@ int debug_mode_int_multiply(int a, int b, integer_result_mode_type result_mode, 
 #undef INTEGER_OPERATOR
 }
 
-int debug_mode_int_divide(int a, int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int debug_mode_int_divide(int a, int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR /
 	typedef int integer_type;
@@ -292,6 +298,8 @@ int debug_mode_int_divide(int a, int b, integer_result_mode_type result_mode, co
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -307,7 +315,7 @@ int debug_mode_int_divide(int a, int b, integer_result_mode_type result_mode, co
 #undef INTEGER_OPERATOR
 }
 
-int debug_mode_int_remainder(int a, int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int debug_mode_int_remainder(int a, int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR %
 	typedef int integer_type;
@@ -331,6 +339,8 @@ int debug_mode_int_remainder(int a, int b, integer_result_mode_type result_mode,
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -364,10 +374,10 @@ static void debug_mode_default_uint_handler(const uint_debug_info_type* debug_in
 	error_message = integer_operation_error_message(debug_info->error);
 	fprintf(file, "%s (line %d)\n", debug_info->file_name, debug_info->line_number);
 	fprintf(file, "%s [Error code: %d]\n", error_message, (int) debug_info->error);
-	fprintf(file, "[Operand 1: " INTEGER_SPECIFIER "][Operand 2: " INTEGER_SPECIFIER
+	fprintf(file, "[Operand 1 (%s): " INTEGER_SPECIFIER "][Operand 2 (%s): " INTEGER_SPECIFIER
 		"][Result: " INTEGER_SPECIFIER "][Operand type: " INTEGER_TYPE_NAME
 		"][Minimum: " INTEGER_SPECIFIER "][Maximum: " INTEGER_SPECIFIER "][Result mode: %s][Operation: %s]\n",
-		debug_info->operand1, debug_info->operand2, debug_info->result,
+		debug_info->operand1_name, debug_info->operand1, debug_info->operand2_name, debug_info->operand2, debug_info->result,
 		debug_info->minimum_value, debug_info->maximum_value, result_mode_name, operation_name);
 #undef INTEGER_TYPE_NAME
 #undef INTEGER_SPECIFIER
@@ -393,7 +403,7 @@ void debug_mode_uint_reset_handler(void)
 #define MINIMUM 0U
 #define MAXIMUM UINT_MAX
 
-unsigned int debug_mode_uint_add(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned int debug_mode_uint_add(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR +
 	typedef unsigned int unsigned_integer_type;
@@ -416,6 +426,8 @@ unsigned int debug_mode_uint_add(unsigned int a, unsigned int b, integer_result_
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -431,7 +443,7 @@ unsigned int debug_mode_uint_add(unsigned int a, unsigned int b, integer_result_
 #undef INTEGER_OPERATOR
 }
 
-unsigned int debug_mode_uint_minus(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned int debug_mode_uint_minus(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR -
 	typedef unsigned int unsigned_integer_type;
@@ -454,6 +466,8 @@ unsigned int debug_mode_uint_minus(unsigned int a, unsigned int b, integer_resul
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -468,7 +482,7 @@ unsigned int debug_mode_uint_minus(unsigned int a, unsigned int b, integer_resul
 	return result;
 #undef INTEGER_OPERATOR
 }
-unsigned int debug_mode_uint_multiply(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned int debug_mode_uint_multiply(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR *
 	typedef unsigned int unsigned_integer_type;
@@ -491,6 +505,8 @@ unsigned int debug_mode_uint_multiply(unsigned int a, unsigned int b, integer_re
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -506,7 +522,7 @@ unsigned int debug_mode_uint_multiply(unsigned int a, unsigned int b, integer_re
 #undef INTEGER_OPERATOR
 }
 
-unsigned int debug_mode_uint_divide(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned int debug_mode_uint_divide(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR /
 	typedef unsigned int unsigned_integer_type;
@@ -533,6 +549,8 @@ unsigned int debug_mode_uint_divide(unsigned int a, unsigned int b, integer_resu
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -548,7 +566,7 @@ unsigned int debug_mode_uint_divide(unsigned int a, unsigned int b, integer_resu
 #undef INTEGER_OPERATOR
 }
 
-unsigned int debug_mode_uint_remainder(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned int debug_mode_uint_remainder(unsigned int a, unsigned int b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR %
 	typedef unsigned int unsigned_integer_type;
@@ -570,6 +588,8 @@ unsigned int debug_mode_uint_remainder(unsigned int a, unsigned int b, integer_r
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -603,10 +623,10 @@ static void debug_mode_default_long_handler(const long_debug_info_type* debug_in
 	error_message = integer_operation_error_message(debug_info->error);
 	fprintf(file, "%s (line %d)\n", debug_info->file_name, debug_info->line_number);
 	fprintf(file, "%s [Error code: %d]\n", error_message, (int) debug_info->error);
-	fprintf(file, "[Operand 1: " INTEGER_SPECIFIER "][Operand 2: " INTEGER_SPECIFIER
+	fprintf(file, "[Operand 1 (%s): " INTEGER_SPECIFIER "][Operand 2 (%s): " INTEGER_SPECIFIER
 		"][Result: " INTEGER_SPECIFIER "][Operand type: " INTEGER_TYPE_NAME
 		"][Minimum: " INTEGER_SPECIFIER "][Maximum: " INTEGER_SPECIFIER "][Result mode: %s][Operation: %s]\n",
-		debug_info->operand1, debug_info->operand2, debug_info->result,
+		debug_info->operand1_name, debug_info->operand1, debug_info->operand2_name, debug_info->operand2, debug_info->result,
 		debug_info->minimum_value, debug_info->maximum_value, result_mode_name, operation_name);
 #undef INTEGER_TYPE_NAME
 #undef INTEGER_SPECIFIER
@@ -632,7 +652,7 @@ void debug_mode_long_reset_handler(void)
 #define MINIMUM LONG_MIN
 #define MAXIMUM LONG_MAX
 
-long debug_mode_long_add(long a, long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long debug_mode_long_add(long a, long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR +
 	typedef long integer_type;
@@ -671,6 +691,8 @@ long debug_mode_long_add(long a, long b, integer_result_mode_type result_mode, c
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -686,7 +708,7 @@ long debug_mode_long_add(long a, long b, integer_result_mode_type result_mode, c
 #undef INTEGER_OPERATOR
 }
 
-long debug_mode_long_minus(long a, long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long debug_mode_long_minus(long a, long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR -
 	typedef long integer_type;
@@ -725,6 +747,8 @@ long debug_mode_long_minus(long a, long b, integer_result_mode_type result_mode,
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -740,7 +764,7 @@ long debug_mode_long_minus(long a, long b, integer_result_mode_type result_mode,
 #undef INTEGER_OPERATOR
 }
 
-long debug_mode_long_multiply(long a, long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long debug_mode_long_multiply(long a, long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR *
 	typedef long integer_type;
@@ -779,6 +803,8 @@ long debug_mode_long_multiply(long a, long b, integer_result_mode_type result_mo
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -794,7 +820,7 @@ long debug_mode_long_multiply(long a, long b, integer_result_mode_type result_mo
 #undef INTEGER_OPERATOR
 }
 
-long debug_mode_long_divide(long a, long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long debug_mode_long_divide(long a, long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR /
 	typedef long integer_type;
@@ -831,6 +857,8 @@ long debug_mode_long_divide(long a, long b, integer_result_mode_type result_mode
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -846,7 +874,7 @@ long debug_mode_long_divide(long a, long b, integer_result_mode_type result_mode
 #undef INTEGER_OPERATOR
 }
 
-long debug_mode_long_remainder(long a, long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long debug_mode_long_remainder(long a, long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR %
 	typedef long integer_type;
@@ -870,6 +898,8 @@ long debug_mode_long_remainder(long a, long b, integer_result_mode_type result_m
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -903,10 +933,10 @@ static void debug_mode_default_ulong_handler(const ulong_debug_info_type* debug_
 	error_message = integer_operation_error_message(debug_info->error);
 	fprintf(file, "%s (line %d)\n", debug_info->file_name, debug_info->line_number);
 	fprintf(file, "%s [Error code: %d]\n", error_message, (int) debug_info->error);
-	fprintf(file, "[Operand 1: " INTEGER_SPECIFIER "][Operand 2: " INTEGER_SPECIFIER
+	fprintf(file, "[Operand 1 (%s): " INTEGER_SPECIFIER "][Operand 2 (%s): " INTEGER_SPECIFIER
 		"][Result: " INTEGER_SPECIFIER "][Operand type: " INTEGER_TYPE_NAME
 		"][Minimum: " INTEGER_SPECIFIER "][Maximum: " INTEGER_SPECIFIER "][Result mode: %s][Operation: %s]\n",
-		debug_info->operand1, debug_info->operand2, debug_info->result,
+		debug_info->operand1_name, debug_info->operand1, debug_info->operand2_name, debug_info->operand2, debug_info->result,
 		debug_info->minimum_value, debug_info->maximum_value, result_mode_name, operation_name);
 #undef INTEGER_TYPE_NAME
 #undef INTEGER_SPECIFIER
@@ -932,7 +962,7 @@ void debug_mode_ulong_reset_handler(void)
 #define MINIMUM 0UL
 #define MAXIMUM ULONG_MAX
 
-unsigned long debug_mode_ulong_add(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long debug_mode_ulong_add(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR +
 	typedef unsigned long unsigned_integer_type;
@@ -955,6 +985,8 @@ unsigned long debug_mode_ulong_add(unsigned long a, unsigned long b, integer_res
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -970,7 +1002,7 @@ unsigned long debug_mode_ulong_add(unsigned long a, unsigned long b, integer_res
 #undef INTEGER_OPERATOR
 }
 
-unsigned long debug_mode_ulong_minus(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long debug_mode_ulong_minus(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR -
 	typedef unsigned long unsigned_integer_type;
@@ -993,6 +1025,8 @@ unsigned long debug_mode_ulong_minus(unsigned long a, unsigned long b, integer_r
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1007,7 +1041,7 @@ unsigned long debug_mode_ulong_minus(unsigned long a, unsigned long b, integer_r
 	return result;
 #undef INTEGER_OPERATOR
 }
-unsigned long debug_mode_ulong_multiply(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long debug_mode_ulong_multiply(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR *
 	typedef unsigned long unsigned_integer_type;
@@ -1030,6 +1064,8 @@ unsigned long debug_mode_ulong_multiply(unsigned long a, unsigned long b, intege
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1045,7 +1081,7 @@ unsigned long debug_mode_ulong_multiply(unsigned long a, unsigned long b, intege
 #undef INTEGER_OPERATOR
 }
 
-unsigned long debug_mode_ulong_divide(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long debug_mode_ulong_divide(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR /
 	typedef unsigned long unsigned_integer_type;
@@ -1072,6 +1108,8 @@ unsigned long debug_mode_ulong_divide(unsigned long a, unsigned long b, integer_
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1087,7 +1125,7 @@ unsigned long debug_mode_ulong_divide(unsigned long a, unsigned long b, integer_
 #undef INTEGER_OPERATOR
 }
 
-unsigned long debug_mode_ulong_remainder(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long debug_mode_ulong_remainder(unsigned long a, unsigned long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR %
 	typedef unsigned long unsigned_integer_type;
@@ -1109,6 +1147,8 @@ unsigned long debug_mode_ulong_remainder(unsigned long a, unsigned long b, integ
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1143,10 +1183,10 @@ static void debug_mode_default_llong_handler(const llong_debug_info_type* debug_
 	error_message = integer_operation_error_message(debug_info->error);
 	fprintf(file, "%s (line %d)\n", debug_info->file_name, debug_info->line_number);
 	fprintf(file, "%s [Error code: %d]\n", error_message, (int) debug_info->error);
-	fprintf(file, "[Operand 1: " INTEGER_SPECIFIER "][Operand 2: " INTEGER_SPECIFIER
+	fprintf(file, "[Operand 1 (%s): " INTEGER_SPECIFIER "][Operand 2 (%s): " INTEGER_SPECIFIER
 		"][Result: " INTEGER_SPECIFIER "][Operand type: " INTEGER_TYPE_NAME
 		"][Minimum: " INTEGER_SPECIFIER "][Maximum: " INTEGER_SPECIFIER "][Result mode: %s][Operation: %s]\n",
-		debug_info->operand1, debug_info->operand2, debug_info->result,
+		debug_info->operand1_name, debug_info->operand1, debug_info->operand2_name, debug_info->operand2, debug_info->result,
 		debug_info->minimum_value, debug_info->maximum_value, result_mode_name, operation_name);
 #undef INTEGER_TYPE_NAME
 #undef INTEGER_SPECIFIER
@@ -1172,7 +1212,7 @@ void debug_mode_llong_reset_handler(void)
 #define MINIMUM LLONG_MIN
 #define MAXIMUM LLONG_MAX
 
-long long debug_mode_llong_add(long long a, long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long long debug_mode_llong_add(long long a, long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR +
 	typedef long long integer_type;
@@ -1211,6 +1251,8 @@ long long debug_mode_llong_add(long long a, long long b, integer_result_mode_typ
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1226,7 +1268,7 @@ long long debug_mode_llong_add(long long a, long long b, integer_result_mode_typ
 #undef INTEGER_OPERATOR
 }
 
-long long debug_mode_llong_minus(long long a, long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long long debug_mode_llong_minus(long long a, long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR -
 	typedef long long integer_type;
@@ -1265,6 +1307,8 @@ long long debug_mode_llong_minus(long long a, long long b, integer_result_mode_t
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1280,7 +1324,7 @@ long long debug_mode_llong_minus(long long a, long long b, integer_result_mode_t
 #undef INTEGER_OPERATOR
 }
 
-long long debug_mode_llong_multiply(long long a, long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long long debug_mode_llong_multiply(long long a, long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR *
 	typedef long long integer_type;
@@ -1319,6 +1363,8 @@ long long debug_mode_llong_multiply(long long a, long long b, integer_result_mod
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1334,7 +1380,7 @@ long long debug_mode_llong_multiply(long long a, long long b, integer_result_mod
 #undef INTEGER_OPERATOR
 }
 
-long long debug_mode_llong_divide(long long a, long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long long debug_mode_llong_divide(long long a, long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR /
 	typedef long long integer_type;
@@ -1371,6 +1417,8 @@ long long debug_mode_llong_divide(long long a, long long b, integer_result_mode_
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1386,7 +1434,7 @@ long long debug_mode_llong_divide(long long a, long long b, integer_result_mode_
 #undef INTEGER_OPERATOR
 }
 
-long long debug_mode_llong_remainder(long long a, long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+long long debug_mode_llong_remainder(long long a, long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR %
 	typedef long long integer_type;
@@ -1410,6 +1458,8 @@ long long debug_mode_llong_remainder(long long a, long long b, integer_result_mo
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1445,10 +1495,10 @@ static void debug_mode_default_ullong_handler(const ullong_debug_info_type* debu
 	error_message = integer_operation_error_message(debug_info->error);
 	fprintf(file, "%s (line %d)\n", debug_info->file_name, debug_info->line_number);
 	fprintf(file, "%s [Error code: %d]\n", error_message, (int) debug_info->error);
-	fprintf(file, "[Operand 1: " INTEGER_SPECIFIER "][Operand 2: " INTEGER_SPECIFIER
+	fprintf(file, "[Operand 1 (%s): " INTEGER_SPECIFIER "][Operand 2 (%s): " INTEGER_SPECIFIER
 		"][Result: " INTEGER_SPECIFIER "][Operand type: " INTEGER_TYPE_NAME
 		"][Minimum: " INTEGER_SPECIFIER "][Maximum: " INTEGER_SPECIFIER "][Result mode: %s][Operation: %s]\n",
-		debug_info->operand1, debug_info->operand2, debug_info->result,
+		debug_info->operand1_name, debug_info->operand1, debug_info->operand2_name, debug_info->operand2, debug_info->result,
 		debug_info->minimum_value, debug_info->maximum_value, result_mode_name, operation_name);
 #undef INTEGER_SPECIFIER
 }
@@ -1473,7 +1523,7 @@ void debug_mode_ullong_reset_handler(void)
 #define MINIMUM 0ULL
 #define MAXIMUM ULLONG_MAX
 
-unsigned long long debug_mode_ullong_add(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long long debug_mode_ullong_add(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR +
 	typedef unsigned long long unsigned_integer_type;
@@ -1496,6 +1546,8 @@ unsigned long long debug_mode_ullong_add(unsigned long long a, unsigned long lon
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1511,7 +1563,7 @@ unsigned long long debug_mode_ullong_add(unsigned long long a, unsigned long lon
 #undef INTEGER_OPERATOR
 }
 
-unsigned long long debug_mode_ullong_minus(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long long debug_mode_ullong_minus(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR -
 	typedef unsigned long long unsigned_integer_type;
@@ -1534,6 +1586,8 @@ unsigned long long debug_mode_ullong_minus(unsigned long long a, unsigned long l
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1549,7 +1603,7 @@ unsigned long long debug_mode_ullong_minus(unsigned long long a, unsigned long l
 #undef INTEGER_OPERATOR
 }
 
-unsigned long long debug_mode_ullong_multiply(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long long debug_mode_ullong_multiply(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR *
 	typedef unsigned long long unsigned_integer_type;
@@ -1572,6 +1626,8 @@ unsigned long long debug_mode_ullong_multiply(unsigned long long a, unsigned lon
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1587,7 +1643,7 @@ unsigned long long debug_mode_ullong_multiply(unsigned long long a, unsigned lon
 #undef INTEGER_OPERATOR
 }
 
-unsigned long long debug_mode_ullong_divide(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long long debug_mode_ullong_divide(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR /
 	typedef unsigned long long unsigned_integer_type;
@@ -1614,6 +1670,8 @@ unsigned long long debug_mode_ullong_divide(unsigned long long a, unsigned long 
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1629,7 +1687,7 @@ unsigned long long debug_mode_ullong_divide(unsigned long long a, unsigned long 
 #undef INTEGER_OPERATOR
 }
 
-unsigned long long debug_mode_ullong_remainder(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+unsigned long long debug_mode_ullong_remainder(unsigned long long a, unsigned long long b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #define INTEGER_OPERATOR %
 	typedef unsigned long long unsigned_integer_type;
@@ -1651,6 +1709,8 @@ unsigned long long debug_mode_ullong_remainder(unsigned long long a, unsigned lo
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1682,7 +1742,7 @@ STATIC_ASSERT(sizeof(uint32_t) == sizeof(unsigned int) or sizeof(uint32_t) == si
 #define MINIMUM INT8_MIN
 #define MAXIMUM INT8_MAX
 
-int8_t debug_mode_i8_add(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int8_t debug_mode_i8_add(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int8_t integer_type;
 	typedef int_debug_info_type debug_info_type;
@@ -1716,6 +1776,8 @@ int8_t debug_mode_i8_add(int8_t a, int8_t b, integer_result_mode_type result_mod
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1730,7 +1792,7 @@ int8_t debug_mode_i8_add(int8_t a, int8_t b, integer_result_mode_type result_mod
 	return result;
 }
 
-int8_t debug_mode_i8_minus(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int8_t debug_mode_i8_minus(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int8_t integer_type;
 	typedef int_debug_info_type debug_info_type;
@@ -1764,6 +1826,8 @@ int8_t debug_mode_i8_minus(int8_t a, int8_t b, integer_result_mode_type result_m
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1778,7 +1842,7 @@ int8_t debug_mode_i8_minus(int8_t a, int8_t b, integer_result_mode_type result_m
 	return result;
 }
 
-int8_t debug_mode_i8_multiply(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int8_t debug_mode_i8_multiply(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int8_t integer_type;
 	typedef int_debug_info_type debug_info_type;
@@ -1812,6 +1876,8 @@ int8_t debug_mode_i8_multiply(int8_t a, int8_t b, integer_result_mode_type resul
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1826,7 +1892,7 @@ int8_t debug_mode_i8_multiply(int8_t a, int8_t b, integer_result_mode_type resul
 	return result;
 }
 
-int8_t debug_mode_i8_divide(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int8_t debug_mode_i8_divide(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int8_t integer_type;
 	typedef int_debug_info_type debug_info_type;
@@ -1856,6 +1922,8 @@ int8_t debug_mode_i8_divide(int8_t a, int8_t b, integer_result_mode_type result_
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1870,7 +1938,7 @@ int8_t debug_mode_i8_divide(int8_t a, int8_t b, integer_result_mode_type result_
 	return result;
 }
 
-int8_t debug_mode_i8_remainder(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int8_t debug_mode_i8_remainder(int8_t a, int8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int8_t integer_type;
 	typedef int_debug_info_type debug_info_type;
@@ -1888,6 +1956,8 @@ int8_t debug_mode_i8_remainder(int8_t a, int8_t b, integer_result_mode_type resu
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1909,7 +1979,7 @@ int8_t debug_mode_i8_remainder(int8_t a, int8_t b, integer_result_mode_type resu
 #define MINIMUM 0U
 #define MAXIMUM UINT8_MAX
 
-uint8_t debug_mode_u8_add(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint8_t debug_mode_u8_add(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint8_t unsigned_integer_type;
 	typedef uint_debug_info_type debug_info_type;
@@ -1933,6 +2003,8 @@ uint8_t debug_mode_u8_add(uint8_t a, uint8_t b, integer_result_mode_type result_
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1947,7 +2019,7 @@ uint8_t debug_mode_u8_add(uint8_t a, uint8_t b, integer_result_mode_type result_
 	return result;
 }
 
-uint8_t debug_mode_u8_minus(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint8_t debug_mode_u8_minus(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint8_t unsigned_integer_type;
 	typedef uint_debug_info_type debug_info_type;
@@ -1971,6 +2043,8 @@ uint8_t debug_mode_u8_minus(uint8_t a, uint8_t b, integer_result_mode_type resul
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -1985,7 +2059,7 @@ uint8_t debug_mode_u8_minus(uint8_t a, uint8_t b, integer_result_mode_type resul
 	return result;
 }
 
-uint8_t debug_mode_u8_multiply(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint8_t debug_mode_u8_multiply(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint8_t unsigned_integer_type;
 	typedef uint_debug_info_type debug_info_type;
@@ -2010,6 +2084,8 @@ uint8_t debug_mode_u8_multiply(uint8_t a, uint8_t b, integer_result_mode_type re
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2024,7 +2100,7 @@ uint8_t debug_mode_u8_multiply(uint8_t a, uint8_t b, integer_result_mode_type re
 	return result;
 }
 
-uint8_t debug_mode_u8_divide(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint8_t debug_mode_u8_divide(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint8_t unsigned_integer_type;
 	typedef uint_debug_info_type debug_info_type;
@@ -2045,6 +2121,8 @@ uint8_t debug_mode_u8_divide(uint8_t a, uint8_t b, integer_result_mode_type resu
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2059,7 +2137,7 @@ uint8_t debug_mode_u8_divide(uint8_t a, uint8_t b, integer_result_mode_type resu
 	return result;
 }
 
-uint8_t debug_mode_u8_remainder(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint8_t debug_mode_u8_remainder(uint8_t a, uint8_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint8_t unsigned_integer_type;
 	typedef uint_debug_info_type debug_info_type;
@@ -2075,6 +2153,8 @@ uint8_t debug_mode_u8_remainder(uint8_t a, uint8_t b, integer_result_mode_type r
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2096,7 +2176,7 @@ uint8_t debug_mode_u8_remainder(uint8_t a, uint8_t b, integer_result_mode_type r
 #define MINIMUM INT16_MIN
 #define MAXIMUM INT16_MAX
 
-int16_t debug_mode_i16_add(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int16_t debug_mode_i16_add(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int16_t integer_type;
 #if (INT_MIN < MINIMUM) && (INT_MAX > MAXIMUM)
@@ -2131,6 +2211,8 @@ int16_t debug_mode_i16_add(int16_t a, int16_t b, integer_result_mode_type result
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2143,12 +2225,12 @@ int16_t debug_mode_i16_add(int16_t a, int16_t b, integer_result_mode_type result
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	integer_type result = (integer_type) debug_mode_int_add(a, b, result_mode, file_name, line_number);
+	integer_type result = (integer_type) debug_mode_int_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
 
-int16_t debug_mode_i16_minus(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int16_t debug_mode_i16_minus(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int16_t integer_type;
 #if (INT_MIN < MINIMUM) && (INT_MAX > MAXIMUM)
@@ -2183,6 +2265,8 @@ int16_t debug_mode_i16_minus(int16_t a, int16_t b, integer_result_mode_type resu
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2195,12 +2279,12 @@ int16_t debug_mode_i16_minus(int16_t a, int16_t b, integer_result_mode_type resu
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	integer_type result = (integer_type) debug_mode_int_minus(a, b, result_mode, file_name, line_number);
+	integer_type result = (integer_type) debug_mode_int_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
 
-int16_t debug_mode_i16_multiply(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int16_t debug_mode_i16_multiply(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int16_t integer_type;
 #if (INT_MIN < MINIMUM) && (INT_MAX > MAXIMUM)
@@ -2235,6 +2319,8 @@ int16_t debug_mode_i16_multiply(int16_t a, int16_t b, integer_result_mode_type r
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2247,12 +2333,12 @@ int16_t debug_mode_i16_multiply(int16_t a, int16_t b, integer_result_mode_type r
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	integer_type result = (integer_type) debug_mode_int_multiply(a, b, result_mode, file_name, line_number);
+	integer_type result = (integer_type) debug_mode_int_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
 
-int16_t debug_mode_i16_divide(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int16_t debug_mode_i16_divide(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int16_t integer_type;
 #if (INT_MIN < MINIMUM) && (INT_MAX > MAXIMUM)
@@ -2283,6 +2369,8 @@ int16_t debug_mode_i16_divide(int16_t a, int16_t b, integer_result_mode_type res
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2295,12 +2383,12 @@ int16_t debug_mode_i16_divide(int16_t a, int16_t b, integer_result_mode_type res
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	integer_type result = (integer_type) debug_mode_int_divide(a, b, result_mode, file_name, line_number);
+	integer_type result = (integer_type) debug_mode_int_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
 
-int16_t debug_mode_i16_remainder(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int16_t debug_mode_i16_remainder(int16_t a, int16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef int16_t integer_type;
 #if (INT_MIN < MINIMUM) && (INT_MAX > MAXIMUM)
@@ -2319,6 +2407,8 @@ int16_t debug_mode_i16_remainder(int16_t a, int16_t b, integer_result_mode_type 
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2331,7 +2421,7 @@ int16_t debug_mode_i16_remainder(int16_t a, int16_t b, integer_result_mode_type 
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	integer_type result = (integer_type) debug_mode_int_remainder(a, b, result_mode, file_name, line_number);
+	integer_type result = (integer_type) debug_mode_int_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
@@ -2343,7 +2433,7 @@ int16_t debug_mode_i16_remainder(int16_t a, int16_t b, integer_result_mode_type 
 #define MINIMUM 0U
 #define MAXIMUM UINT16_MAX
 
-uint16_t debug_mode_u16_add(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint16_t debug_mode_u16_add(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint16_t unsigned_integer_type;
 #if UINT_MAX > UINT16_MAX
@@ -2368,6 +2458,8 @@ uint16_t debug_mode_u16_add(uint16_t a, uint16_t b, integer_result_mode_type res
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2380,12 +2472,12 @@ uint16_t debug_mode_u16_add(uint16_t a, uint16_t b, integer_result_mode_type res
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_add(a, b, result_mode, file_name, line_number);
+	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
 
-uint16_t debug_mode_u16_minus(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint16_t debug_mode_u16_minus(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint16_t unsigned_integer_type;
 #if UINT_MAX > UINT16_MAX
@@ -2410,6 +2502,8 @@ uint16_t debug_mode_u16_minus(uint16_t a, uint16_t b, integer_result_mode_type r
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2422,12 +2516,12 @@ uint16_t debug_mode_u16_minus(uint16_t a, uint16_t b, integer_result_mode_type r
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_minus(a, b, result_mode, file_name, line_number);
+	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
 
-uint16_t debug_mode_u16_multiply(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint16_t debug_mode_u16_multiply(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint16_t unsigned_integer_type;
 #if UINT_MAX > UINT16_MAX
@@ -2453,6 +2547,8 @@ uint16_t debug_mode_u16_multiply(uint16_t a, uint16_t b, integer_result_mode_typ
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2465,12 +2561,12 @@ uint16_t debug_mode_u16_multiply(uint16_t a, uint16_t b, integer_result_mode_typ
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_multiply(a, b, result_mode, file_name, line_number);
+	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
 
-uint16_t debug_mode_u16_divide(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint16_t debug_mode_u16_divide(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint16_t unsigned_integer_type;
 #if UINT_MAX > UINT16_MAX
@@ -2492,6 +2588,8 @@ uint16_t debug_mode_u16_divide(uint16_t a, uint16_t b, integer_result_mode_type 
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2504,12 +2602,12 @@ uint16_t debug_mode_u16_divide(uint16_t a, uint16_t b, integer_result_mode_type 
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_divide(a, b, result_mode, file_name, line_number);
+	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
 
-uint16_t debug_mode_u16_remainder(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint16_t debug_mode_u16_remainder(uint16_t a, uint16_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 	typedef uint16_t unsigned_integer_type;
 #if UINT_MAX > UINT16_MAX
@@ -2526,6 +2624,8 @@ uint16_t debug_mode_u16_remainder(uint16_t a, uint16_t b, integer_result_mode_ty
 		debug_info_type debug_info = {0};
 		debug_info.file_name = file_name;
 		debug_info.line_number = line_number;
+		debug_info.operand1_name = a_name;
+		debug_info.operand2_name = b_name;
 		debug_info.operand1 = a;
 		debug_info.operand2 = b;
 		debug_info.result = result;
@@ -2538,7 +2638,7 @@ uint16_t debug_mode_u16_remainder(uint16_t a, uint16_t b, integer_result_mode_ty
 		DEBUG_MODE_HANDLER(&debug_info);
 	}
 #else
-	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_remainder(a, b, result_mode, file_name, line_number);
+	unsigned_integer_type result = (unsigned_integer_type) debug_mode_uint_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #endif
 	return result;
 }
@@ -2549,58 +2649,58 @@ uint16_t debug_mode_u16_remainder(uint16_t a, uint16_t b, integer_result_mode_ty
 #define MINIMUM INT32_MIN
 #define MAXIMUM INT32_MAX
 
-int32_t debug_mode_i32_add(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int32_t debug_mode_i32_add(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (INT_MIN == MINIMUM) && (INT_MAX == MAXIMUM)
 	STATIC_ASSERT(sizeof(int) == sizeof(int32_t), "The size of int must be the same as the size of int32_t.");
-	return debug_mode_int_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_int_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
 	STATIC_ASSERT(sizeof(long) == sizeof(int32_t), "The size of long int must be the same as the size of int32_t.");
-	return debug_mode_long_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-int32_t debug_mode_i32_minus(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int32_t debug_mode_i32_minus(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (INT_MIN == MINIMUM) && (INT_MAX == MAXIMUM)
-	return debug_mode_int_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_int_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
-	return debug_mode_long_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-int32_t debug_mode_i32_multiply(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int32_t debug_mode_i32_multiply(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (INT_MIN == MINIMUM) && (INT_MAX == MAXIMUM)
-	return debug_mode_int_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_int_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
-	return debug_mode_long_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-int32_t debug_mode_i32_divide(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int32_t debug_mode_i32_divide(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (INT_MIN == MINIMUM) && (INT_MAX == MAXIMUM)
-	return debug_mode_int_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_int_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
-	return debug_mode_long_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-int32_t debug_mode_i32_remainder(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int32_t debug_mode_i32_remainder(int32_t a, int32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (INT_MIN == MINIMUM) && (INT_MAX == MAXIMUM)
-	return debug_mode_int_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_int_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
-	return debug_mode_long_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
@@ -2610,58 +2710,58 @@ int32_t debug_mode_i32_remainder(int32_t a, int32_t b, integer_result_mode_type 
 #undef MINIMUM
 #define MAXIMUM UINT32_MAX
 
-uint32_t debug_mode_u32_add(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint32_t debug_mode_u32_add(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if UINT_MAX == MAXIMUM
 	STATIC_ASSERT(sizeof(unsigned int) == sizeof(uint32_t), "The size of unsigned int must be the same as the size of uint32_t.");
-	return debug_mode_uint_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_uint_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULONG_MAX == MAXIMUM
 	STATIC_ASSERT(sizeof(unsigned long) == sizeof(uint32_t), "The size of unsigned long int must be the same as the size of uint32_t.");
-	return debug_mode_ulong_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-uint32_t debug_mode_u32_minus(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint32_t debug_mode_u32_minus(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if UINT_MAX == MAXIMUM
-	return debug_mode_uint_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_uint_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULONG_MAX == MAXIMUM
-	return debug_mode_ulong_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-uint32_t debug_mode_u32_multiply(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint32_t debug_mode_u32_multiply(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if UINT_MAX == MAXIMUM
-	return debug_mode_uint_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_uint_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULONG_MAX == MAXIMUM
-	return debug_mode_ulong_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-uint32_t debug_mode_u32_divide(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint32_t debug_mode_u32_divide(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if UINT_MAX == MAXIMUM
-	return debug_mode_uint_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_uint_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULONG_MAX == MAXIMUM
-	return debug_mode_ulong_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-uint32_t debug_mode_u32_remainder(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint32_t debug_mode_u32_remainder(uint32_t a, uint32_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if UINT_MAX == MAXIMUM
-	return debug_mode_uint_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_uint_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULONG_MAX == MAXIMUM
-	return debug_mode_ulong_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
@@ -2672,58 +2772,58 @@ uint32_t debug_mode_u32_remainder(uint32_t a, uint32_t b, integer_result_mode_ty
 #if defined(INT64_MIN) && defined(INT64_MAX)
 #define MINIMUM INT64_MIN
 #define MAXIMUM INT64_MAX
-int64_t debug_mode_i64_add(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int64_t debug_mode_i64_add(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
 	STATIC_ASSERT(sizeof(long) == sizeof(int64_t), "The size of long int must be the same as the size of int64_t.");
-	return debug_mode_long_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LLONG_MIN == MINIMUM) && (LLONG_MAX == MAXIMUM)
 	STATIC_ASSERT(sizeof(long long) == sizeof(int64_t), "The size of long long int must be the same as the size of int64_t.");
-	return debug_mode_llong_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_llong_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-int64_t debug_mode_i64_minus(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int64_t debug_mode_i64_minus(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
-	return debug_mode_long_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LLONG_MIN == MINIMUM) && (LLONG_MAX == MAXIMUM)
-	return debug_mode_llong_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_llong_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-int64_t debug_mode_i64_multiply(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int64_t debug_mode_i64_multiply(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
-	return debug_mode_long_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LLONG_MIN == MINIMUM) && (LLONG_MAX == MAXIMUM)
-	return debug_mode_llong_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_llong_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-int64_t debug_mode_i64_divide(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int64_t debug_mode_i64_divide(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
-	return debug_mode_long_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LLONG_MIN == MINIMUM) && (LLONG_MAX == MAXIMUM)
-	return debug_mode_llong_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_llong_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-int64_t debug_mode_i64_remainder(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+int64_t debug_mode_i64_remainder(int64_t a, int64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (LONG_MIN == MINIMUM) && (LONG_MAX == MAXIMUM)
-	return debug_mode_long_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_long_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (LLONG_MIN == MINIMUM) && (LLONG_MAX == MAXIMUM)
-	return debug_mode_llong_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_llong_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
@@ -2734,58 +2834,58 @@ int64_t debug_mode_i64_remainder(int64_t a, int64_t b, integer_result_mode_type 
 
 #if defined(UINT64_MAX)
 #define MAXIMUM UINT64_MAX
-uint64_t debug_mode_u64_add(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint64_t debug_mode_u64_add(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if ULONG_MAX == MAXIMUM
 	STATIC_ASSERT(sizeof(unsigned long) == sizeof(uint64_t), "The size of unsigned long must be the same as the size of uint64_t.");
-	return debug_mode_ulong_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULLONG_MAX == MAXIMUM
 	STATIC_ASSERT(sizeof(unsigned long long) == sizeof(uint64_t), "The size of unsigned long long must be the same as the size of uint64_t.");
-	return debug_mode_ullong_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_ullong_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-uint64_t debug_mode_u64_minus(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint64_t debug_mode_u64_minus(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if ULONG_MAX == MAXIMUM
-	return debug_mode_ulong_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULLONG_MAX == MAXIMUM
-	return debug_mode_ullong_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_ullong_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-uint64_t debug_mode_u64_multiply(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint64_t debug_mode_u64_multiply(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if ULONG_MAX == MAXIMUM
-	return debug_mode_ulong_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULLONG_MAX == MAXIMUM
-	return debug_mode_ullong_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_ullong_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-uint64_t debug_mode_u64_divide(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint64_t debug_mode_u64_divide(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if ULONG_MAX == MAXIMUM
-	return debug_mode_ulong_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULLONG_MAX == MAXIMUM
-	return debug_mode_ullong_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_ullong_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-uint64_t debug_mode_u64_remainder(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+uint64_t debug_mode_u64_remainder(uint64_t a, uint64_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if ULONG_MAX == MAXIMUM
-	return debug_mode_ulong_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_ulong_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif ULLONG_MAX == MAXIMUM
-	return debug_mode_ullong_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_ullong_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
@@ -2793,139 +2893,139 @@ uint64_t debug_mode_u64_remainder(uint64_t a, uint64_t b, integer_result_mode_ty
 #undef MAXIMUM
 #endif /* UINT64_MAX */
 
-ptrdiff_t debug_mode_ptrdiff_add(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+ptrdiff_t debug_mode_ptrdiff_add(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (PTRDIFF_MIN == INT16_MIN) && (PTRDIFF_MAX == INT16_MAX)
 	STATIC_ASSERT(sizeof(ptrdiff_t) == sizeof(int16_t), "The size of ptrdiff_t must be the same as the size of int16_t.");
-	return debug_mode_i16_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_i16_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (PTRDIFF_MIN == INT32_MIN) && (PTRDIFF_MAX == INT32_MAX)
 	STATIC_ASSERT(sizeof(ptrdiff_t) == sizeof(int32_t), "The size of ptrdiff_t must be the same as the size of int32_t.");
-	return debug_mode_i32_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_i32_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(INT64_MIN) && (PTRDIFF_MIN == INT64_MIN) && defined(INT64_MAX) && (PTRDIFF_MAX == INT64_MAX)
 	STATIC_ASSERT(sizeof(ptrdiff_t) == sizeof(int64_t), "The size of ptrdiff_t must be the same as the size of int64_t.");
-	return debug_mode_i64_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_i64_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-ptrdiff_t debug_mode_ptrdiff_minus(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+ptrdiff_t debug_mode_ptrdiff_minus(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (PTRDIFF_MIN == INT16_MIN) && (PTRDIFF_MAX == INT16_MAX)
-	return debug_mode_i16_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_i16_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (PTRDIFF_MIN == INT32_MIN) && (PTRDIFF_MAX == INT32_MAX)
-	return debug_mode_i32_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_i32_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(INT64_MIN) && (PTRDIFF_MIN == INT64_MIN) && defined(INT64_MAX) && (PTRDIFF_MAX == INT64_MAX)
-	return debug_mode_i64_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_i64_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-ptrdiff_t debug_mode_ptrdiff_multiply(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+ptrdiff_t debug_mode_ptrdiff_multiply(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (PTRDIFF_MIN == INT16_MIN) && (PTRDIFF_MAX == INT16_MAX)
-	return debug_mode_i16_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_i16_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (PTRDIFF_MIN == INT32_MIN) && (PTRDIFF_MAX == INT32_MAX)
-	return debug_mode_i32_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_i32_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(INT64_MIN) && (PTRDIFF_MIN == INT64_MIN) && defined(INT64_MAX) && (PTRDIFF_MAX == INT64_MAX)
-	return debug_mode_i64_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_i64_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-ptrdiff_t debug_mode_ptrdiff_divide(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+ptrdiff_t debug_mode_ptrdiff_divide(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (PTRDIFF_MIN == INT16_MIN) && (PTRDIFF_MAX == INT16_MAX)
-	return debug_mode_i16_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_i16_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (PTRDIFF_MIN == INT32_MIN) && (PTRDIFF_MAX == INT32_MAX)
-	return debug_mode_i32_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_i32_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(INT64_MIN) && (PTRDIFF_MIN == INT64_MIN) && defined(INT64_MAX) && (PTRDIFF_MAX == INT64_MAX)
-	return debug_mode_i64_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_i64_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-ptrdiff_t debug_mode_ptrdiff_remainder(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+ptrdiff_t debug_mode_ptrdiff_remainder(ptrdiff_t a, ptrdiff_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if (PTRDIFF_MIN == INT16_MIN) && (PTRDIFF_MAX == INT16_MAX)
-	return debug_mode_i16_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_i16_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif (PTRDIFF_MIN == INT32_MIN) && (PTRDIFF_MAX == INT32_MAX)
-	return debug_mode_i32_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_i32_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(INT64_MIN) && (PTRDIFF_MIN == INT64_MIN) && defined(INT64_MAX) && (PTRDIFF_MAX == INT64_MAX)
-	return debug_mode_i64_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_i64_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-size_t debug_mode_size_add(size_t a, size_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+size_t debug_mode_size_add(size_t a, size_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if SIZE_MAX == UINT16_MAX
 	STATIC_ASSERT(sizeof(size_t) == sizeof(uint16_t), "The size of size_t must be the same as the size of uint16_t.");
-	return debug_mode_u16_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_u16_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif SIZE_MAX == UINT32_MAX
 	STATIC_ASSERT(sizeof(size_t) == sizeof(uint32_t), "The size of size_t must be the same as the size of uint32_t.");
-	return debug_mode_u32_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_u32_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(UINT64_MAX) && (SIZE_MAX == UINT64_MAX)
 	STATIC_ASSERT(sizeof(size_t) == sizeof(uint64_t), "The size of size_t must be the same as the size of uint64_t.");
-	return debug_mode_u64_add(a, b, result_mode, file_name, line_number);
+	return debug_mode_u64_add(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-size_t debug_mode_size_minus(size_t a, size_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+size_t debug_mode_size_minus(size_t a, size_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if SIZE_MAX == UINT16_MAX
-	return debug_mode_u16_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_u16_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif SIZE_MAX == UINT32_MAX
-	return debug_mode_u32_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_u32_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(UINT64_MAX) && (SIZE_MAX == UINT64_MAX)
-	return debug_mode_u64_minus(a, b, result_mode, file_name, line_number);
+	return debug_mode_u64_minus(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-size_t debug_mode_size_multiply(size_t a, size_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+size_t debug_mode_size_multiply(size_t a, size_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if SIZE_MAX == UINT16_MAX
-	return debug_mode_u16_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_u16_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif SIZE_MAX == UINT32_MAX
-	return debug_mode_u32_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_u32_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(UINT64_MAX) && (SIZE_MAX == UINT64_MAX)
-	return debug_mode_u64_multiply(a, b, result_mode, file_name, line_number);
+	return debug_mode_u64_multiply(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 
-size_t debug_mode_size_divide(size_t a, size_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+size_t debug_mode_size_divide(size_t a, size_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 {
 #if SIZE_MAX == UINT16_MAX
-	return debug_mode_u16_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_u16_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif SIZE_MAX == UINT32_MAX
-	return debug_mode_u32_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_u32_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(UINT64_MAX) && (SIZE_MAX == UINT64_MAX)
-	return debug_mode_u64_divide(a, b, result_mode, file_name, line_number);
+	return debug_mode_u64_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
 }
 }
 
-size_t debug_mode_size_remainder(size_t a, size_t b, integer_result_mode_type result_mode, const char *file_name, int line_number)
+size_t debug_mode_size_remainder(size_t a, size_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
 #if SIZE_MAX == UINT16_MAX
-	return debug_mode_u16_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_u16_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif SIZE_MAX == UINT32_MAX
-	return debug_mode_u32_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_u32_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif defined(UINT64_MAX) && (SIZE_MAX == UINT64_MAX)
-	return debug_mode_u64_remainder(a, b, result_mode, file_name, line_number);
+	return debug_mode_u64_remainder(a, b, result_mode, a_name, b_name, file_name, line_number);
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
