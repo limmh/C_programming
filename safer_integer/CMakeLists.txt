@@ -214,3 +214,19 @@ target_link_libraries(
 	terminal_text_color
 	unit_testing
 )
+
+add_executable(
+	safer_integer_type_runtime_tests
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_runtime_tests.cpp"
+)
+set_target_properties(
+	safer_integer_type_runtime_tests PROPERTIES
+	CXX_STANDARD 98
+	CXX_STANDARD_REQUIRED YES
+	CXX_EXTENSIONS YES
+)
+target_include_directories(
+	safer_integer_type_runtime_tests PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+)
