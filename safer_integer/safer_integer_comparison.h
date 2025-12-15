@@ -154,6 +154,7 @@ INLINE_OR_STATIC int safer_i32_and_u32_compare(int32_t a, uint32_t b) {
 INLINE_OR_STATIC int safer_u32_and_i32_compare(uint32_t a, int32_t b) {
 	int result = 0;
 	if (b < (int32_t) 0) {
+		result = 1;
 	} else {
 		const uint32_t ub = (uint32_t) b;
 		if (a < ub) {

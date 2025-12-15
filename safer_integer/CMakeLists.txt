@@ -170,3 +170,47 @@ target_link_libraries(
 	debug_mode_integer_runtime_tests_unchecked
 	safer_integer
 )
+
+add_executable(
+	safer_integer_comparison_tests
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_comparison_tests.c"
+)
+set_target_properties(
+	safer_integer_comparison_tests PROPERTIES
+	C_STANDARD ${LIBRARY_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS YES
+)
+target_include_directories(
+	safer_integer_comparison_tests PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+target_link_libraries(
+	safer_integer_comparison_tests
+	terminal_text_color
+	unit_testing
+)
+
+add_executable(
+	safe_bitwise_operation_tests
+	"${CMAKE_CURRENT_SOURCE_DIR}/safe_bitwise_operation_tests.c"
+)
+set_target_properties(
+	safe_bitwise_operation_tests PROPERTIES
+	C_STANDARD ${LIBRARY_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS YES
+)
+target_include_directories(
+	safe_bitwise_operation_tests PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+target_link_libraries(
+	safe_bitwise_operation_tests
+	terminal_text_color
+	unit_testing
+)

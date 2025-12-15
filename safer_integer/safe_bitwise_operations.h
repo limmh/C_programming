@@ -744,6 +744,8 @@ INLINE_OR_STATIC uint8_t u8_inv(uint8_t var)                { return safe_u8_inv
 INLINE_OR_STATIC uint8_t u8_lshift(uint8_t var, size_t nb)  { return safe_u8_left_shift(var, nb); }
 INLINE_OR_STATIC uint8_t u8_rshift(uint8_t var, size_t nb)  { return safe_u8_right_shift(var, nb); }
 INLINE_OR_STATIC uint8_t u8_arshift(uint8_t var, size_t nb) { return safe_u8_arithmetic_right_shift(var, nb); }
+INLINE_OR_STATIC uint8_t u8_lrotate(uint8_t var, size_t nb) { return safe_u8_left_rotate(var, nb); }
+INLINE_OR_STATIC uint8_t u8_rrotate(uint8_t var, size_t nb) { return safe_u8_right_rotate(var, nb); }
 
 INLINE_OR_STATIC uint16_t u16_and(uint16_t a, uint16_t b)      { return safe_u16_and(a, b); }
 INLINE_OR_STATIC uint16_t u16_or(uint16_t a, uint16_t b)       { return safe_u16_or(a, b); }
