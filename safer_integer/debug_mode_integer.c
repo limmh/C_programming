@@ -3,7 +3,15 @@
 #include "static_assert.h"
 #include <assert.h>
 #include <iso646.h>
-#include <stdio.h>
+
+static FILE *output_file_pointer = NULL;
+
+FILE *debug_mode_integer_set_output_file(FILE *file_pointer)
+{
+	FILE *previous_output_file_pointer = output_file_pointer;
+	output_file_pointer = file_pointer;
+	return previous_output_file_pointer;
+}
 
 /* non-null guarantee */
 static const char *debug_mode_integer_operation_name(integer_operation_type operation)
@@ -56,7 +64,7 @@ static void debug_mode_default_int_handler(const int_debug_info_type* debug_info
 #define INTEGER_SPECIFIER "%d"
 #define INTEGER_TYPE_NAME "int"
 	const char *operation_name = NULL, *result_mode_name = NULL, *error_message = NULL;
-	FILE *file = stderr;
+	FILE *file = (output_file_pointer != NULL) ? output_file_pointer : stderr ;
 	assert(debug_info != NULL);
 	assert(debug_info->file_name != NULL);
 	operation_name = debug_mode_integer_operation_name(debug_info->operation);
@@ -366,7 +374,7 @@ static void debug_mode_default_uint_handler(const uint_debug_info_type* debug_in
 #define INTEGER_SPECIFIER "%u"
 #define INTEGER_TYPE_NAME "unsigned int"
 	const char *operation_name = NULL, *result_mode_name = NULL, *error_message = NULL;
-	FILE *file = stderr;
+	FILE *file = (output_file_pointer != NULL) ? output_file_pointer : stderr ;
 	assert(debug_info != NULL);
 	assert(debug_info->file_name != NULL);
 	operation_name = debug_mode_integer_operation_name(debug_info->operation);
@@ -615,7 +623,7 @@ static void debug_mode_default_long_handler(const long_debug_info_type* debug_in
 #define INTEGER_SPECIFIER "%ld"
 #define INTEGER_TYPE_NAME "long"
 	const char *operation_name = NULL, *result_mode_name = NULL, *error_message = NULL;
-	FILE *file = stderr;
+	FILE *file = (output_file_pointer != NULL) ? output_file_pointer : stderr ;
 	assert(debug_info != NULL);
 	assert(debug_info->file_name != NULL);
 	operation_name = debug_mode_integer_operation_name(debug_info->operation);
@@ -925,7 +933,7 @@ static void debug_mode_default_ulong_handler(const ulong_debug_info_type* debug_
 #define INTEGER_SPECIFIER "%lu"
 #define INTEGER_TYPE_NAME "unsigned long"
 	const char *operation_name = NULL, *result_mode_name = NULL, *error_message = NULL;
-	FILE *file = stderr;
+	FILE *file = (output_file_pointer != NULL) ? output_file_pointer : stderr ;
 	assert(debug_info != NULL);
 	assert(debug_info->file_name != NULL);
 	operation_name = debug_mode_integer_operation_name(debug_info->operation);
@@ -1175,7 +1183,7 @@ static void debug_mode_default_llong_handler(const llong_debug_info_type* debug_
 #define INTEGER_SPECIFIER "%lld"
 #define INTEGER_TYPE_NAME "long long"
 	const char *operation_name = NULL, *result_mode_name = NULL, *error_message = NULL;
-	FILE *file = stderr;
+	FILE *file = (output_file_pointer != NULL) ? output_file_pointer : stderr ;
 	assert(debug_info != NULL);
 	assert(debug_info->file_name != NULL);
 	operation_name = debug_mode_integer_operation_name(debug_info->operation);
@@ -1487,7 +1495,7 @@ static void debug_mode_default_ullong_handler(const ullong_debug_info_type* debu
 #define INTEGER_SPECIFIER "%llu"
 #define INTEGER_TYPE_NAME "unsigned long long"
 	const char *operation_name = NULL, *result_mode_name = NULL, *error_message = NULL;
-	FILE *file = stderr;
+	FILE *file = (output_file_pointer != NULL) ? output_file_pointer : stderr ;
 	assert(debug_info != NULL);
 	assert(debug_info->file_name != NULL);
 	operation_name = debug_mode_integer_operation_name(debug_info->operation);

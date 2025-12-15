@@ -3,6 +3,7 @@
 
 #include "safer_integer.h"
 #include "fixed_width_integer_types.h"
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,6 +12,8 @@ extern "C" {
 #define INTEGER_RESULT_MODE_DEFAULT 0
 #define INTEGER_RESULT_MODE_WRAPAROUND 1
 #define INTEGER_RESULT_MODE_SATURATION 2
+
+FILE *debug_mode_integer_set_output_file(FILE *file_pointer); /* return previous output file */
 
 typedef enum integer_operation_type
 {
