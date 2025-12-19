@@ -1,5 +1,6 @@
 #include "dynamic_array.h"
 #include "simple_tokenizer.h"
+#include "safer_fixed_width_integers.h"
 
 #include <assert.h>
 #include <iso646.h>
@@ -515,7 +516,7 @@ typedef enum number_type_enum
 
 typedef struct number_type
 {
-	union number_s {
+	union internal {
 		int64_t integer;
 		double decimal;
 	} value;
@@ -591,8 +592,14 @@ evaluate_postfix_expression_tokens(const expression_token_type *ptokens, size_t 
 					result_operand.value.decimal = (double)operand_1.value.integer + operand_2.value.decimal;
 					result_operand.type = number_type_decimal_number;
 				} else {
-					result_operand.value.integer = operand_1.value.integer + operand_2.value.integer;
-					result_operand.type = number_type_integer;
+					const i64_result_type i64_result = safer_i64_add(operand_1.value.integer, operand_2.value.integer);
+					if (i64_result.error == integer_operation_error_none) {
+						result_operand.value.integer = i64_result.value;
+						result_operand.type = number_type_integer;
+					} else {
+						result_operand.value.decimal = (double)operand_1.value.integer + (double)operand_2.value.integer;
+						result_operand.type = number_type_decimal_number;
+					}
 				}
 				dynamic_array_push_back(number_type, numbers, result_operand);
 			} else {
@@ -619,8 +626,14 @@ evaluate_postfix_expression_tokens(const expression_token_type *ptokens, size_t 
 					result_operand.value.decimal = (double)operand_1.value.integer - operand_2.value.decimal;
 					result_operand.type = number_type_decimal_number;
 				} else {
-					result_operand.value.integer = operand_1.value.integer - operand_2.value.integer;
-					result_operand.type = number_type_integer;
+					const i64_result_type i64_result = safer_i64_minus(operand_1.value.integer, operand_2.value.integer);
+					if (i64_result.error == integer_operation_error_none) {
+						result_operand.value.integer = i64_result.value;
+						result_operand.type = number_type_integer;
+					} else {
+						result_operand.value.decimal = (double)operand_1.value.integer - (double)operand_2.value.integer;
+						result_operand.type = number_type_decimal_number;
+					}
 				}
 				dynamic_array_push_back(number_type, numbers, result_operand);
 			} else {
@@ -647,8 +660,14 @@ evaluate_postfix_expression_tokens(const expression_token_type *ptokens, size_t 
 					result_operand.value.decimal = (double)operand_1.value.integer * operand_2.value.decimal;
 					result_operand.type = number_type_decimal_number;
 				} else {
-					result_operand.value.integer = operand_1.value.integer * operand_2.value.integer;
-					result_operand.type = number_type_integer;
+					const i64_result_type i64_result = safer_i64_multiply(operand_1.value.integer, operand_2.value.integer);
+					if (i64_result.error == integer_operation_error_none) {
+						result_operand.value.integer = i64_result.value;
+						result_operand.type = number_type_integer;
+					} else {
+						result_operand.value.decimal = (double)operand_1.value.integer * (double)operand_2.value.integer;
+						result_operand.type = number_type_decimal_number;
+					}
 				}
 				dynamic_array_push_back(number_type, numbers, result_operand);
 			} else {
@@ -675,11 +694,15 @@ evaluate_postfix_expression_tokens(const expression_token_type *ptokens, size_t 
 					result_operand.value.decimal = (double)operand_1.value.integer / operand_2.value.decimal;
 					result_operand.type = number_type_decimal_number;
 				} else {
-					if (operand_2.value.integer != 0) {
-						result_operand.value.integer = operand_1.value.integer / operand_2.value.integer;
+					const i64_result_type i64_result = safer_i64_divide(operand_1.value.integer, operand_2.value.integer);
+					if (i64_result.error == integer_operation_error_none) {
+						result_operand.value.integer = i64_result.value;
 						result_operand.type = number_type_integer;
-					} else {
+					} else if (i64_result.error == integer_operation_error_division_of_signed_integer_by_zero) {
 						result.error = evaluation_result_error_integer_division_by_zero;
+					} else {
+						result_operand.value.decimal = (double)operand_1.value.integer / (double)operand_2.value.integer;
+						result_operand.type = number_type_decimal_number;
 					}
 				}
 				dynamic_array_push_back(number_type, numbers, result_operand);

@@ -41,6 +41,7 @@ set_target_properties(
 target_include_directories(
 	byte_writer PRIVATE
 	"${CMAKE_CURRENT_SOURCE_DIR}/../dynamic_array"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
 )
 target_link_libraries(
 	byte_writer
@@ -62,9 +63,11 @@ target_include_directories(
 	"${CMAKE_CURRENT_SOURCE_DIR}/../dynamic_array"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../simple_tokenizer"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../safer_integer"
 )
 target_link_libraries(
 	evaluate_expression
 	dynamic_array
 	simple_tokenizer
+	safer_integer
 )

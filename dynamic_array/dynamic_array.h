@@ -3,6 +3,7 @@
 #ifndef DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_H
 
+#include "static_assert.h"
 #include <assert.h>
 #include <stddef.h>
 
@@ -42,8 +43,8 @@ typedef struct dynamic_array_debug_info_type
 {
 	const char *file_name; /* application source file */
 	const char *library_file_name; /* library source file */
-	size_t line_number; /* application source file */
-	size_t library_line_number; /* library source file */
+	int line_number; /* application source file */
+	int library_line_number; /* library source file */
 	size_t struct_size;
 	size_t internal_struct_size;
 	size_t info_1;
@@ -144,23 +145,23 @@ dynamic_array_create_(
 	size_t element_size,
 	dynamic_array_allocator_type *allocator,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
 #define dynamic_array_create(type, initial_size) \
-	dynamic_array_create_(NULL, initial_size, sizeof(type), NULL, __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_))
+	dynamic_array_create_(NULL, initial_size, sizeof(type), NULL, __FILE__, __LINE__, sizeof(dynamic_array_type_))
 
 #define dynamic_array_create_with_allocator(type, initial_size, allocator) \
-	dynamic_array_create_(NULL, initial_size, sizeof(type), &(allocator), __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_))
+	dynamic_array_create_(NULL, initial_size, sizeof(type), &(allocator), __FILE__, __LINE__, sizeof(dynamic_array_type_))
 
 #define dynamic_array_create_from_source(type, source, source_size) \
 	(assert(sizeof(type) == sizeof((source)[0])), \
-	dynamic_array_create_(source, source_size, sizeof(type), NULL, __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_)))
+	dynamic_array_create_(source, source_size, sizeof(type), NULL, __FILE__, __LINE__, sizeof(dynamic_array_type_)))
 
 #define dynamic_array_create_from_source_with_allocator(type, source, source_size, allocator) \
 	(assert(sizeof(type) == sizeof((source)[0])), \
-	dynamic_array_create_(source, source_size, sizeof(type), &(allocator), __FILE__, (size_t)__LINE__, sizeof(dynamic_array_type_)))
+	dynamic_array_create_(source, source_size, sizeof(type), &(allocator), __FILE__, __LINE__, sizeof(dynamic_array_type_)))
 
 /*
 Performs cleanup and releases the memory occupied by the dynamic array.
@@ -176,12 +177,12 @@ Return value: None.
 void dynamic_array_delete_(
 	dynamic_array_type_ *dynamic_array,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
 #define dynamic_array_delete(array) \
-	dynamic_array_delete_(&(array), __FILE__, (size_t)__LINE__, sizeof(array))
+	dynamic_array_delete_(&(array), __FILE__, __LINE__, sizeof(array))
 
 /*
 Retrieves the allocator
@@ -199,12 +200,12 @@ const dynamic_array_allocator_type*
 dynamic_array_get_allocator_(
 	const dynamic_array_type_ *dynamic_array,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
 #define dynamic_array_get_allocator(array) \
-	dynamic_array_get_allocator_(&(array), __FILE__, (size_t)__LINE__, sizeof(array))
+	dynamic_array_get_allocator_(&(array), __FILE__, __LINE__, sizeof(array))
 
 /*
 Checks the dynamic array for any error. The returned error is the first error detected.
@@ -221,12 +222,12 @@ dynamic_array_error_type
 dynamic_array_check_(
 	const dynamic_array_type_ *dynamic_array,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
 #define dynamic_array_check(array) \
-	dynamic_array_check_(&(array), __FILE__, (size_t)__LINE__, sizeof(array))
+	dynamic_array_check_(&(array), __FILE__, __LINE__, sizeof(array))
 
 /*
 Returns the number of elements that can be stored without reallocation
@@ -243,12 +244,12 @@ The number of elements that can be stored without reallocation
 size_t dynamic_array_capacity_(
 	const dynamic_array_type_ *dynamic_array,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
 #define dynamic_array_capacity(array) \
-	dynamic_array_capacity_(&(array), __FILE__, (size_t)__LINE__, sizeof(array))
+	dynamic_array_capacity_(&(array), __FILE__, __LINE__, sizeof(array))
 
 /*
 Returns the actual number of elements of the dynamic array
@@ -265,12 +266,12 @@ The number of elements in the dynamic array
 size_t dynamic_array_size_(
 	const dynamic_array_type_ *dynamic_array,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
 #define dynamic_array_size(array) \
-	dynamic_array_size_(&(array), __FILE__, (size_t)__LINE__, sizeof(array))
+	dynamic_array_size_(&(array), __FILE__, __LINE__, sizeof(array))
 
 #define dynamic_array_length(array) dynamic_array_size(array)
 
@@ -295,12 +296,12 @@ void *dynamic_array_element_ptr_(
 	size_t index,
 	size_t element_size,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
 #define dynamic_array_element(type, array, index) \
-		(*((type*) dynamic_array_element_ptr_(&(array), index, sizeof(type), __FILE__, (size_t)__LINE__, sizeof(array))))
+		(*((type*) dynamic_array_element_ptr_(&(array), index, sizeof(type), __FILE__, __LINE__, sizeof(array))))
 
 /*
 Adds or inserts elements at an index
@@ -330,7 +331,7 @@ void dynamic_array_add_elements_at_index_(
 	size_t number_of_elements,
 	size_t element_size,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
@@ -338,30 +339,30 @@ void dynamic_array_add_elements_at_index_(
 	do { \
 		type tmp = element; \
 		dynamic_array_add_elements_at_index_(&(array), index, &tmp, 1U, sizeof(tmp), \
-			 __FILE__, (size_t)__LINE__, sizeof(array)); \
+			 __FILE__, __LINE__, sizeof(array)); \
 	} while (0)
 
 #define dynamic_array_add_elements_at_index(type, array, index, elements, element_count) \
 	do { \
-		assert(sizeof(type) == sizeof((elements)[0])); \
+		STATIC_ASSERT(sizeof(type) == sizeof((elements)[0]), "Mismatch between type size and element size."); \
 		dynamic_array_add_elements_at_index_(&(array), index, elements, element_count, sizeof((elements)[0]), \
-			__FILE__, (size_t)__LINE__, sizeof(array)); \
+			__FILE__, __LINE__, sizeof(array)); \
 	} while (0)
 
 #define dynamic_array_append_element(type, array, element) \
 	do { \
 		type tmp = element; \
 		dynamic_array_add_elements_at_index_(&(array), dynamic_array_size(array), &tmp, 1U, sizeof(tmp), \
-			__FILE__, (size_t)__LINE__, sizeof(array)); \
+			__FILE__, __LINE__, sizeof(array)); \
 	} while (0)
 
 #define dynamic_array_push_back(type, array, element) dynamic_array_append_element(type, array, element)
 
 #define dynamic_array_append_elements(type, array, elements, element_count) \
 	do { \
-		assert(sizeof(type) == sizeof((elements)[0])); \
+		STATIC_ASSERT(sizeof(type) == sizeof((elements)[0]), "Mismatch between type size and element size."); \
 		dynamic_array_add_elements_at_index_(&(array), dynamic_array_size(array), elements, element_count, sizeof((elements)[0]), \
-			__FILE__, (size_t)__LINE__, sizeof(array)); \
+			__FILE__, __LINE__, sizeof(array)); \
 	} while (0)
 
 /*
@@ -390,35 +391,35 @@ void dynamic_array_remove_elements_starting_from_index_(
 	size_t number_of_elements,
 	size_t element_size,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
 #define dynamic_array_remove_element_at_index(type, array, index) \
 	dynamic_array_remove_elements_starting_from_index_(&(array), index, NULL, 1U, sizeof(type), \
-		__FILE__, (size_t)__LINE__, sizeof(array))
+		__FILE__, __LINE__, sizeof(array))
 
 #define dynamic_array_remove_elements_starting_from_index(type, array, index, number_of_elements) \
 	dynamic_array_remove_elements_starting_from_index_(&(array), index, NULL, number_of_elements, sizeof(type), \
-		__FILE__, (size_t)__LINE__, sizeof(array))
+		__FILE__, __LINE__, sizeof(array))
 
 #define dynamic_array_move_elements_starting_from_index_to_buffer(type, array, index, buffer, number_of_elements) \
 	do { \
+		STATIC_ASSERT(sizeof(type) == sizeof((buffer)[0]), "Mismatch between type size and buffer element size."); \
 		assert(buffer != NULL); \
-		assert(sizeof(type) == sizeof((buffer)[0])); \
 		dynamic_array_remove_elements_starting_from_index_(&(array), index, buffer, number_of_elements, sizeof((buffer)[0]), \
-			__FILE__, (size_t)__LINE__, sizeof(array)); \
+			__FILE__, __LINE__, sizeof(array)); \
 	} while (0)
 
 #define dynamic_array_pop_back(type, array, variable) \
 	do { \
+		STATIC_ASSERT(sizeof(type) == sizeof(variable), "Mismatch between type size and variable size."); \
 		size_t last_element_index = 0U, array_length = 0U; \
-		assert(sizeof(type) == sizeof(variable)); \
 		array_length = dynamic_array_size(array); \
 		assert(array_length >= 1U); \
 		last_element_index = (array_length >= 1U) ? (array_length - 1U) : 0U; \
 		dynamic_array_remove_elements_starting_from_index_(&(array), last_element_index, &(variable), 1U, sizeof(variable), \
-			__FILE__, (size_t)__LINE__, sizeof(array)); \
+			__FILE__, __LINE__, sizeof(array)); \
 	} while (0)
 
 /*
@@ -441,12 +442,12 @@ void dynamic_array_resize_(
 	size_t new_size,
 	size_t element_size,
 	const char *file_name,
-	size_t line_number,
+	int line_number,
 	size_t struct_size
 );
 
 #define dynamic_array_resize(type, array, new_size) \
-	dynamic_array_resize_(&(array), new_size, sizeof(type), __FILE__, (size_t)__LINE__, sizeof(array))
+	dynamic_array_resize_(&(array), new_size, sizeof(type), __FILE__, __LINE__, sizeof(array))
 
 #ifdef __cplusplus
 }

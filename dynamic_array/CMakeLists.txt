@@ -23,6 +23,11 @@ set_target_properties(
 target_include_directories(
 	dynamic_array PRIVATE
 	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../safer_integer"
+)
+target_link_libraries(
+	dynamic_array
+	safer_integer
 )
 
 # library 2
@@ -44,6 +49,11 @@ set_target_properties(
 target_include_directories(
 	dynamic_array_debug PRIVATE
 	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../safer_integer"
+)
+target_link_libraries(
+	dynamic_array_debug
+	safer_integer
 )
 
 # library 3
@@ -66,6 +76,11 @@ set_target_properties(
 target_include_directories(
 	dynamic_array_unsafe PRIVATE
 	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../safer_integer"
+)
+target_link_libraries(
+	dynamic_array_unsafe
+	safer_integer
 )
 
 # library 4
@@ -110,6 +125,7 @@ target_include_directories(
 target_link_libraries(
 	dynamic_array_tests
 	dynamic_array
+	safer_integer
 	static_pool
 	terminal_text_color
 	unit_testing
@@ -140,6 +156,7 @@ target_include_directories(
 target_link_libraries(
 	dynamic_array_tests_no_realloc
 	dynamic_array
+	safer_integer
 	static_pool
 	terminal_text_color
 	unit_testing
@@ -169,6 +186,7 @@ target_include_directories(
 target_link_libraries(
 	dynamic_array_tests_debug
 	dynamic_array_debug
+	safer_integer
 	static_pool
 	terminal_text_color
 	unit_testing
@@ -199,6 +217,7 @@ target_include_directories(
 target_link_libraries(
 	dynamic_array_tests_no_realloc_debug
 	dynamic_array_debug
+	safer_integer
 	static_pool
 	terminal_text_color
 	unit_testing
@@ -228,6 +247,7 @@ target_include_directories(
 target_link_libraries(
 	dynamic_array_tests_unsafe
 	dynamic_array_unsafe
+	safer_integer
 	static_pool
 	terminal_text_color
 	unit_testing
@@ -258,6 +278,7 @@ target_include_directories(
 target_link_libraries(
 	dynamic_array_tests_no_realloc_unsafe
 	dynamic_array_unsafe
+	safer_integer
 	static_pool
 	terminal_text_color
 	unit_testing
