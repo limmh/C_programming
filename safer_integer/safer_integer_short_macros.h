@@ -4,27 +4,8 @@
 #include "safer_integer.h"
 #include "safer_fixed_width_integers.h"
 #include "debug_mode_integer.h"
+#include "safer_integer_util.h"
 #include "inline_or_static.h"
-
-#ifndef SAFER_INTEGER_SHORT_MACROS_CUSTOM_ASSERTION_DEFINED
-#ifdef NDEBUG
-#include <stdio.h>
-static void safer_integer_assert(FILE *file, int Boolean_condition, const char *file_name, int line_number, const char *message)
-{
-	if (!Boolean_condition) {
-		fprintf(file, "%s (line %d)\nAssertion failure: %s\n", file_name, line_number, message);
-	}
-}
-#define SAFER_INTEGER_ASSERT(condition) \
-	safer_integer_assert(stderr, condition, __FILE__, __LINE__, #condition)
-#else
-#include <assert.h>
-#define SAFER_INTEGER_ASSERT(condition) assert(condition)
-#endif /* NDEBUG */
-#endif /* SAFER_INTEGER_SHORT_MACROS_CUSTOM_ASSERTION_DEFINED */
-
-#define INTEGER_IS_WITHIN_RANGE(integer, minimum, maximum) \
-	((integer) >= (minimum) && (integer) <= (maximum))
 
 /* Short macros for signed integer operations */
 #ifndef siadd

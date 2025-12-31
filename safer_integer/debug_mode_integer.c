@@ -3013,7 +3013,6 @@ size_t debug_mode_size_multiply(size_t a, size_t b, integer_result_mode_type res
 
 size_t debug_mode_size_divide(size_t a, size_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)
 {
-{
 #if SIZE_MAX == UINT16_MAX
 	return debug_mode_u16_divide(a, b, result_mode, a_name, b_name, file_name, line_number);
 #elif SIZE_MAX == UINT32_MAX
@@ -3023,7 +3022,6 @@ size_t debug_mode_size_divide(size_t a, size_t b, integer_result_mode_type resul
 #else
 #error "Error: The debug mode operation cannot be implemented properly."
 #endif
-}
 }
 
 size_t debug_mode_size_remainder(size_t a, size_t b, integer_result_mode_type result_mode, const char *a_name, const char *b_name, const char *file_name, int line_number)

@@ -204,6 +204,7 @@ bool operation_returns_Boolean_result(operation_type type) {
 		break;
 	}
 	return returns_Boolean;
+#undef OP
 }
 
 #undef OPERATIONS
