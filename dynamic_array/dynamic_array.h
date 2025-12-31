@@ -13,8 +13,7 @@ extern "C" {
 
 typedef struct dynamic_array_type_
 {
-	size_t do_not_access_this_variable; /* for memory alignment purpose */
-	unsigned char do_not_access_this_array[4 * sizeof(size_t)];
+	size_t do_not_access_this[5];
 } dynamic_array_type_;
 
 /* This macro is only for annotation. */

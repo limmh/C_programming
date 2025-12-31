@@ -2,7 +2,6 @@
 #include "Boolean_type.h"
 #include "macro_alignof.h"
 #include "safer_fixed_width_integers.h"
-
 #include <iso646.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +13,7 @@
 - Avoid changing size variables from size_t to a signed integer type
 */
 
-typedef struct {
+typedef struct dynamic_array_internal_type {
 	size_t capacity;
 	size_t number_of_elements;
 	size_t element_size; /* number of bytes of each element */
@@ -22,20 +21,13 @@ typedef struct {
 	dynamic_array_allocator_type *allocator; /* must have a longer lifetime than the dynamic array */
 } dynamic_array_internal_type;
 
-STATIC_ASSERT(sizeof(unsigned char) == 1U, "The size of a byte must be one.");
 STATIC_ASSERT(sizeof(size_t) == sizeof(void*), "size_t and pointer type must have the same size.");
 STATIC_ASSERT(sizeof(dynamic_array_type_) == sizeof(dynamic_array_internal_type), "The public data type and the internal data type must have the same size.");
 STATIC_ASSERT(ALIGNOF(dynamic_array_type_) == ALIGNOF(dynamic_array_internal_type), "The public data type and the internal data type must have the same memory alignment.");
 
 static dynamic_array_allocator_type default_allocator = {&malloc, &realloc, &free};
 
-static void dynamic_array_report_error_default(dynamic_array_debug_info_type);
-static void (*s_report_error_funcptr)(dynamic_array_debug_info_type) = &dynamic_array_report_error_default;
-static void (*s_exception_handler_funcptr)(dynamic_array_error_type) = NULL;
-
-static void dynamic_array_report_error_default(
-	dynamic_array_debug_info_type debug_info
-)
+static void dynamic_array_report_error_default(dynamic_array_debug_info_type debug_info)
 {
 	FILE *output = stdout;
 	const char *file_name = (debug_info.file_name != NULL) ? debug_info.file_name : "Unknown file name";
@@ -99,16 +91,16 @@ static void dynamic_array_report_error_default(
 	}
 }
 
-static void dynamic_array_report_error(
-	dynamic_array_debug_info_type debug_info
-)
+static void (*s_report_error_funcptr)(dynamic_array_debug_info_type) = &dynamic_array_report_error_default;
+
+static void dynamic_array_report_error(dynamic_array_debug_info_type debug_info)
 {
 	if (s_report_error_funcptr != NULL) {
 		s_report_error_funcptr(debug_info);
-	} else {
-		dynamic_array_report_error_default(debug_info);
 	}
 }
+
+static void (*s_exception_handler_funcptr)(dynamic_array_error_type) = NULL;
 
 static void dynamic_array_handle_exception(dynamic_array_error_type error)
 {
