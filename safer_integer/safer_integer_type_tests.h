@@ -6,8 +6,10 @@
 #include "Boolean_type.h"
 #include "static_assert.h"
 #include "unit_testing.h"
+#include <errno.h>
 #include <iso646.h>
 #include <stdio.h>
+#include <string.h>
 
 #define LINE __LINE__
 
@@ -51,6 +53,36 @@ static FILE *output_file = NULL;
 static const Boolean_type safer_integer_type_exception_thrown = Boolean_true;
 
 /* Property tests */
+TEST(safer_integer_is_builtin_integer_type_tests, "Tests for safer_integer::is_builtin_integer_type<T>::value")
+{
+#ifdef __cplusplus
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<bool>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<char>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<signed char>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<unsigned char>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<short>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<unsigned short>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<int>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<unsigned int>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<long>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<unsigned long>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<long long>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<unsigned long long>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<ptrdiff_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<size_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<int8_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<uint8_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<int16_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<uint16_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<int32_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<uint32_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<int64_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<uint64_t>::value, Boolean_true);
+#else
+	fprintf(output_file, "The tests are only for C++.\n");
+#endif
+}
+
 TEST(safer_integer_type_signedness_tests, "Safer integer type signedness tests")
 {
 	ASSERT(not SAFER_BOOL_TYPE_IS_SIGNED);
@@ -5646,7 +5678,7 @@ TEST(safer_integer_type_logical_not_tests, "safer integer type logical NOT tests
 	}
 }
 
-static void run_safer_integer_type_tests(void)
+static void run_safer_integer_type_tests(int argc, const char **argv)
 {
 	const char *language = 
 #ifdef __cplusplus
@@ -5656,6 +5688,7 @@ static void run_safer_integer_type_tests(void)
 #endif
 		;
 	DEFINE_LIST_OF_TESTS(tests) {
+		safer_integer_is_builtin_integer_type_tests,
 		safer_integer_type_signedness_tests,
 		safer_integer_type_min_max_tests,
 		safer_integer_type_uninitialized_variable_tests,
@@ -5748,11 +5781,24 @@ static void run_safer_integer_type_tests(void)
 		safer_integer_type_logical_not_tests
 	};
 
-	output_file = stdout;
-	fprintf(output_file, "%s\n", __FILE__);
-	fprintf(output_file, "The tests were compiled as %s code.\n", language);
-	RUN_TESTS(tests);
-	PRINT_TEST_STATISTICS(tests);
+	if (argc >= 2 && argv != NULL && argv[1] != NULL) {
+		output_file = fopen(argv[1], "w");
+	} else {
+		output_file = stdout;
+	}
+
+	if (output_file != NULL) {
+		SET_OUTPUT_FILE(output_file);
+#ifdef __cplusplus
+		safer_integer::set_output_file_pointer(output_file);
+#endif
+		fprintf(output_file, "%s\n", __FILE__);
+		fprintf(output_file, "The tests were compiled as %s code.\n", language);
+		RUN_TESTS(tests);
+		PRINT_TEST_STATISTICS(tests);
+	} else {
+		printf("%s\n", strerror(errno));
+	}
 }
 
 #undef LINE

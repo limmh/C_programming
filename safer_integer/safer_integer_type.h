@@ -5,74 +5,73 @@
 #include <limits.h>
 
 /*
-The purpose of the header file is to provide an generic emulated integer type implemented and user-friendly
-safer integer types which support integer operation diagnostics. The safer integer types themselves DO NOT
-automatically guarantee integer safety, but using them can allow us to switch between built-in integer types and
-safer integer types easily.
+The purpose of the header file is to provide a generic emulated integer type and user-friendly safer integer types
+which support integer operation diagnostics. The safer integer types themselves DO NOT automatically guarantee integer
+safety, but they allow us to switch between built-in integer types and safer integer types easily.
 
-Runtime checks are only possible for C++, so if the header file is included by a C source file, each safer integer type
-is a built-in integer type. However, if the C file can be compiled as C++, then integer arithmetic operations in the file can be verified
-with proper tests. Hence, the safer integer types can be used in unit tests or runtime tests to detect integer issues.
+Runtime checks are only possible for C++, so if the header file is included by a C source file, each safer integer type is a
+built-in integer type. If the C file can be compiled as C++, then the integer arithmetic operations in the file can be
+verified with proper tests. Hence, the safer integer types can be used in unit tests or runtime tests to detect integer issues.
 
-Emulated integer type: safer_integer::integer_type<native_integer_type>
+Emulated integer type: safer_integer::integer_type<T>, where T is a built-in integer type
 User-friendly safer integer types:
-- safer_bool_type: represents bool
-- safer_char_type: represents char
-- safer_schar_type: represents signed char
-- safer_uchar_type: represents unsigned char
-- safer_short_type: represents short
-- safer_ushort_type: represents unsigned short
-- safer_int_type: represents int
-- safer_uint_type: represents unsigned int
-- safer_long_type: represents long
-- safer_ulong_type: represents unsigned long
-- safer_llong_type: represents long long
-- safer_ullong_type: represents unsigned long long
-- safer_ptrdiff_type: represents ptrdiff_t
-- safer_size_type: represents size_t
-- safer_int8_type: represents int8_t
-- safer_uint8_type: represents uint8_t
-- safer_int16_type: represents int16_t
-- safer_uint16_type: represents uint16_t
-- safer_int32_type: represents int32_t
-- safer_uint32_type: represents uint32_t
-- safer_int64_type: represents int64_t
-- safer_uint64_type: represents uint64_t
+safer_bool_type    : represents bool
+safer_char_type    : represents char
+safer_schar_type   : represents signed char
+safer_uchar_type   : represents unsigned char
+safer_short_type   : represents short
+safer_ushort_type  : represents unsigned short
+safer_int_type     : represents int
+safer_uint_type    : represents unsigned int
+safer_long_type    : represents long
+safer_ulong_type   : represents unsigned long
+safer_llong_type   : represents long long
+safer_ullong_type  : represents unsigned long long
+safer_ptrdiff_type : represents ptrdiff_t
+safer_size_type    : represents size_t
+safer_int8_type    : represents int8_t
+safer_uint8_type   : represents uint8_t
+safer_int16_type   : represents int16_t
+safer_uint16_type  : represents uint16_t
+safer_int32_type   : represents int32_t
+safer_uint32_type  : represents uint32_t
+safer_int64_type   : represents int64_t
+safer_uint64_type  : represents uint64_t
 
 If the header is included by a C source file, each safer integer type will be its corresponding native integer type.
 If the header is included by a C++ source file, each safer integer type will be safer_integer::integer_type<T>,
-where T is the corresponding native type.
+where T is the corresponding native integer type.
 
 How to configure the header file?
 
 Compiler switches and their meanings
 ------------------------------------
-The following compiler switches are not applicable to C++ source files.
-SAFER_INTEGER_TYPE_USE_BUILTIN_INTEGER_TYPES: The user-friendly integer types will become native integer types.
-SAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO: Source file information will be stored, will increase the size of integer_type<T>
-SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_FOR_UNINITIALIZED_VARIABLES: Safer integers will throw an exception when an instance is uninitialized
-SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_CONVERSION_ERRORS: Safer integers will throw an exception when a conversion error is detected.
-SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_OPERATION_ERRORS: Safer integers will thrown an exception when an arithmetic operation error is detected.
-SAFER_INTEGER_TYPE_APPLY_SATURATED_RESULTS: The default result policy will apply saturated results for arithmetic operations (+,-,*,/)
-SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_CONVERSION_ERRORS: Error reporting for conversion errors will be disabled
-SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_OPERATION_ERRORS: Error reporting for operation errors will be disabled
-SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_UNINITIALIZED_VARIABLES: Error reporting for uninitialized safer integer variables will be disabled
+The following compiler switches are applicable to C++ source files.
 
-By default, the compiler switches above are not defined, integer_type<T> will have the same size as T.
+SAFER_INTEGER_TYPE_USE_BUILTIN_INTEGER_TYPES                              : The user-friendly integer types will become native integer types.
+SAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO                               : Source file information will be stored, but will increase the size of integer_type<T>.
+SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_FOR_UNINITIALIZED_VARIABLES : A safer integer will throw an exception when it is uninitialized.
+SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_CONVERSION_ERRORS        : A safer integer will throw an exception when it detects a conversion error.
+SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_OPERATION_ERRORS         : A safer integer will throw an exception when it detects an arithmetic operation error.
+SAFER_INTEGER_TYPE_APPLY_SATURATED_RESULTS                                : The default result policy will apply saturated results for arithmetic operations (+,-,*,/).
+SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_CONVERSION_ERRORS                : Error reporting for conversion errors will be disabled.
+SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_OPERATION_ERRORS                 : Error reporting for operation errors will be disabled.
+SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_UNINITIALIZED_VARIABLES          : Error reporting for uninitialized safer integer variables will be disabled.
+
+By default, the compiler switches above are not defined, and integer_type<T> will have the same size as T.
 
 When source file information is included by defining SAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO before header file inclusion,
-each safer integer will store additional information related to the source file that defines safer integer variables.
-Before C++20, DECLARE_SAFER_INTEGER(type, name) or DEFINE_SAFER_INTEGER(type, name, value) needs to be used when defining a safer integer variable
-if source file information (the path or name of source file and the line number where the variable is defined) needs to be stored
-because it is not possible for overloaded operators to have extra parameters with default arguments.
-Constructors can have multiple parameters, so each constructor has an optional parameter with default argument related to source file information.
-If variable information is available, it will be included during error reporting.
-Since it is not possible to inject source file information at overloaded operator function call sites, the exact line number cannot be reported.
-This is a limitation.
+each safer integer will store source file information, so the size of each safer integer will be larger than the size of the integer type it represents.
+Before C++20, if source file information (the path or name of source file and the line number where the variable is defined) needs to be stored,
+DECLARE_SAFER_INTEGER(type, name) or DEFINE_SAFER_INTEGER(type, name, value) has to be used when declaring or defining a safer integer variable
+because it is not possible for each overloaded operator to have extra parameters with default arguments.
+When source file information is included, each constructor will have an optional parameter with default argument related to source file information.
+If variable information is available, it will be included during error reporting. Since it is not possible to inject source file information at
+overloaded operator function call sites, the exact line number cannot be reported. This is a limitation.
 
 Runtime exceptions are disabled by default. They can be enabled by defining the relevant compiler switches.
-There are three groups of errors: uninitialized variables, conversion errors and operation errors (for unary and binary operations).
-The runtime exception for each group can be enabled or disabled separately.
+There are three groups of errors: uninitialized variables, conversion errors (for construction and assignment operations) and operation errors
+(for unary and binary operations). The runtime exception for each group can be enabled or disabled separately.
 Error reporting is enabled by default. Errors are reported to stderr by default and the output file pointer can be changed programmatically
 by calling safer_integer::set_output_file_pointer(FILE*) in your application code.
 */
