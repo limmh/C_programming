@@ -6,7 +6,7 @@ set(LIBRARY_C_STANDARD "90")
 
 if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang|IntelLLVM|XLClang|IBMClang")
 	set(COMPILER_SUPPORTS_GNU_COMPILER_FLAGS YES)
-	set(CUSTOM_C_FLAGS "-Wall -Wconversion -Wextra -Wpedantic -Wno-long-long -Wno-unused-function -Wno-unused-local-typedefs")
+	set(CUSTOM_C_FLAGS "-O2 -fstrict-aliasing -Wall -Wconversion -Wextra -Wpedantic -Wno-long-long -Wno-unused-function -Wno-unused-local-typedefs")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CUSTOM_C_FLAGS}")
 	set(PROGRAM_C_STANDARD "99")
 elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
