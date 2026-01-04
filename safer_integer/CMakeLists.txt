@@ -399,6 +399,146 @@ target_link_libraries(
 )
 
 add_executable(
+	safer_integer_type_tests_cpp98
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type.h"
+)
+set_target_properties(
+	safer_integer_type_tests_cpp98 PROPERTIES
+	CXX_STANDARD 98
+	CXX_STANDARD_REQUIRED YES
+	CXX_EXTENSIONS YES
+)
+target_include_directories(
+	safer_integer_type_tests_cpp98 PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+target_compile_options(
+	safer_integer_type_tests_cpp98 PRIVATE
+	-DSAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_FOR_UNINITIALIZED_VARIABLES
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_CONVERSION_ERRORS
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_OPERATION_ERRORS
+)
+target_compile_options(
+	safer_integer_type_tests_cpp98 PRIVATE
+	$<$<CXX_COMPILER_ID:MSVC>:/permissive- /Zc:__cplusplus>
+)
+target_link_libraries(
+	safer_integer_type_tests_cpp98
+	terminal_text_color
+	unit_testing
+)
+
+add_executable(
+	safer_integer_type_tests_cpp11
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type.h"
+)
+set_target_properties(
+	safer_integer_type_tests_cpp11 PROPERTIES
+	CXX_STANDARD 11
+	CXX_STANDARD_REQUIRED YES
+	CXX_EXTENSIONS NO
+)
+target_include_directories(
+	safer_integer_type_tests_cpp11 PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+target_compile_options(
+	safer_integer_type_tests_cpp11 PRIVATE
+	-DSAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_FOR_UNINITIALIZED_VARIABLES
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_CONVERSION_ERRORS
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_OPERATION_ERRORS
+)
+target_compile_options(
+	safer_integer_type_tests_cpp11 PRIVATE
+	$<$<CXX_COMPILER_ID:MSVC>:/permissive- /Zc:__cplusplus>
+)
+target_link_libraries(
+	safer_integer_type_tests_cpp11
+	terminal_text_color
+	unit_testing
+)
+
+add_executable(
+	safer_integer_type_tests_cpp14
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type.h"
+)
+set_target_properties(
+	safer_integer_type_tests_cpp14 PROPERTIES
+	CXX_STANDARD 14
+	CXX_STANDARD_REQUIRED YES
+	CXX_EXTENSIONS NO
+)
+target_include_directories(
+	safer_integer_type_tests_cpp14 PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+target_compile_options(
+	safer_integer_type_tests_cpp14 PRIVATE
+	-DSAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_FOR_UNINITIALIZED_VARIABLES
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_CONVERSION_ERRORS
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_OPERATION_ERRORS
+)
+target_compile_options(
+	safer_integer_type_tests_cpp14 PRIVATE
+	$<$<CXX_COMPILER_ID:MSVC>:/permissive- /Zc:__cplusplus>
+)
+target_link_libraries(
+	safer_integer_type_tests_cpp14
+	terminal_text_color
+	unit_testing
+)
+
+add_executable(
+	safer_integer_type_tests_cpp17
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type.h"
+)
+set_target_properties(
+	safer_integer_type_tests_cpp17 PROPERTIES
+	CXX_STANDARD 17
+	CXX_STANDARD_REQUIRED YES
+	CXX_EXTENSIONS NO
+)
+target_include_directories(
+	safer_integer_type_tests_cpp17 PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+target_compile_options(
+	safer_integer_type_tests_cpp17 PRIVATE
+	-DSAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_FOR_UNINITIALIZED_VARIABLES
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_CONVERSION_ERRORS
+	-DSAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_OPERATION_ERRORS
+)
+target_compile_options(
+	safer_integer_type_tests_cpp17 PRIVATE
+	$<$<CXX_COMPILER_ID:MSVC>:/permissive- /Zc:__cplusplus>
+)
+target_link_libraries(
+	safer_integer_type_tests_cpp17
+	terminal_text_color
+	unit_testing
+)
+
+add_executable(
 	safer_integer_type_tests_no_source_info
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_type_tests.h"

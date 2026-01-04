@@ -97,8 +97,10 @@ by calling safer_integer::set_output_file_pointer(FILE*) in your application cod
 
 #if defined(__cplusplus)
 
+#include "safer_integer_util.h"
 #include "static_assert.h"
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <limits>
@@ -285,8 +287,7 @@ struct debug_info_type {
 	}
 };
 
-// Default Integer Policy
-struct DIP {
+struct default_integer_policy {
 	typedef bool bool_type;
 	typedef char char_type;
 	typedef signed char schar_type;
@@ -304,216 +305,216 @@ struct DIP {
 };
 
 // Default Promotion Policy - must be specialized for all possible combinations of two integer types, except for ptrdiff_type and size_type because they are typedefs
-template<typename T1, typename T2> struct DPP;
+template<typename T1, typename T2> struct default_promotion_policy;
 
-template<> struct DPP<DIP::bool_type, DIP::bool_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::bool_type, DIP::char_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::bool_type, DIP::schar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::bool_type, DIP::uchar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::bool_type, DIP::short_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::bool_type, DIP::ushort_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::bool_type, DIP::int_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::bool_type, DIP::uint_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::bool_type, DIP::long_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::bool_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::bool_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::char_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::schar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::uchar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::short_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::ushort_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::int_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::uint_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 
-template<> struct DPP<DIP::char_type, DIP::bool_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::char_type, DIP::char_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::char_type, DIP::schar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::char_type, DIP::uchar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::char_type, DIP::short_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::char_type, DIP::ushort_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::char_type, DIP::int_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::char_type, DIP::uint_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::char_type, DIP::long_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::char_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::bool_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::char_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::schar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::uchar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::short_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::ushort_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::int_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::uint_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 
-template<> struct DPP<DIP::schar_type, DIP::bool_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::schar_type, DIP::char_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::schar_type, DIP::schar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::schar_type, DIP::uchar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::schar_type, DIP::short_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::schar_type, DIP::ushort_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::schar_type, DIP::int_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::schar_type, DIP::uint_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::schar_type, DIP::long_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::schar_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::bool_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::char_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::schar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::uchar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::short_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::ushort_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::int_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::uint_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 
-template<> struct DPP<DIP::uchar_type, DIP::bool_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::char_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::schar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::uchar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::short_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::ushort_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::int_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::uint_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::long_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::bool_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::char_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::schar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::uchar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::short_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::ushort_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::int_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::uint_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 
-template<> struct DPP<DIP::short_type, DIP::bool_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::short_type, DIP::char_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::short_type, DIP::schar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::short_type, DIP::uchar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::short_type, DIP::short_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::short_type, DIP::ushort_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::short_type, DIP::int_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::short_type, DIP::uint_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::short_type, DIP::long_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::short_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::bool_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::char_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::schar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::uchar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::short_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::ushort_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::int_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::uint_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 
 #if USHRT_MAX < INT_MAX
-template<> struct DPP<DIP::ushort_type, DIP::bool_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::char_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::schar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::uchar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::short_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::ushort_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::int_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::uint_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::long_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::bool_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::char_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::schar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::uchar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::short_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::ushort_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::int_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::uint_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 #elif (USHRT_MAX == UINT_MAX)
-template<> struct DPP<DIP::ushort_type, DIP::bool_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::char_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::schar_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::uchar_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::short_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::ushort_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::int_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::uint_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::long_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::bool_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::char_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::schar_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::uchar_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::short_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::ushort_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::int_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::uint_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 #else
 #pragma message("It seems that sizeof(unsigned short) is larger than sizeof(unsigned int).")
 #pragma message("Please check your compiler for more details.")
 #endif
 
-template<> struct DPP<DIP::int_type, DIP::bool_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::int_type, DIP::char_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::int_type, DIP::schar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::int_type, DIP::uchar_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::int_type, DIP::short_type> {typedef DIP::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::bool_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::char_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::schar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::uchar_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::short_type> {typedef default_integer_policy::int_type type;};
 #if USHRT_MAX < INT_MAX
-template<> struct DPP<DIP::int_type, DIP::ushort_type> {typedef DIP::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::ushort_type> {typedef default_integer_policy::int_type type;};
 #elif (USHRT_MAX == UINT_MAX)
-template<> struct DPP<DIP::int_type, DIP::ushort_type> {typedef DIP::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::ushort_type> {typedef default_integer_policy::uint_type type;};
 #else
 #pragma message("It seems that sizeof(unsigned short) is larger than sizeof(unsigned int).")
 #pragma message("Please check your compiler for more details.")
 #endif
-template<> struct DPP<DIP::int_type, DIP::int_type> {typedef DIP::int_type type;};
-template<> struct DPP<DIP::int_type, DIP::uint_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::int_type, DIP::long_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::int_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::int_type> {typedef default_integer_policy::int_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::uint_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 
-template<> struct DPP<DIP::uint_type, DIP::bool_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::uint_type, DIP::char_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::uint_type, DIP::schar_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::uint_type, DIP::uchar_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::uint_type, DIP::short_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::uint_type, DIP::ushort_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::uint_type, DIP::int_type> {typedef DIP::uint_type type;};
-template<> struct DPP<DIP::uint_type, DIP::uint_type> {typedef DIP::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::bool_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::char_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::schar_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::uchar_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::short_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::ushort_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::int_type> {typedef default_integer_policy::uint_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::uint_type> {typedef default_integer_policy::uint_type type;};
 #if UINT_MAX < LONG_MAX
-template<> struct DPP<DIP::uint_type, DIP::long_type> {typedef DIP::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
 #elif UINT_MAX == ULONG_MAX
-template<> struct DPP<DIP::uint_type, DIP::long_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::long_type> {typedef default_integer_policy::ulong_type type;};
 #else
 #pragma message("It seems that sizeof(unsigned int) is larger than sizeof(unsigned long).")
 #pragma message("Please check your compiler for more details.")
 #endif
-template<> struct DPP<DIP::uint_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 
-template<> struct DPP<DIP::long_type, DIP::bool_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::long_type, DIP::char_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::long_type, DIP::schar_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::long_type, DIP::uchar_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::long_type, DIP::short_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::long_type, DIP::ushort_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::long_type, DIP::int_type> {typedef DIP::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::bool_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::char_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::schar_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::uchar_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::short_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::ushort_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::int_type> {typedef default_integer_policy::long_type type;};
 #if UINT_MAX < LONG_MAX
-template<> struct DPP<DIP::long_type, DIP::uint_type> {typedef DIP::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::uint_type> {typedef default_integer_policy::long_type type;};
 #elif UINT_MAX == ULONG_MAX
-template<> struct DPP<DIP::long_type, DIP::uint_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::uint_type> {typedef default_integer_policy::ulong_type type;};
 #else
 #pragma message("It seems that sizeof(unsigned int) is larger than sizeof(unsigned long).")
 #pragma message("Please check your compiler for more details.")
 #endif
-template<> struct DPP<DIP::long_type, DIP::long_type> {typedef DIP::long_type type;};
-template<> struct DPP<DIP::long_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::long_type> {typedef default_integer_policy::long_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 
-template<> struct DPP<DIP::ulong_type, DIP::bool_type> {typedef DIP::ulong_type type;};
-template<> struct DPP<DIP::ulong_type, DIP::char_type> {typedef DIP::ulong_type type;};
-template<> struct DPP<DIP::ulong_type, DIP::schar_type> {typedef DIP::ulong_type type;};
-template<> struct DPP<DIP::ulong_type, DIP::uchar_type> {typedef DIP::ulong_type type;};
-template<> struct DPP<DIP::ulong_type, DIP::short_type> {typedef DIP::ulong_type type;};
-template<> struct DPP<DIP::ulong_type, DIP::ushort_type> {typedef DIP::ulong_type type;};
-template<> struct DPP<DIP::ulong_type, DIP::int_type> {typedef DIP::ulong_type type;};
-template<> struct DPP<DIP::ulong_type, DIP::uint_type> {typedef DIP::ulong_type type;};
-template<> struct DPP<DIP::ulong_type, DIP::long_type> {typedef DIP::ulong_type type;};
-template<> struct DPP<DIP::ulong_type, DIP::ulong_type> {typedef DIP::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::bool_type> {typedef default_integer_policy::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::char_type> {typedef default_integer_policy::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::schar_type> {typedef default_integer_policy::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::uchar_type> {typedef default_integer_policy::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::short_type> {typedef default_integer_policy::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::ushort_type> {typedef default_integer_policy::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::int_type> {typedef default_integer_policy::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::uint_type> {typedef default_integer_policy::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::long_type> {typedef default_integer_policy::ulong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ulong_type type;};
 
 #if defined(LLONG_MIN) && defined(LLONG_MAX) && defined(ULLONG_MAX)
-template<> struct DPP<DIP::bool_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::bool_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::char_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::char_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::schar_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::schar_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::uchar_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::short_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::short_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::ushort_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::int_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::int_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::uint_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::uint_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::long_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::long_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::bool_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::char_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::schar_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uchar_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::short_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ushort_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::int_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::uint_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::long_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
 #if ULONG_MAX < LLONG_MAX
-template<> struct DPP<DIP::ulong_type, DIP::llong_type> {typedef DIP::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
 #elif ULONG_MAX == ULLONG_MAX
-template<> struct DPP<DIP::ulong_type, DIP::llong_type> {typedef DIP::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::llong_type> {typedef default_integer_policy::ullong_type type;};
 #else
 #pragma message("It seems that sizeof(unsigned long) is larger than sizeof(unsigned long long).")
 #pragma message("Please check your compiler for more details.")
 #endif
-template<> struct DPP<DIP::ulong_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ulong_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
 
-template<> struct DPP<DIP::llong_type, DIP::bool_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::llong_type, DIP::char_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::llong_type, DIP::schar_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::llong_type, DIP::uchar_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::llong_type, DIP::short_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::llong_type, DIP::ushort_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::llong_type, DIP::int_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::llong_type, DIP::uint_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::llong_type, DIP::long_type> {typedef DIP::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::bool_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::char_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::schar_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::uchar_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::short_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::ushort_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::int_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::uint_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::long_type> {typedef default_integer_policy::llong_type type;};
 #if ULONG_MAX < LLONG_MAX
-template<> struct DPP<DIP::llong_type, DIP::ulong_type> {typedef DIP::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::ulong_type> {typedef default_integer_policy::llong_type type;};
 #elif ULONG_MAX == ULLONG_MAX
-template<> struct DPP<DIP::llong_type, DIP::ulong_type> {typedef DIP::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ullong_type type;};
 #else
 #pragma message("It seems that sizeof(unsigned long) is larger than sizeof(unsigned long long).")
 #pragma message("Please check your compiler for more details.")
 #endif
-template<> struct DPP<DIP::llong_type, DIP::llong_type> {typedef DIP::llong_type type;};
-template<> struct DPP<DIP::llong_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::llong_type> {typedef default_integer_policy::llong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::llong_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
 
-template<> struct DPP<DIP::ullong_type, DIP::bool_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::char_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::schar_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::uchar_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::short_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::ushort_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::int_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::uint_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::long_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::ulong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::llong_type> {typedef DIP::ullong_type type;};
-template<> struct DPP<DIP::ullong_type, DIP::ullong_type> {typedef DIP::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::bool_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::char_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::schar_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::uchar_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::short_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::ushort_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::int_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::uint_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::long_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::ulong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::llong_type> {typedef default_integer_policy::ullong_type type;};
+template<> struct default_promotion_policy<default_integer_policy::ullong_type, default_integer_policy::ullong_type> {typedef default_integer_policy::ullong_type type;};
 #endif
 
 static
@@ -528,10 +529,100 @@ static FILE *set_output_file_pointer(FILE *file_pointer) {
 	return previous_file_pointer;
 }
 
-// Default Error Policy - must provide a static member function called handle_error
-template<typename T1, typename T2, typename result_type>
-struct DEP {
-	static void handle_error(const debug_info_type<T1, T2, result_type>& debug_info) {
+static FILE *get_output_file_pointer() {
+	return output_file_pointer;
+}
+
+// Default Error Policy
+struct default_error_policy {
+	template<typename value_type>
+	static void handle_uninitialized_value_error(value_type default_value) {
+#ifndef SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_UNINITIALIZED_VARIABLES
+	FILE* file_pointer = get_output_file_pointer();
+	if (file_pointer != NULL) {
+		typedef long long llong_type;
+		typedef unsigned long long ullong_type;
+		typedef std::numeric_limits<value_type> type_info;
+		if (type_info::is_signed) {
+			fprintf(file_pointer, "The safer integer variable is initialized to %lld. A built-in integer will not be initialized.\n",
+				static_cast<llong_type>(default_value));
+		} else {
+			fprintf(file_pointer, "The safer integer variable is initialized to %llu. A built-in integer will not be initialized.\n",
+				static_cast<ullong_type>(default_value));
+		}
+	}
+#endif
+	// do not throw an exception if you want the integer to be used in a container
+#ifdef SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_FOR_UNINITIALIZED_VARIABLES
+	throw std::runtime_error("An uninitialized integer variable is detected.");
+#endif
+	}
+
+	template<typename src_type, typename dst_type>
+	static void handle_conversion_error(src_type src, dst_type dst) {
+		typedef long long llong_type;
+		typedef unsigned long long ullong_type;
+		typedef std::numeric_limits<src_type> src_type_info;
+		typedef std::numeric_limits<dst_type> dst_type_info;
+#ifndef SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_CONVERSION_ERRORS
+		FILE* file_pointer = get_output_file_pointer();
+		if (file_pointer != NULL) {
+			const src_type src_min = src_type_info::min();
+			const src_type src_max = src_type_info::max();
+			const dst_type dst_min = dst_type_info::min();
+			const dst_type dst_max = dst_type_info::max();
+			if (src_type_info::is_exact and dst_type_info::is_exact) {
+				if (src_type_info::is_signed) {
+					if (dst_type_info::is_signed)
+						fprintf(file_pointer, "Truncation error: %lld [signed, %d-byte, min: %lld, max: %lld] -> %lld [signed, %d-byte, min: %lld, max: %lld]\n",
+							static_cast<llong_type>(src), static_cast<int>(sizeof(src)), static_cast<llong_type>(src_min), static_cast<llong_type>(src_max),
+							static_cast<llong_type>(dst), static_cast<int>(sizeof(dst)), static_cast<llong_type>(dst_min), static_cast<llong_type>(dst_max));
+					else
+						fprintf(file_pointer, "Signedness error: %lld [signed, %d-byte, min: %lld, max: %lld] -> %llu [unsigned, %d-byte, min: %llu, max: %llu]\n",
+							static_cast<llong_type>(src), static_cast<int>(sizeof(src)), static_cast<llong_type>(src_min), static_cast<llong_type>(src_max),
+							static_cast<ullong_type>(dst), static_cast<int>(sizeof(dst)), static_cast<ullong_type>(dst_min), static_cast<ullong_type>(dst_max));
+				} else {
+					if (dst_type_info::is_signed)
+						fprintf(file_pointer, "Signedness error: %llu [unsigned, %d-byte, min: %llu, max: %llu] -> %lld [signed, %d-byte, min: %lld, max: %lld]\n",
+							static_cast<ullong_type>(src), static_cast<int>(sizeof(src)), static_cast<ullong_type>(src_min), static_cast<ullong_type>(src_max),
+							static_cast<llong_type>(dst), static_cast<int>(sizeof(dst)), static_cast<llong_type>(dst_min), static_cast<llong_type>(dst_max));
+					else
+						fprintf(file_pointer, "Truncation error: %llu [unsigned, %d-byte, min: %llu, max: %llu] -> %llu [unsigned, %d-byte, min: %llu, max: %llu]\n",
+							static_cast<ullong_type>(src), static_cast<int>(sizeof(src)), static_cast<ullong_type>(src_min), static_cast<ullong_type>(src_max),
+							static_cast<ullong_type>(dst), static_cast<int>(sizeof(dst)), static_cast<ullong_type>(dst_min), static_cast<ullong_type>(dst_max));
+				}
+			} else if (src_type_info::is_exact and not dst_type_info::is_exact) {
+				if (src_type_info::is_signed)
+					fprintf(file_pointer, "Conversion warning: %lld [signed, %d-byte, min: %lld, max: %lld] -> %Lg [approximate, %d-byte, min: %Lg, max: %Lg]\n",
+						static_cast<llong_type>(src), static_cast<int>(sizeof(src)), static_cast<llong_type>(src_min), static_cast<llong_type>(src_max),
+						static_cast<long double>(dst), static_cast<int>(sizeof(dst)), static_cast<long double>(dst_min), static_cast<long double>(dst_max));
+				else
+					fprintf(file_pointer, "Conversion warning: %llu [unsigned, %d-byte, min: %llu, max: %llu] -> %Lg [approximate, %d-byte, min: %Lg, max: %Lg]\n",
+						static_cast<ullong_type>(src), static_cast<int>(sizeof(src)), static_cast<ullong_type>(src_min), static_cast<ullong_type>(src_max),
+						static_cast<long double>(dst), static_cast<int>(sizeof(dst)), static_cast<long double>(dst_min), static_cast<long double>(dst_max));
+			} else if (not src_type_info::is_exact and dst_type_info::is_exact) {
+				if (dst_type_info::is_signed)
+					fprintf(file_pointer, "Conversion warning: %Lg [approximate, %d-byte, min: %Lg, max: %Lg] -> %lld [signed, %d-byte, min: %lld, max: %lld]\n",
+						static_cast<long double>(src), static_cast<int>(sizeof(src)), static_cast<long double>(src_min), static_cast<long double>(src_max),
+						static_cast<llong_type>(dst), static_cast<int>(sizeof(dst)), static_cast<llong_type>(dst_min), static_cast<llong_type>(dst_max));
+				else
+					fprintf(file_pointer, "Conversion warning: %Lg [approximate, %d-byte, min: %Lg, max: %Lg] -> %llu [unsigned, %d-byte, min: %llu, max: %llu]\n",
+						static_cast<long double>(src), static_cast<int>(sizeof(src)), static_cast<long double>(src_min), static_cast<long double>(src_max),
+						static_cast<ullong_type>(dst), static_cast<int>(sizeof(dst)), static_cast<ullong_type>(dst_min), static_cast<ullong_type>(dst_max));
+			} else {
+				fprintf(file_pointer, "Conversion warning: %Lg [approximate, %d-byte, min: %Lg, max: %Lg] -> %Lg [approximate, %d-byte, min: %Lg, max: %Lg\n",
+					static_cast<long double>(src), static_cast<int>(sizeof(src)), static_cast<long double>(src_min), static_cast<long double>(src_max),
+					static_cast<long double>(dst), static_cast<int>(sizeof(dst)), static_cast<long double>(dst_min), static_cast<long double>(dst_max));
+			}
+		}
+#endif
+#ifdef SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_CONVERSION_ERRORS
+		throw std::runtime_error("An integer truncation or signedness error is detected.");
+#endif
+	}
+
+	template<typename T1, typename T2, typename result_type>
+	static void handle_operation_error(const debug_info_type<T1, T2, result_type>& debug_info) {
 #ifndef SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_OPERATION_ERRORS
 		typedef long long llong_type;
 		typedef unsigned long long ullong_type;
@@ -541,7 +632,7 @@ struct DEP {
 		const result_type min_result = result_type_info::min();
 		const result_type max_result = result_type_info::max();
 
-		FILE *file_pointer = output_file_pointer;
+		FILE *file_pointer = get_output_file_pointer();
 		if (debug_info.error != operation_error_none and file_pointer != NULL) {
 			assert(debug_info.file_path != NULL);
 			assert(debug_info.line_number > 0);
@@ -664,7 +755,7 @@ template<> struct to_unsigned_type<unsigned long long> {typedef unsigned long lo
 
 // Default Result Policy - must provide a static member function called calculate_result
 template<typename T1, typename T2, typename result_type>
-struct DRP {
+struct default_result_policy {
 	static result_type calculate_result(operation_type operation, operation_error_type error, T1 operand_1, T2 operand_2) {
 #ifdef SAFER_INTEGER_TYPE_APPLY_SATURATED_RESULTS
 		const result_type min_result = std::numeric_limits<result_type>::min();
@@ -1140,29 +1231,104 @@ operation_error_type check_right_shift_operation(T1 lhs, T2 rhs) {
 	return error;
 }
 
+inline int64_t signed_integer_power(int8_t base, uint8_t exponent) {
+	int64_t result = 1;
+	for (size_t i = 0U; i < exponent; ++i) {
+		SAFER_INTEGER_ASSERT(check_signed_multiplication<int64_t>(result, base) == operation_error_none);
+		result *= base;
+	}
+	return result;
+}
+
+inline uint64_t unsigned_integer_power(uint8_t base, uint8_t exponent) {
+	uint64_t result = 1U;
+	for (size_t i = 0U; i < exponent; ++i) {
+		SAFER_INTEGER_ASSERT(check_unsigned_multiplication<uint64_t>(result, base) == operation_error_none);
+		result *= base;
+	}
+	return result;
+}
+
+template<typename number_type>
+struct number_parts_type {
+	number_type integer_part;
+	number_type fractional_part;
+	STATIC_ASSERT(std::numeric_limits<number_type>::is_specialized, "The type number_type must be a numeric type.");
+};
+
+template<typename integer_type>
+number_parts_type<integer_type> split_number_into_integer_and_fractional_parts(integer_type number) {
+	STATIC_ASSERT(std::numeric_limits<integer_type>::is_integer, "The type integer_type must be an integer type.");
+	number_parts_type<integer_type> result = {number, 0};
+	return result;
+}
+
+template<> number_parts_type<float> split_number_into_integer_and_fractional_parts<float>(float number) {
+	number_parts_type<float> result = {};
+	result.fractional_part = std::modf(number, &result.integer_part);
+	return result;
+}
+
+template<> number_parts_type<double> split_number_into_integer_and_fractional_parts<double>(double number) {
+	number_parts_type<double> result = {};
+	result.fractional_part = std::modf(number, &result.integer_part);
+	return result;
+}
+
+template<> number_parts_type<long double> split_number_into_integer_and_fractional_parts<long double>(long double number) {
+	number_parts_type<long double> result = {};
+	result.fractional_part = std::modf(number, &result.integer_part);
+	return result;
+}
+
 template<typename dst_type, typename src_type>
-bool can_cast_properly(src_type src_integer)
+bool can_cast_properly(src_type src)
 {
 	typedef std::numeric_limits<dst_type> dst_type_info;
 	typedef std::numeric_limits<src_type> src_type_info;
-	STATIC_ASSERT(dst_type_info::is_integer, "The destination type must be an integer type.");
-	STATIC_ASSERT(src_type_info::is_integer, "The source type must be an integer type.");
+	STATIC_ASSERT(dst_type_info::is_specialized, "The destination type is NOT supported.");
+	STATIC_ASSERT(src_type_info::is_specialized, "The source type is NOT supported.");
 	const dst_type dst_min = dst_type_info::min();
 	const dst_type dst_max = dst_type_info::max();
 	bool result = false;
-	if (dst_type_info::is_signed) {
-		if (src_type_info::is_signed) {
-			result = (src_integer >= dst_min) and (src_integer <= dst_max);
+	if (dst_type_info::is_exact and src_type_info::is_exact) {
+		if (dst_type_info::is_signed) {
+			if (src_type_info::is_signed) {
+				result = (src >= dst_min) and (src <= dst_max);
+			} else {
+				result = (src <= dst_max);
+			}
 		} else {
-			result = (src_integer <= dst_max);
+			assert(dst_min == 0);
+			if (src_type_info::is_signed) {
+				result = (src >= 0) and (src <= dst_max);
+			} else {
+				result = (src <= dst_max);
+			}
+		}
+	} else if (dst_type_info::is_exact and not src_type_info::is_exact) {
+		const number_parts_type<src_type> number_parts = split_number_into_integer_and_fractional_parts(src);
+		const bool fractional_part_is_zero = (number_parts.fractional_part == 0.0);
+		result = fractional_part_is_zero and (number_parts.integer_part >= dst_min) and (number_parts.integer_part <= dst_max);
+	} else if (not dst_type_info::is_exact and src_type_info::is_exact) {
+		assert(dst_type_info::digits >= 0 && src_type_info::digits <= UINT8_MAX);
+		assert(dst_type_info::radix == src_type_info::radix);
+		const int exponent = dst_type_info::digits;
+		const int src_digits = src_type_info::digits;
+		if (src_digits <= exponent) {
+			result = true;
+		} else {
+			const int radix = src_type_info::radix;
+			if (src_type_info::is_signed) {
+				const int64_t max_integer_value = signed_integer_power(static_cast<int8_t>(radix), static_cast<uint8_t>(exponent));
+				result = (src >= -max_integer_value) and (src <= max_integer_value);
+			} else {
+				const uint64_t max_integer_value = unsigned_integer_power(static_cast<uint8_t>(radix), static_cast<uint8_t>(exponent));
+				result = (src <= max_integer_value);
+			}
 		}
 	} else {
-		assert(dst_min == 0);
-		if (src_type_info::is_signed) {
-			result = (src_integer >= 0) and (src_integer <= dst_max);
-		} else {
-			result = (src_integer <= dst_max);
-		}
+		result = (src >= dst_min) and (src <= dst_max);
 	}
 	return result;
 }
@@ -1226,20 +1392,24 @@ template<> struct is_builtin_integer_type<long long> {static const bool value = 
 template<> struct is_builtin_integer_type<unsigned long long> {static const bool value = true;};
 #endif
 
-// "Substition failure is not an error" (SFINAE) technique: enable_if
+// For checking whether a type is a floating point type
+template<typename T> struct is_builtin_floating_point_type {static const bool value = false;};
+template<> struct is_builtin_floating_point_type<float> {static const bool value = true;};
+template<> struct is_builtin_floating_point_type<double> {static const bool value = true;};
+template<> struct is_builtin_floating_point_type<long double> {static const bool value = true;};
+
+// "Substition failure is not an error" (SFINAE) technique for enable_if
 template<bool condition, typename T = void> struct enable_if {};
 template<typename T> struct enable_if<true, T> {typedef T type;};
 
-#if __cplusplus >= 201103L
-#define NO_DERIVED_TYPE_ALLOWED final
-#else
-#define NO_DERIVED_TYPE_ALLOWED
-#endif	
-
 // a generic type  that emulates built-in integer types
-template<typename T, typename integer_policy = DIP>
-struct integer_type NO_DERIVED_TYPE_ALLOWED {
-	typedef T native_type;
+template<typename T, typename integer_policy = default_integer_policy, typename integer_error_policy = default_error_policy>
+struct integer_type
+#if __cplusplus >= 201103L
+final
+#endif
+{
+	typedef T type;
 	typedef std::numeric_limits<T> type_info;
 	STATIC_ASSERT(type_info::is_integer, "The template parameter type T must be an integer type.");
 	STATIC_ASSERT(sizeof(typename integer_policy::bool_type) == 1U, "The size of bool_type shall be 1-byte.");
@@ -1253,9 +1423,10 @@ struct integer_type NO_DERIVED_TYPE_ALLOWED {
 	STATIC_ASSERT(sizeof(typename integer_policy::long_type) == sizeof(typename integer_policy::ulong_type), "long_type and ulong_type must have the same size.");
  	STATIC_ASSERT(sizeof(typename integer_policy::long_type) <= sizeof(typename integer_policy::llong_type), "The size of long_type must not exceed the size of llong_type.");
 	STATIC_ASSERT(sizeof(typename integer_policy::llong_type) == sizeof(typename integer_policy::ullong_type), "llong_type and ullong_type must have the same size.");
+	STATIC_ASSERT(sizeof(typename integer_policy::ptrdiff_type) == sizeof(typename integer_policy::size_type), "ptrdiff_type and size_type must have the same size.");
 
-	template <typename native_integer_type, typename integer_policy_type>
-	friend void print_source_file_info(const integer_type<native_integer_type, integer_policy_type>& self);
+	template <typename native_integer_type, typename integer_policy_type, typename conversion_error_policy_type>
+	friend void print_source_file_info(const integer_type<native_integer_type, integer_policy_type, conversion_error_policy_type>& self);
 
 	integer_type(
 #ifdef SAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
@@ -1283,16 +1454,7 @@ struct integer_type NO_DERIVED_TYPE_ALLOWED {
 #endif
 #endif
 		print_source_file_info(*this);
-#ifndef SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_UNINITIALIZED_VARIABLES
-		FILE* file_pointer = output_file_pointer;
-		if (file_pointer != NULL) {
-			fprintf(file_pointer, "The safer integer variable is initialized to zero by default. A built-in integer will not be initialized.\n");
-		}
-#endif
-		// do not throw an exception if you want the integer to be used in a container
-#ifdef SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_FOR_UNINITIALIZED_VARIABLES
-		throw std::runtime_error("An uninitialized integer variable is detected.");
-#endif
+		integer_error_policy::handle_uninitialized_value_error(m_value);
 	}
 
 	integer_type(T src
@@ -1322,8 +1484,8 @@ struct integer_type NO_DERIVED_TYPE_ALLOWED {
 #endif
 	}
 
-	template<typename U>
-	integer_type(U src
+	template<typename src_type>
+	integer_type(src_type src
 #ifdef SAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
 #if __cplusplus < 202002L
 		, const char *info = "<unknown info>"
@@ -1348,11 +1510,11 @@ struct integer_type NO_DERIVED_TYPE_ALLOWED {
 		}
 #endif
 #endif
-		typedef T dst_type;
-		typedef U src_type;
-		typedef std::numeric_limits<src_type> src_type_info;
-		STATIC_ASSERT(src_type_info::is_integer, "The source type must be an integer type.");
-		check_and_report_truncation_or_signedness_error<dst_type, src_type>(*this, src);
+		STATIC_ASSERT(std::numeric_limits<src_type>::is_specialized, "The source type is NOT supported.");
+		if (not can_cast_properly<T>(src)) {
+			print_source_file_info(*this);
+			integer_error_policy::handle_conversion_error(src, static_cast<T>(src));
+		}
 	}
 
 	integer_type(const integer_type& src
@@ -1382,8 +1544,8 @@ struct integer_type NO_DERIVED_TYPE_ALLOWED {
 #endif
 	}
 
-	template<typename U>
-	integer_type(const integer_type<U>& rhs
+	template<typename src_type>
+	integer_type(const integer_type<src_type>& rhs
 #ifdef SAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
 #if __cplusplus < 202002L
 		, const char *info = "<unknown info>"
@@ -1391,7 +1553,7 @@ struct integer_type NO_DERIVED_TYPE_ALLOWED {
 		, const std::source_location& location = std::source_location::current()
 #endif
 #endif
-	) : m_value(static_cast<T>(static_cast<U>(rhs)))
+	) : m_value(static_cast<T>(static_cast<src_type>(rhs)))
 #ifdef SAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
 #if __cplusplus < 202002L
 	, m_source_file_info(info)
@@ -1408,12 +1570,12 @@ struct integer_type NO_DERIVED_TYPE_ALLOWED {
 		}
 #endif
 #endif
-		typedef T dst_type;
-		typedef U src_type;
-		typedef std::numeric_limits<src_type> src_type_info;
-		STATIC_ASSERT(src_type_info::is_integer, "The source type must be an integer type.");
+		STATIC_ASSERT(std::numeric_limits<src_type>::is_specialized, "The source type is NOT supported.");
 		const src_type src = static_cast<src_type>(rhs);
-		check_and_report_truncation_or_signedness_error<dst_type, src_type>(*this, src);
+		if (not can_cast_properly<T>(src)) {
+			print_source_file_info(*this);
+			integer_error_policy::handle_conversion_error(src, static_cast<T>(src));
+		}
 	}
 
 	~integer_type() {
@@ -1432,13 +1594,13 @@ struct integer_type NO_DERIVED_TYPE_ALLOWED {
 		return *this;
 	}
 
-	template<typename U>
-	integer_type& operator=(U src) {
-		typedef T dst_type;
-		typedef U src_type;
-		typedef std::numeric_limits<src_type> src_type_info;
-		STATIC_ASSERT(src_type_info::is_integer, "The source type must be an integer type.");
-		check_and_report_truncation_or_signedness_error<dst_type, src_type>(*this, src);
+	template<typename src_type>
+	integer_type& operator=(src_type src) {
+		STATIC_ASSERT(std::numeric_limits<src_type>::is_specialized, "The source type is NOT supported.");
+		if (not can_cast_properly<T>(src)) {
+			print_source_file_info(*this);
+			integer_error_policy::handle_conversion_error(src, static_cast<T>(src));
+		}
 		m_value = static_cast<T>(src);
 		return *this;
 	}
@@ -1448,88 +1610,40 @@ struct integer_type NO_DERIVED_TYPE_ALLOWED {
 		return *this;
 	}
 
-	template<typename U>
-	integer_type& operator=(const integer_type<U>& rhs) {
-		typedef T dst_type;
-		typedef U src_type;
-		typedef std::numeric_limits<src_type> src_type_info;
-		STATIC_ASSERT(src_type_info::is_integer, "The source type must be an integer type.");
+	template<typename src_type>
+	integer_type& operator=(const integer_type<src_type>& rhs) {
+		STATIC_ASSERT(std::numeric_limits<src_type>::is_specialized, "The source type is NOT supported.");
 		const src_type src = static_cast<src_type>(rhs);
-		check_and_report_truncation_or_signedness_error<dst_type, src_type>(*this, src);
+		if (not can_cast_properly<T>(src)) {
+			print_source_file_info(*this);
+			integer_error_policy::handle_conversion_error(src, static_cast<T>(src));
+		}
 		m_value = static_cast<T>(src);
 		return *this;
 	}
 
-	operator T() const {
-		return m_value;
-	}
+	operator T() const {return m_value;}
 
 #if __cplusplus >= 201103L
-	template<typename U, typename Enable = typename enable_if<is_builtin_integer_type<U>::value and (not is_same_type<U, T>::value), void>::type>
-	operator U() const {
-		typedef U dst_type;
+	template<typename dst_type,
+		typename Enable = typename enable_if<(is_builtin_integer_type<dst_type>::value or is_builtin_floating_point_type<dst_type>::value) and
+			(not is_same_type<dst_type, T>::value), void>::type
+	>
+	operator dst_type() const {
 		typedef T src_type;
-		typedef std::numeric_limits<dst_type> dst_type_info;
-		STATIC_ASSERT(dst_type_info::is_integer, "The destination type must be an integer");
-		check_and_report_truncation_or_signedness_error<dst_type, src_type>(*this, m_value);
-		return static_cast<U>(m_value);
+		STATIC_ASSERT(std::numeric_limits<dst_type>::is_specialized, "The destination type is NOT supported.");
+		if (not can_cast_properly<dst_type>(m_value)) {
+			print_source_file_info(*this);
+			integer_error_policy::handle_conversion_error(m_value, static_cast<dst_type>(m_value));
+		}
+		return static_cast<dst_type>(m_value);
 	}
 #endif
 
-	bool operator!() const {
-		return (m_value == 0);
-	}
+	bool operator!() const {return (m_value == 0);}
 
 private:
-	template<typename dst_type, typename src_type>
-	static void check_and_report_truncation_or_signedness_error(const integer_type<T, integer_policy>& self, src_type src) {
-		typedef long long llong_type;
-		typedef unsigned long long ullong_type;
-		typedef std::numeric_limits<src_type> src_type_info;
-		typedef std::numeric_limits<dst_type> dst_type_info;
-		FILE* file_pointer = output_file_pointer;
-
-		if (not can_cast_properly<dst_type>(src)) {
-			print_source_file_info(self);
-#ifndef SAFER_INTEGER_TYPE_DISABLE_REPORTING_FOR_CONVERSION_ERRORS
-			if (file_pointer != NULL) {
-				const src_type src_min = src_type_info::min();
-				const src_type src_max = src_type_info::max();
-				const dst_type dst_min = dst_type_info::min();
-				const dst_type dst_max = dst_type_info::max();
-				const dst_type value = static_cast<dst_type>(src);
-
-				if (src_type_info::is_signed) {
-					if (dst_type_info::is_signed)
-						fprintf(file_pointer, "Truncation error: %lld [signed, %d-byte, min: %lld, max: %lld] -> %lld [signed, %d-byte, min: %lld, max: %lld]\n",
-							static_cast<llong_type>(src), static_cast<int>(sizeof(src)), static_cast<llong_type>(src_min), static_cast<llong_type>(src_max),
-							static_cast<llong_type>(value), static_cast<int>(sizeof(value)), static_cast<llong_type>(dst_min), static_cast<llong_type>(dst_max));
-					else
-						fprintf(file_pointer, "Signedness error: %lld [signed, %d-byte, min: %lld, max: %lld] -> %llu [unsigned, %d-byte, min: %llu, max: %llu]\n",
-							static_cast<llong_type>(src), static_cast<int>(sizeof(src)), static_cast<llong_type>(src_min), static_cast<llong_type>(src_max),
-							static_cast<ullong_type>(value), static_cast<int>(sizeof(value)), static_cast<ullong_type>(dst_min), static_cast<ullong_type>(dst_max));
-				} else {
-					if (dst_type_info::is_signed)
-						fprintf(file_pointer, "Signedness error: %llu [unsigned, %d-byte, min: %llu, max: %llu] -> %lld [signed, %d-byte, min: %lld, max: %lld]\n",
-							static_cast<ullong_type>(src), static_cast<int>(sizeof(src)), static_cast<ullong_type>(src_min), static_cast<ullong_type>(src_max),
-							static_cast<llong_type>(value), static_cast<int>(sizeof(value)), static_cast<llong_type>(dst_min), static_cast<llong_type>(dst_max));
-					else
-						fprintf(file_pointer, "Truncation error: %llu [unsigned, %d-byte, min: %llu, max: %llu] -> %llu [unsigned, %d-byte, min: %llu, max: %llu]\n",
-							static_cast<ullong_type>(src), static_cast<int>(sizeof(src)), static_cast<ullong_type>(src_min), static_cast<ullong_type>(src_max),
-							static_cast<ullong_type>(value), static_cast<int>(sizeof(value)), static_cast<ullong_type>(dst_min), static_cast<ullong_type>(dst_max));
-				}
-			}
-#endif
-#ifdef SAFER_INTEGER_TYPE_THROW_CPLUSPLUS_EXCEPTIONS_ON_CONVERSION_ERRORS
-			throw std::runtime_error("An integer truncation or signedness error is detected.");
-#endif
-		}
-	}
-
-	// member variables
 	T m_value;
-
-	// optional member variables
 #ifdef SAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
 #if __cplusplus < 202002L
 	const char *m_source_file_info;
@@ -1539,10 +1653,8 @@ private:
 #endif
 };
 
-#undef NO_DERIVED_TYPE_ALLOWED
-
-template<typename native_integer_type, typename integer_policy_type>
-void print_source_file_info(const integer_type<native_integer_type, integer_policy_type>& self) {
+template<typename native_integer_type, typename integer_policy_type, typename integer_error_policy_type>
+void print_source_file_info(const integer_type<native_integer_type, integer_policy_type, integer_error_policy_type>& self) {
 #ifdef SAFER_INTEGER_TYPE_INCLUDE_SOURCE_FILE_INFO
 	if (output_file_pointer != NULL) {
 #if __cplusplus < 202002L
@@ -1556,16 +1668,16 @@ void print_source_file_info(const integer_type<native_integer_type, integer_poli
 }
 
 // operator functions that support integer promotion
-template<typename T, typename integer_policy, typename promotion_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_unary_plus(const integer_type<T, integer_policy>& operand) {
+template<typename T, typename integer_policy, typename promotion_policy, typename error_policy>
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_unary_plus(const integer_type<T, integer_policy, error_policy>& operand) {
 	typedef typename promotion_policy::type result_type;
-	return integer_type<result_type, integer_policy>(static_cast<result_type>(static_cast<T>(operand)));
+	return integer_type<result_type, integer_policy, error_policy>(static_cast<result_type>(static_cast<T>(operand)));
 }
 
 template<typename T, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_unary_minus(const integer_type<T, integer_policy>& operand) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_unary_minus(const integer_type<T, integer_policy, error_policy>& operand) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	result_type value = static_cast<result_type>(static_cast<T>(operand));
@@ -1580,9 +1692,9 @@ operator_unary_minus(const integer_type<T, integer_policy>& operand) {
 			const T operand_1 = static_cast<T>(operand);
 			const T operand_2 = static_cast<T>(0);
 			result = result_policy::calculate_result(operation, error, operand_1, operand_2);
-			debug_info_type<T,T,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+			debug_info_type<T, T, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 			print_source_file_info(operand);
-			error_policy::handle_error(debug_info);
+			error_policy::handle_operation_error(debug_info);
 		} else {
 			result = -value;
 		}
@@ -1592,16 +1704,16 @@ operator_unary_minus(const integer_type<T, integer_policy>& operand) {
 		const T operand_1 = static_cast<T>(operand);
 		const T operand_2 = static_cast<T>(0);
 		result = result_policy::calculate_result(operation, error, operand_1, operand_2);
-		debug_info_type<T,T,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T, T, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T, typename integer_policy, typename result_policy, typename error_policy>
-integer_type<T, integer_policy>
-operator_post_increment(integer_type<T, integer_policy>& operand, int unused) {
+integer_type<T, integer_policy, error_policy>
+operator_post_increment(integer_type<T, integer_policy, error_policy>& operand, int unused) {
 	typedef typename std::numeric_limits<T> type_info;
 	T value = static_cast<T>(operand);
 	const T previous_value = value;
@@ -1615,17 +1727,17 @@ operator_post_increment(integer_type<T, integer_policy>& operand, int unused) {
 		const T operand_1 = static_cast<T>(operand);
 		const T operand_2 = static_cast<T>(0);
 		value = result_policy::calculate_result(operation, error, operand_1, operand_2);
-		debug_info_type<T,T,T> debug_info(operation, error, operand_1, operand_2, value, __FILE__, __LINE__);
+		debug_info_type<T, T, T> debug_info(operation, error, operand_1, operand_2, value, __FILE__, __LINE__);
 		print_source_file_info(operand);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	operand = value;
-	return integer_type<T, integer_policy>(previous_value);
+	return integer_type<T, integer_policy, error_policy>(previous_value);
 }
 
 template<typename T, typename integer_policy, typename result_policy, typename error_policy>
-integer_type<T, integer_policy>&
-operator_pre_increment(integer_type<T, integer_policy>& operand) {
+integer_type<T, integer_policy, error_policy>&
+operator_pre_increment(integer_type<T, integer_policy, error_policy>& operand) {
 	typedef typename std::numeric_limits<T> type_info;
 	T value = static_cast<T>(operand);
 	if (value != type_info::max()) {
@@ -1638,17 +1750,17 @@ operator_pre_increment(integer_type<T, integer_policy>& operand) {
 		const T operand_1 = static_cast<T>(operand);
 		const T operand_2 = static_cast<T>(0);
 		value = result_policy::calculate_result(operation, error, operand_1, operand_2);
-		debug_info_type<T,T,T> debug_info(operation, error, operand_1, operand_2, value, __FILE__, __LINE__);
+		debug_info_type<T, T, T> debug_info(operation, error, operand_1, operand_2, value, __FILE__, __LINE__);
 		print_source_file_info(operand);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	operand = value;
 	return operand;
 }
 
 template<typename T, typename integer_policy, typename result_policy, typename error_policy>
-integer_type<T, integer_policy>
-operator_post_decrement(integer_type<T, integer_policy>& operand, int unused) {
+integer_type<T, integer_policy, error_policy>
+operator_post_decrement(integer_type<T, integer_policy, error_policy>& operand, int unused) {
 	typedef typename std::numeric_limits<T> type_info;
 	T value = static_cast<T>(operand);
 	const T previous_value = value;
@@ -1662,17 +1774,17 @@ operator_post_decrement(integer_type<T, integer_policy>& operand, int unused) {
 		const T operand_1 = static_cast<T>(operand);
 		const T operand_2 = static_cast<T>(0);
 		value = result_policy::calculate_result(operation, error, operand_1, operand_2);
-		debug_info_type<T,T,T> debug_info(operation, error, operand_1, operand_2, value, __FILE__, __LINE__);
+		debug_info_type<T, T, T> debug_info(operation, error, operand_1, operand_2, value, __FILE__, __LINE__);
 		print_source_file_info(operand);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	operand = value;
-	return integer_type<T, integer_policy>(previous_value);
+	return integer_type<T, integer_policy, error_policy>(previous_value);
 }
 
 template<typename T, typename integer_policy, typename result_policy, typename error_policy>
-integer_type<T, integer_policy>&
-operator_pre_decrement(integer_type<T, integer_policy>& operand) {
+integer_type<T, integer_policy, error_policy>&
+operator_pre_decrement(integer_type<T, integer_policy, error_policy>& operand) {
 	typedef typename std::numeric_limits<T> type_info;
 	T value = static_cast<T>(operand);
 	if (value != type_info::min()) {
@@ -1685,17 +1797,20 @@ operator_pre_decrement(integer_type<T, integer_policy>& operand) {
 		const T operand_1 = static_cast<T>(operand);
 		const T operand_2 = static_cast<T>(0);
 		value = result_policy::calculate_result(operation, error, operand_1, operand_2);
-		debug_info_type<T,T,T> debug_info(operation, error, operand_1, operand_2, value, __FILE__, __LINE__);
+		debug_info_type<T, T, T> debug_info(operation, error, operand_1, operand_2, value, __FILE__, __LINE__);
 		print_source_file_info(operand);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	operand = value;
 	return operand;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_plus(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_plus(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_addition;
@@ -1714,14 +1829,17 @@ operator_plus(const integer_type<T1, integer_policy>& operand1, const integer_ty
 		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_minus(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_minus(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_subtraction;
@@ -1740,14 +1858,17 @@ operator_minus(const integer_type<T1, integer_policy>& operand1, const integer_t
 		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_multiply(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_multiply(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_multiplication;
@@ -1766,14 +1887,17 @@ operator_multiply(const integer_type<T1, integer_policy>& operand1, const intege
 		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_divide(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_divide(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_division;
@@ -1792,14 +1916,17 @@ operator_divide(const integer_type<T1, integer_policy>& operand1, const integer_
 		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_remainder(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_remainder(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_remainder;
@@ -1818,14 +1945,17 @@ operator_remainder(const integer_type<T1, integer_policy>& operand1, const integ
 		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_plus_assignment(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_plus_assignment(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_self_addition;
@@ -1841,18 +1971,21 @@ operator_plus_assignment(integer_type<T1, integer_policy>& self, const integer_t
 	}
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_minus_assignment(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_minus_assignment(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_self_subtraction;
@@ -1868,18 +2001,21 @@ operator_minus_assignment(integer_type<T1, integer_policy>& self, const integer_
 	}
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_multiply_assignment(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_multiply_assignment(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_self_multiplication;
@@ -1895,18 +2031,21 @@ operator_multiply_assignment(integer_type<T1, integer_policy>& self, const integ
 	}
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_divide_assignment(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_divide_assignment(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_self_division;
@@ -1922,18 +2061,21 @@ operator_divide_assignment(integer_type<T1, integer_policy>& self, const integer
 	}
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_remainder_assignment(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_remainder_assignment(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	typedef typename std::numeric_limits<result_type> result_type_info;
 	const operation_type operation = operation_self_remainder;
@@ -1949,17 +2091,20 @@ operator_remainder_assignment(integer_type<T1, integer_policy>& self, const inte
 	}
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-bool operator_compare_equal(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+bool operator_compare_equal(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type promoted_type;
 	const operation_type operation = operation_comparison_equal;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -1967,16 +2112,19 @@ bool operator_compare_equal(const integer_type<T1, integer_policy>& operand1, co
 	const operation_error_type error = check_integer_promotion_for_binary_operation<T1, T2, promoted_type>(operand_1, operand_2);
 	const promoted_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	return (result != 0);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-bool operator_compare_not_equal(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+bool operator_compare_not_equal(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type promoted_type;
 	const operation_type operation = operation_comparison_not_equal;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -1984,16 +2132,19 @@ bool operator_compare_not_equal(const integer_type<T1, integer_policy>& operand1
 	const operation_error_type error = check_integer_promotion_for_binary_operation<T1, T2, promoted_type>(operand_1, operand_2);
 	const promoted_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	return (result != 0);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename	result_policy, typename error_policy>
-bool operator_compare_greater_than(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+bool operator_compare_greater_than(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type promoted_type;
 	const operation_type operation = operation_comparison_greater;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -2001,16 +2152,19 @@ bool operator_compare_greater_than(const integer_type<T1, integer_policy>& opera
 	const operation_error_type error = check_integer_promotion_for_binary_operation<T1, T2, promoted_type>(operand_1, operand_2);
 	const promoted_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	return (result != 0);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename	result_policy, typename error_policy>
-bool operator_compare_greater_than_or_equal(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+bool operator_compare_greater_than_or_equal(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type promoted_type;
 	const operation_type operation = operation_comparison_greater_or_equal;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -2018,16 +2172,19 @@ bool operator_compare_greater_than_or_equal(const integer_type<T1, integer_polic
 	const operation_error_type error = check_integer_promotion_for_binary_operation<T1, T2, promoted_type>(operand_1, operand_2);
 	const promoted_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	return (result != 0);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename	result_policy, typename error_policy>
-bool operator_compare_less_than(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+bool operator_compare_less_than(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type promoted_type;
 	const operation_type operation = operation_comparison_less;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -2035,16 +2192,19 @@ bool operator_compare_less_than(const integer_type<T1, integer_policy>& operand1
 	const operation_error_type error = check_integer_promotion_for_binary_operation<T1, T2, promoted_type>(operand_1, operand_2);
 	const promoted_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	return (result != 0);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename	result_policy, typename error_policy>
-bool operator_compare_less_than_or_equal(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+bool operator_compare_less_than_or_equal(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type promoted_type;
 	const operation_type operation = operation_comparison_less_or_equal;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -2052,17 +2212,20 @@ bool operator_compare_less_than_or_equal(const integer_type<T1, integer_policy>&
 	const operation_error_type error = check_integer_promotion_for_binary_operation<T1, T2, promoted_type>(operand_1, operand_2);
 	const promoted_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, promoted_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	return (result != 0);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_bitwise_and(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_bitwise_and(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_bitwise_and;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -2070,17 +2233,20 @@ operator_bitwise_and(const integer_type<T1, integer_policy>& operand1, const int
 	const operation_error_type error = check_bitwise_and_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_bitwise_or(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_bitwise_or(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_bitwise_or;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -2088,17 +2254,20 @@ operator_bitwise_or(const integer_type<T1, integer_policy>& operand1, const inte
 	const operation_error_type error = check_bitwise_or_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_bitwise_xor(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_bitwise_xor(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_bitwise_xor;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -2106,17 +2275,17 @@ operator_bitwise_xor(const integer_type<T1, integer_policy>& operand1, const int
 	const operation_error_type error = check_bitwise_xor_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	return integer_type<result_type, integer_policy>(result);
 }
 
 template<typename T, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<typename promotion_policy::type, integer_policy>
-operator_bitwise_not(const integer_type<T, integer_policy>& operand) {
+integer_type<typename promotion_policy::type, integer_policy, error_policy>
+operator_bitwise_not(const integer_type<T, integer_policy, error_policy>& operand) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_bitwise_not;
 	const T operand_1 = static_cast<T>(operand);
@@ -2124,16 +2293,19 @@ operator_bitwise_not(const integer_type<T, integer_policy>& operand) {
 	const operation_error_type error = check_bitwise_not_operation(operand_1);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T,T,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T, T, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>
-operator_bitwise_left_shift(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<T1, integer_policy, error_policy>
+operator_bitwise_left_shift(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_bitwise_left_shift;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -2141,17 +2313,20 @@ operator_bitwise_left_shift(const integer_type<T1, integer_policy>& operand1, co
 	const operation_error_type error = check_left_shift_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>
-operator_bitwise_right_shift(const integer_type<T1, integer_policy>& operand1, const integer_type<T2, integer_policy>& operand2) {
+integer_type<T1, integer_policy, error_policy>
+operator_bitwise_right_shift(
+	const integer_type<T1, integer_policy, error_policy>& operand1,
+	const integer_type<T2, integer_policy, error_policy>& operand2
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_bitwise_right_shift;
 	const T1 operand_1 = static_cast<T1>(operand1);
@@ -2159,17 +2334,20 @@ operator_bitwise_right_shift(const integer_type<T1, integer_policy>& operand1, c
 	const operation_error_type error = check_right_shift_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(operand1);
 		print_source_file_info(operand2);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
-	return integer_type<result_type, integer_policy>(result);
+	return integer_type<result_type, integer_policy, error_policy>(result);
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_self_bitwise_and(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_self_bitwise_and(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_self_bitwise_and;
 	const T1 operand_1 = static_cast<T1>(self);
@@ -2177,18 +2355,21 @@ operator_self_bitwise_and(integer_type<T1, integer_policy>& self, const integer_
 	const operation_error_type error = check_bitwise_and_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_self_bitwise_or(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_self_bitwise_or(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_self_bitwise_or;
 	const T1 operand_1 = static_cast<T1>(self);
@@ -2196,18 +2377,21 @@ operator_self_bitwise_or(integer_type<T1, integer_policy>& self, const integer_t
 	const operation_error_type error = check_bitwise_or_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_self_bitwise_xor(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_self_bitwise_xor(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_self_bitwise_xor;
 	const T1 operand_1 = static_cast<T1>(self);
@@ -2215,18 +2399,21 @@ operator_self_bitwise_xor(integer_type<T1, integer_policy>& self, const integer_
 	const operation_error_type error = check_bitwise_xor_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_self_bitwise_left_shift(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_self_bitwise_left_shift(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_self_bitwise_left_shift;
 	const T1 operand_1 = static_cast<T1>(self);
@@ -2234,18 +2421,21 @@ operator_self_bitwise_left_shift(integer_type<T1, integer_policy>& self, const i
 	const operation_error_type error = check_left_shift_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
 }
 
 template<typename T1, typename T2, typename integer_policy, typename promotion_policy, typename result_policy, typename error_policy>
-integer_type<T1, integer_policy>&
-operator_self_bitwise_right_shift(integer_type<T1, integer_policy>& self, const integer_type<T2, integer_policy>& value) {
+integer_type<T1, integer_policy, error_policy>&
+operator_self_bitwise_right_shift(
+	integer_type<T1, integer_policy, error_policy>& self,
+	const integer_type<T2, integer_policy, error_policy>& value
+) {
 	typedef typename promotion_policy::type result_type;
 	const operation_type operation = operation_self_bitwise_right_shift;
 	const T1 operand_1 = static_cast<T1>(self);
@@ -2253,10 +2443,10 @@ operator_self_bitwise_right_shift(integer_type<T1, integer_policy>& self, const 
 	const operation_error_type error = check_right_shift_operation(operand_1, operand_2);
 	const result_type result = result_policy::calculate_result(operation, error, operand_1, operand_2);
 	if (error != operation_error_none) {
-		debug_info_type<T1,T2,result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
+		debug_info_type<T1, T2, result_type> debug_info(operation, error, operand_1, operand_2, result, __FILE__, __LINE__);
 		print_source_file_info(self);
 		print_source_file_info(value);
-		error_policy::handle_error(debug_info);
+		error_policy::handle_operation_error(debug_info);
 	}
 	self = result;
 	return self;
@@ -2265,568 +2455,1539 @@ operator_self_bitwise_right_shift(integer_type<T1, integer_policy>& self, const 
 } // end of namespace safer_integer
 
 // Global overloaded operators
-#define SI safer_integer
 
 // unary plus
 template<typename T>
-SI::integer_type<typename SI::DPP<T,T>::type, SI::DIP>
-operator+(const SI::integer_type<T, SI::DIP>& operand) {
-	return SI::operator_unary_plus<T, SI::DIP>(operand);
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T, T>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator+(
+	const safer_integer::integer_type< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& operand
+	) {
+	return safer_integer::operator_unary_plus< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(operand);
 }
 
 // unary minus
 template<typename T>
-SI::integer_type<typename SI::DPP<T,T>::type, SI::DIP>
-operator-(const SI::integer_type<T, SI::DIP>& operand) {
-	typedef typename SI::DPP<T,T>::type result_type;
-	return SI::operator_unary_minus<
-		T, SI::DIP, SI::DPP<T,T>, SI::DRP<T,T,result_type>, SI::DEP<T,T,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T, T>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator-(
+	const safer_integer::integer_type< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& operand
+) {
+	typedef typename safer_integer::default_promotion_policy<T, T>::type result_type;
+	return safer_integer::operator_unary_minus< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T, T>,
+		safer_integer::default_result_policy<T, T, result_type>,
+		safer_integer::default_error_policy
 	>(operand);
 }
 
 // post-increment
 template<typename T>
-SI::integer_type<T, SI::DIP>
-operator++(SI::integer_type<T, SI::DIP>& operand, int unused) {
-	return SI::operator_post_increment<
-		T, SI::DIP, SI::DRP<T,T,T>, SI::DEP<T,T,T>
+safer_integer::integer_type< T,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator++(
+	safer_integer::integer_type< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& operand,
+	int unused
+) {
+	return safer_integer::operator_post_increment< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_result_policy<T, T, T>,
+		safer_integer::default_error_policy
 	>(operand, unused);
 }
 
 // pre-increment
 template<typename T>
-SI::integer_type<T, SI::DIP>&
-operator++(SI::integer_type<T, SI::DIP>& operand) {
-	return SI::operator_pre_increment<
-		T, SI::DIP, SI::DRP<T,T,T>, SI::DEP<T,T,T>
+safer_integer::integer_type< T,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator++(
+	safer_integer::integer_type<T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& operand
+) {
+	return safer_integer::operator_pre_increment< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_result_policy<T, T, T>,
+		safer_integer::default_error_policy
 	>(operand);
 }
 
 // post-decrement
 template<typename T>
-SI::integer_type<T, SI::DIP>
-operator--(SI::integer_type<T, SI::DIP>& operand, int unused) {
-	return SI::operator_post_decrement<
-		T, SI::DIP, SI::DRP<T,T,T>, SI::DEP<T,T,T>
+safer_integer::integer_type< T,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator--(
+	safer_integer::integer_type< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& operand,
+	int unused
+) {
+	return safer_integer::operator_post_decrement< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_result_policy<T, T, T>,
+		safer_integer::default_error_policy
 	>(operand, unused);
 }
 
 // pre-decrement
 template<typename T>
-SI::integer_type<T, SI::DIP>&
-operator--(SI::integer_type<T, SI::DIP>& operand) {
-	return SI::operator_pre_decrement<
-		T, SI::DIP, SI::DRP<T,T,T>, SI::DEP<T,T,T>
+safer_integer::integer_type< T,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator--(
+	safer_integer::integer_type< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& operand
+) {
+	return safer_integer::operator_pre_decrement< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_result_policy<T, T, T>,
+		safer_integer::default_error_policy
 	>(operand);
 }
 
 // addition
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator+(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_plus<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator+(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type result_type;
+	return safer_integer::operator_plus< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator+(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a + SI::integer_type<T2, SI::DIP>(b);
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator+(
+	const safer_integer::integer_type < T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a +
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator+(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) + b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator+(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) + b;
 }
 
 // subtraction
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator-(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_minus<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator-(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type result_type;
+	return safer_integer::operator_minus< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator-(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a - SI::integer_type<T2, SI::DIP>(b);
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator-(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a -
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator-(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) - b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator-(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) - b;
 }
 
 // multiplication
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator*(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_multiply<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator*(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type result_type;
+	return safer_integer::operator_multiply< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator*(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a * SI::integer_type<T2, SI::DIP>(b);
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator*(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a *
+		safer_integer::integer_type< T2,
+			safer_integer::default_integer_policy,
+			safer_integer::default_error_policy
+		>(b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator*(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) * b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator*(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) * b;
 }
 
 // division
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator/(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_divide<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator/(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type result_type;
+	return safer_integer::operator_divide< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator/(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a / SI::integer_type<T2, SI::DIP>(b);
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator/(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a /
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator/(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) / b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator/(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) / b;
 }
 
 // remainder
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator%(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_remainder<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator%(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type result_type;
+	return safer_integer::operator_remainder< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator%(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a % SI::integer_type<T2, SI::DIP>(b);
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator%(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a %
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator%(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) % b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator%(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) % b;
 }
 
 // adding a number to self
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator+=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_plus_assignment<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator+=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_plus_assignment< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator+=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self += SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator+=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	T2 value
+) {
+	return self +=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
 
 // subtracting number from self
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator-=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_minus_assignment<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator-=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_minus_assignment< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator-=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self -= SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator-=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	T2 value
+) {
+	return self -=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
 
 // multiplying self by a number
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator*=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_multiply_assignment<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator*=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_multiply_assignment< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator*=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self *= SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator*=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	T2 value
+) {
+	return self *=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
 
 // dividing self by a number
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator/=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_divide_assignment<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator/=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_divide_assignment< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator/=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self /= SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator/=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	T2 value
+) {
+	return self /=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
 
 // remainder after dividing self by a number
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator%=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_remainder_assignment<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator%=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_remainder_assignment< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator%=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self %= SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator%=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	T2 value
+) {
+	return self %=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
 
 // equal comparison
 template<typename T1, typename T2>
-bool operator==(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1, T2>::type promoted_type;
-	return SI::operator_compare_equal<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,promoted_type>, SI::DEP<T1,T2,promoted_type>
+bool operator==(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_compare_equal< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-bool operator==(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a == SI::integer_type<T2, SI::DIP>(b);
+bool operator==(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a ==
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-bool operator==(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) == b;
+bool operator==(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) == b;
 }
 
 // unequal comparison
 template<typename T1, typename T2>
-bool operator!=(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1, T2>::type promoted_type;
-	return SI::operator_compare_not_equal<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,promoted_type>, SI::DEP<T1,T2,promoted_type>
+bool operator!=(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_compare_not_equal< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-bool operator!=(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a != SI::integer_type<T2, SI::DIP>(b);
+bool operator!=(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a !=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-bool operator!=(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) != b;
+bool operator!=(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) != b;
 }
 
 // greater than comparison
 template<typename T1, typename T2>
-bool operator>(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1, T2>::type promoted_type;
-	return SI::operator_compare_greater_than<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,promoted_type>, SI::DEP<T1,T2,promoted_type>
+bool operator>(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_compare_greater_than< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-bool operator>(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a > SI::integer_type<T2, SI::DIP>(b);
+bool operator>(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a >
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-bool operator>(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) > b;
+bool operator>(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) > b;
 }
 
 // greater than or equal comparison
 template<typename T1, typename T2>
-bool operator>=(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1, T2>::type promoted_type;
-	return SI::operator_compare_greater_than_or_equal<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,promoted_type>, SI::DEP<T1,T2,promoted_type>
+bool operator>=(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_compare_greater_than_or_equal< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-bool operator>=(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a >= SI::integer_type<T2, SI::DIP>(b);
+bool operator>=(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a >=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-bool operator>=(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) >= b;
+bool operator>=(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) >= b;
 }
 
 // less than comparison
 template<typename T1, typename T2>
-bool operator<(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1, T2>::type promoted_type;
-	return SI::operator_compare_less_than<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,promoted_type>, SI::DEP<T1,T2,promoted_type>
+bool operator<(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_compare_less_than< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-bool operator<(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a < SI::integer_type<T2, SI::DIP>(b);
+bool operator<(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a <
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-bool operator<(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) < b;
+bool operator<(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) < b;
 }
 
 // less than or equal comparison
 template<typename T1, typename T2>
-bool operator<=(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1, T2>::type promoted_type;
-	return SI::operator_compare_less_than_or_equal<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,promoted_type>, SI::DEP<T1,T2,promoted_type>
+bool operator<=(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_compare_less_than_or_equal< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-bool operator<=(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a <= SI::integer_type<T2, SI::DIP>(b);
+bool operator<=(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a <=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-bool operator<=(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) <= b;
+bool operator<=(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) <= b;
 }
 
 // bitwise AND
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator&(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_bitwise_and<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator&(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type result_type;
+	return safer_integer::operator_bitwise_and< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator&(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a & SI::integer_type<T2, SI::DIP>(b); 
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator&(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a &
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator&(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) & b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator&(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) & b;
 }
 
 // bitwise OR
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator|(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_bitwise_or<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator|(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type result_type;
+	return safer_integer::operator_bitwise_or< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator|(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a | SI::integer_type<T2, SI::DIP>(b); 
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator|(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a |
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b); 
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator|(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) | b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator|(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) | b;
 }
 
 // bitwise XOR
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator^(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_bitwise_xor<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator^(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type result_type;
+	return safer_integer::operator_bitwise_xor< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator^(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a ^ SI::integer_type<T2, SI::DIP>(b); 
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator^(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a ^
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T2>::type, SI::DIP>
-operator^(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	return SI::integer_type<T1, SI::DIP>(a) ^ b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T2>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator^(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) ^ b;
 }
 
 // bitwise NOT
 template<typename T>
-SI::integer_type<typename SI::DPP<T,T>::type, SI::DIP>
-operator~(const SI::integer_type<T, SI::DIP>& a) {
-	typedef typename SI::DPP<T,T>::type result_type;
-	return SI::operator_bitwise_not<
-		T, SI::DIP, SI::DPP<T,T>, SI::DRP<T,T,result_type>, SI::DEP<T,T,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T, T>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator~(
+	const safer_integer::integer_type< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a
+) {
+	typedef typename safer_integer::default_promotion_policy<T, T>::type result_type;
+	return safer_integer::operator_bitwise_not< T,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T, T>,
+		safer_integer::default_result_policy<T, T, result_type>,
+		safer_integer::default_error_policy
 	>(a);
 }
 
-// bitwise left shift
+// bitwise left shift (integer promotion only on the LHS)
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T1>::type, SI::DIP> // integer promotion only on the LHS
-operator<<(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T1>::type result_type;
-	return SI::operator_bitwise_left_shift<
-		T1, T2, SI::DIP, SI::DPP<T1,T1>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T1>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator<<(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T1>::type result_type;
+	return safer_integer::operator_bitwise_left_shift< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T1>,
+		safer_integer::default_result_policy<T1, T1, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T1>::type, SI::DIP> // integer promotion only on the LHS
-operator<<(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a << SI::integer_type<T2, SI::DIP>(b);
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T1>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator<<(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a <<
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T1>::type, SI::DIP> // integer promotion only on the LHS
-operator<<(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T1>::type result_type;
-	return SI::integer_type<T1, SI::DIP>(a) << b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T1>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator<<(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>&b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T1>::type result_type;
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) << b;
 }
 
-// bitwise right shift
+// bitwise right shift (integer promotion only on the LHS)
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T1>::type, SI::DIP> // integer promotion only on the LHS
-operator>>(const SI::integer_type<T1, SI::DIP>& a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T1>::type result_type;
-	return SI::operator_bitwise_right_shift<
-		T1, T2, SI::DIP, SI::DPP<T1,T1>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T1>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator>>(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T1>::type result_type;
+	return safer_integer::operator_bitwise_right_shift< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T1>,
+		safer_integer::default_result_policy<T1, T1, result_type>,
+		safer_integer::default_error_policy
 	>(a, b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T1>::type, SI::DIP> // integer promotion only on the LHS
-operator>>(const SI::integer_type<T1, SI::DIP>& a, T2 b) {
-	return a >> SI::integer_type<T2, SI::DIP>(b);
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T1>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator>>(
+	const safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& a,
+	T2 b
+) {
+	return a >>
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(b);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<typename SI::DPP<T1,T1>::type, SI::DIP> // integer promotion only on the LHS
-operator>>(T1 a, const SI::integer_type<T2, SI::DIP>& b) {
-	typedef typename SI::DPP<T1,T1>::type result_type;
-	return SI::integer_type<T1, SI::DIP>(a) >> b;
+safer_integer::integer_type<
+	typename safer_integer::default_promotion_policy<T1, T1>::type,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>
+operator>>(
+	T1 a,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& b
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T1>::type result_type;
+	return safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(a) >> b;
 }
 
 // self bitwise AND
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator&=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_self_bitwise_and<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator&=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_self_bitwise_and< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator&=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self &= SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator&=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	T2 value
+) {
+	return self &=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
 
 // self bitwise OR
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator|=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_self_bitwise_or<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator|=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_self_bitwise_or< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator|=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self |= SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator|=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	T2 value
+) {
+	return self |=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
 
 // self bitwise XOR
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator^=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T2>::type result_type;
-	return SI::operator_self_bitwise_xor<
-		T1, T2, SI::DIP, SI::DPP<T1,T2>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator^=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T2>::type promoted_type;
+	return safer_integer::operator_self_bitwise_xor< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T2>,
+		safer_integer::default_result_policy<T1, T2, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator^=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self ^= SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator^=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	T2 value
+) {
+	return self ^=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
 
 // self bitwise left shift
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator<<=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T1>::type result_type;
-	return SI::operator_self_bitwise_left_shift<
-		T1, T2, SI::DIP, SI::DPP<T1,T1>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator<<=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T1>::type promoted_type;
+	return safer_integer::operator_self_bitwise_left_shift< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T1>,
+		safer_integer::default_result_policy<T1, T1, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator<<=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self <<= SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator<<=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self, T2 value
+) {
+	return self <<=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
 
 // self bitwise right shift
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator>>=(SI::integer_type<T1, SI::DIP>& self, const SI::integer_type<T2, SI::DIP>& value) {
-	typedef typename SI::DPP<T1,T1>::type result_type;
-	return SI::operator_self_bitwise_right_shift<
-		T1, T2, SI::DIP, SI::DPP<T1,T1>, SI::DRP<T1,T2,result_type>, SI::DEP<T1,T2,result_type>
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator>>=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	const safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& value
+) {
+	typedef typename safer_integer::default_promotion_policy<T1, T1>::type promoted_type;
+	return safer_integer::operator_self_bitwise_right_shift< T1, T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_promotion_policy<T1, T1>,
+		safer_integer::default_result_policy<T1, T1, promoted_type>,
+		safer_integer::default_error_policy
 	>(self, value);
 }
 
 template<typename T1, typename T2>
-SI::integer_type<T1, SI::DIP>&
-operator>>=(SI::integer_type<T1, SI::DIP>& self, T2 value) {
-	return self >>= SI::integer_type<T2, SI::DIP>(value);
+safer_integer::integer_type< T1,
+	safer_integer::default_integer_policy,
+	safer_integer::default_error_policy
+>&
+operator>>=(
+	safer_integer::integer_type< T1,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>& self,
+	T2 value
+) {
+	return self >>=
+	safer_integer::integer_type< T2,
+		safer_integer::default_integer_policy,
+		safer_integer::default_error_policy
+	>(value);
 }
-
-#undef SI
 
 // Specializing std::numeric_limits for safer_integer::integer_type
 
@@ -2916,28 +4077,28 @@ struct numeric_limits< safer_integer::integer_type<T, integer_policy> >
 
 #if defined(__cplusplus) && !defined(SAFER_INTEGER_TYPE_USE_BUILTIN_INTEGER_TYPES)
 
-typedef safer_integer::integer_type<safer_integer::DIP::bool_type, safer_integer::DIP> safer_bool_type;
-typedef safer_integer::integer_type<safer_integer::DIP::char_type, safer_integer::DIP> safer_char_type;
-typedef safer_integer::integer_type<safer_integer::DIP::schar_type, safer_integer::DIP> safer_schar_type;
-typedef safer_integer::integer_type<safer_integer::DIP::uchar_type, safer_integer::DIP> safer_uchar_type;
-typedef safer_integer::integer_type<safer_integer::DIP::short_type, safer_integer::DIP> safer_short_type;
-typedef safer_integer::integer_type<safer_integer::DIP::ushort_type, safer_integer::DIP> safer_ushort_type;
-typedef safer_integer::integer_type<safer_integer::DIP::int_type, safer_integer::DIP> safer_int_type;
-typedef safer_integer::integer_type<safer_integer::DIP::uint_type, safer_integer::DIP> safer_uint_type;
-typedef safer_integer::integer_type<safer_integer::DIP::long_type, safer_integer::DIP> safer_long_type;
-typedef safer_integer::integer_type<safer_integer::DIP::ulong_type, safer_integer::DIP> safer_ulong_type;
-typedef safer_integer::integer_type<safer_integer::DIP::llong_type, safer_integer::DIP> safer_llong_type;
-typedef safer_integer::integer_type<safer_integer::DIP::ullong_type, safer_integer::DIP> safer_ullong_type;
-typedef safer_integer::integer_type<safer_integer::DIP::ptrdiff_type, safer_integer::DIP> safer_ptrdiff_type;
-typedef safer_integer::integer_type<safer_integer::DIP::size_type, safer_integer::DIP> safer_size_type;
-typedef safer_integer::integer_type<int8_t, safer_integer::DIP> safer_int8_type;
-typedef safer_integer::integer_type<uint8_t, safer_integer::DIP> safer_uint8_type;
-typedef safer_integer::integer_type<int16_t, safer_integer::DIP> safer_int16_type;
-typedef safer_integer::integer_type<uint16_t, safer_integer::DIP> safer_uint16_type;
-typedef safer_integer::integer_type<int32_t, safer_integer::DIP> safer_int32_type;
-typedef safer_integer::integer_type<uint32_t, safer_integer::DIP> safer_uint32_type;
-typedef safer_integer::integer_type<int64_t, safer_integer::DIP> safer_int64_type;
-typedef safer_integer::integer_type<uint64_t, safer_integer::DIP> safer_uint64_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::bool_type> safer_bool_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::char_type> safer_char_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::schar_type> safer_schar_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::uchar_type> safer_uchar_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::short_type> safer_short_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::ushort_type> safer_ushort_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::int_type> safer_int_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::uint_type> safer_uint_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::long_type> safer_long_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::ulong_type> safer_ulong_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::llong_type> safer_llong_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::ullong_type> safer_ullong_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::ptrdiff_type> safer_ptrdiff_type;
+typedef safer_integer::integer_type<safer_integer::default_integer_policy::size_type> safer_size_type;
+typedef safer_integer::integer_type<int8_t> safer_int8_type;
+typedef safer_integer::integer_type<uint8_t> safer_uint8_type;
+typedef safer_integer::integer_type<int16_t> safer_int16_type;
+typedef safer_integer::integer_type<uint16_t> safer_uint16_type;
+typedef safer_integer::integer_type<int32_t> safer_int32_type;
+typedef safer_integer::integer_type<uint32_t> safer_uint32_type;
+typedef safer_integer::integer_type<int64_t> safer_int64_type;
+typedef safer_integer::integer_type<uint64_t> safer_uint64_type;
 
 #define SAFER_BOOL_MIN std::numeric_limits<safer_bool_type>::min()
 #define SAFER_BOOL_MAX std::numeric_limits<safer_bool_type>::max()
@@ -3011,7 +4172,7 @@ typedef safer_integer::integer_type<uint64_t, safer_integer::DIP> safer_uint64_t
 
 #include "Boolean_type.h"
 
-#pragma message("C++ compiler not detected. Defining safer integer types as aliases to built-in integer types.")
+#pragma message("Defining safer integer types as aliases to built-in integer types.")
 
 typedef Boolean_type safer_bool_type;
 typedef char safer_char_type;
@@ -3081,28 +4242,28 @@ typedef uint64_t safer_uint64_type;
 #define SAFER_UINT64_MIN 0U
 #define SAFER_UINT64_MAX UINT64_MAX
 
-#define SAFER_BOOL_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_BOOL_TYPE_IS_SIGNED (SAFER_BOOL_MIN < 0)
 #define SAFER_CHAR_TYPE_IS_SIGNED (SAFER_CHAR_MIN < 0)
 #define SAFER_SCHAR_TYPE_IS_SIGNED (SAFER_SCHAR_MIN < 0)
-#define SAFER_UCHAR_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_UCHAR_TYPE_IS_SIGNED (SAFER_UCHAR_MIN < 0)
 #define SAFER_SHORT_TYPE_IS_SIGNED (SAFER_SHORT_MIN < 0)
-#define SAFER_USHORT_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_USHORT_TYPE_IS_SIGNED (SAFER_USHORT_MIN < 0)
 #define SAFER_INT_TYPE_IS_SIGNED (SAFER_INT_MIN < 0)
-#define SAFER_UINT_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_UINT_TYPE_IS_SIGNED (SAFER_UINT_MIN < 0)
 #define SAFER_LONG_TYPE_IS_SIGNED (SAFER_LONG_MIN < 0)
-#define SAFER_ULONG_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_ULONG_TYPE_IS_SIGNED (SAFER_ULONG_MIN < 0)
 #define SAFER_LLONG_TYPE_IS_SIGNED (SAFER_LLONG_MIN < 0)
-#define SAFER_ULLONG_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_ULLONG_TYPE_IS_SIGNED (SAFER_ULLONG_MIN < 0)
 #define SAFER_PTRDIFF_TYPE_IS_SIGNED (SAFER_PTRDIFF_MIN < 0)
-#define SAFER_SIZE_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_SIZE_TYPE_IS_SIGNED (SAFER_SIZE_MIN < 0)
 #define SAFER_INT8_TYPE_IS_SIGNED (SAFER_INT8_MIN < 0)
-#define SAFER_UINT8_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_UINT8_TYPE_IS_SIGNED (SAFER_UINT8_MIN < 0)
 #define SAFER_INT16_TYPE_IS_SIGNED (SAFER_INT16_MIN < 0)
-#define SAFER_UINT16_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_UINT16_TYPE_IS_SIGNED (SAFER_UINT16_MIN < 0)
 #define SAFER_INT32_TYPE_IS_SIGNED (SAFER_INT32_MIN < 0)
-#define SAFER_UINT32_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_UINT32_TYPE_IS_SIGNED (SAFER_UINT32_MIN < 0)
 #define SAFER_INT64_TYPE_IS_SIGNED (SAFER_INT64_MIN < 0)
-#define SAFER_UINT64_TYPE_IS_SIGNED (Boolean_false)
+#define SAFER_UINT64_TYPE_IS_SIGNED (SAFER_UINT64_MIN < 0)
 
 #endif /* __cplusplus and runtime checks are disabled */
 

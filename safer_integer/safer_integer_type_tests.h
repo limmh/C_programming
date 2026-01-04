@@ -8,6 +8,7 @@
 #include "unit_testing.h"
 #include <errno.h>
 #include <iso646.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -53,7 +54,7 @@ static FILE *output_file = NULL;
 static const Boolean_type safer_integer_type_exception_thrown = Boolean_true;
 
 /* Property tests */
-TEST(safer_integer_is_builtin_integer_type_tests, "Tests for safer_integer::is_builtin_integer_type<T>::value")
+TEST(safer_integer_type_trait_tests, "Type trait tests")
 {
 #ifdef __cplusplus
 	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<bool>::value, Boolean_true);
@@ -78,6 +79,35 @@ TEST(safer_integer_is_builtin_integer_type_tests, "Tests for safer_integer::is_b
 	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<uint32_t>::value, Boolean_true);
 	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<int64_t>::value, Boolean_true);
 	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<uint64_t>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<float>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<double>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_integer_type<long double>::value, Boolean_false);
+
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<bool>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<char>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<signed char>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<unsigned char>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<short>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<unsigned short>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<int>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<unsigned int>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<long>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<unsigned long>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<long long>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<unsigned long long>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<ptrdiff_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<size_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<int8_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<uint8_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<int16_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<uint16_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<int32_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<uint32_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<int64_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<uint64_t>::value, Boolean_false);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<float>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<double>::value, Boolean_true);
+	ASSERT_EQUAL(safer_integer::is_builtin_floating_point_type<long double>::value, Boolean_true);
 #else
 	fprintf(output_file, "The tests are only for C++.\n");
 #endif
@@ -5678,6 +5708,135 @@ TEST(safer_integer_type_logical_not_tests, "safer integer type logical NOT tests
 	}
 }
 
+TEST(safer_integer_type_value_truncation_due_to_conversion_from_floating_point_numbers, "Value truncation due to conversion from floating-point numbers")
+{
+	TRY {
+		const float var = 1.5f;
+		const safer_int_type result = var;
+		fprintf(output_file, "Line %d: %.2f -> %d\n", LINE, var, (int) result);
+	} CATCH (std::exception&) {
+		ASSERT(safer_integer_type_exception_thrown);
+	}
+
+	TRY {
+		const double var = 2.5;
+		const safer_int_type result = var;
+		fprintf(output_file, "Line %d: %.2f -> %d\n", LINE, var, (int) result);
+	} CATCH (std::exception&) {
+		ASSERT(safer_integer_type_exception_thrown);
+	}
+
+	TRY {
+		const long double var = 3.5L;
+		const safer_int_type result = var;
+		fprintf(output_file, "Line %d: %.2Lf -> %d\n", LINE, var, (int) result);
+	} CATCH (std::exception&) {
+		ASSERT(safer_integer_type_exception_thrown);
+	}
+
+	TRY {
+		const double var = -HUGE_VAL;
+		const safer_int_type result = var;
+		fprintf(output_file, "Line %d: %.2f -> %d\n", LINE, var, (int) result);
+	} CATCH (std::exception&) {
+		ASSERT(safer_integer_type_exception_thrown);
+	}
+
+	TRY {
+		const double var = NAN;
+		const safer_int_type result = var;
+		fprintf(output_file, "Line %d: %.2f -> %d\n", LINE, var, (int) result);
+	} CATCH (std::exception&) {
+		ASSERT(safer_integer_type_exception_thrown);
+	}
+
+	TRY {
+		const double var = HUGE_VAL;
+		const safer_int_type result = var;
+		fprintf(output_file, "Line %d: %.2f -> %d\n", LINE, var, (int) result);
+	} CATCH (std::exception&) {
+		ASSERT(safer_integer_type_exception_thrown);
+	}
+}
+
+TEST(safer_integer_type_value_less_accurate_due_to_conversion_to_floating_point_numbers, "Value less accurate due to conversion to floating-point numbers")
+{
+	TRY {
+		const safer_llong_type var = 9007199254740993LL; // 2^53 + 1
+		const double result = (double) var;
+		fprintf(output_file, "Line %d: %lld -> %.0f\n", LINE, (long long int) var, result);
+	} CATCH (std::exception&) {
+		ASSERT(safer_integer_type_exception_thrown);
+	}
+	TRY {
+		const safer_ullong_type var = 9007199254740993ULL; // 2^53 + 1
+		const double result = (double) var;
+		fprintf(output_file, "Line %d: %llu -> %.0f\n", LINE, (unsigned long long int) var, result);
+	} CATCH (std::exception&) {
+		ASSERT(safer_integer_type_exception_thrown);
+	}
+}
+
+TEST(safer_integer_type_tests_for_conversion_from_integer_to_floating_point, "Conversion from integer to floating point")
+{
+	TRY {
+		const safer_int_type int_var = 42;
+		float float_result = (float) int_var;
+		ASSERT(float_result == 42.0f);
+		double double_result = (double) int_var;
+		ASSERT(double_result == 42.0);
+		long double long_double_result = (long double) int_var;
+		ASSERT(long_double_result == 42.0L);
+	} CATCH (std::exception&) {
+		ASSERT(Boolean_false);
+	}
+
+	TRY {
+		const safer_uint_type uint_var = 42U;
+		float float_result = (float) uint_var;
+		ASSERT(float_result == 42.0f);
+		double double_result = (double) uint_var;
+		ASSERT(double_result == 42.0);
+		long double long_double_result = (long double) uint_var;
+		ASSERT(long_double_result == 42.0L);
+	} CATCH (std::exception&) {
+		ASSERT(Boolean_false);
+	}
+}
+
+TEST(safer_integer_type_tests_for_conversion_from_floating_point_to_integer, "Conversion from floating point to integer")
+{
+	TRY {
+		const float float_var = 42.0f;
+		safer_int_type int_result = (safer_int_type) float_var;
+		ASSERT_EQUAL(int_result, 42);
+		safer_uint_type uint_result = (safer_uint_type) float_var;
+		ASSERT_UINT_EQUAL(uint_result, 42U);
+	} CATCH (std::exception&) {
+		ASSERT(Boolean_false);
+	}
+
+	TRY {
+		const double double_var = 42.0;
+		safer_int_type int_result = (safer_int_type) double_var;
+		ASSERT_EQUAL(int_result, 42);
+		safer_uint_type uint_result = (safer_uint_type) double_var;
+		ASSERT_UINT_EQUAL(uint_result, 42U);
+	} CATCH (std::exception&) {
+		ASSERT(Boolean_false);
+	}
+
+	TRY {
+		const long double long_double_var = 42.0L;
+		safer_int_type int_result = (safer_int_type) long_double_var;
+		ASSERT_EQUAL(int_result, 42);
+		safer_uint_type uint_result = (safer_uint_type) long_double_var;
+		ASSERT_UINT_EQUAL(uint_result, 42U);
+	} CATCH (std::exception&) {
+		ASSERT(Boolean_false);
+	}
+}
+
 static void run_safer_integer_type_tests(int argc, const char **argv)
 {
 	const char *language = 
@@ -5688,7 +5847,7 @@ static void run_safer_integer_type_tests(int argc, const char **argv)
 #endif
 		;
 	DEFINE_LIST_OF_TESTS(tests) {
-		safer_integer_is_builtin_integer_type_tests,
+		safer_integer_type_trait_tests,
 		safer_integer_type_signedness_tests,
 		safer_integer_type_min_max_tests,
 		safer_integer_type_uninitialized_variable_tests,
@@ -5778,7 +5937,11 @@ static void run_safer_integer_type_tests(int argc, const char **argv)
 		safer_integer_type_bitwise_not_tests,
 		safer_integer_type_bitwise_shift_error_tests,
 		safer_integer_type_bitwise_shift_tests,
-		safer_integer_type_logical_not_tests
+		safer_integer_type_logical_not_tests,
+		safer_integer_type_value_truncation_due_to_conversion_from_floating_point_numbers,
+		safer_integer_type_value_less_accurate_due_to_conversion_to_floating_point_numbers,
+		safer_integer_type_tests_for_conversion_from_integer_to_floating_point,
+		safer_integer_type_tests_for_conversion_from_floating_point_to_integer,
 	};
 
 	if (argc >= 2 && argv != NULL && argv[1] != NULL) {
