@@ -42,8 +42,6 @@ If the header is included by a C source file, each safer integer type will be it
 If the header is included by a C++ source file, each safer integer type will be safer_integer::integer_type<T>,
 where T is the corresponding native integer type.
 
-How to configure the header file?
-
 Compiler switches and their meanings
 ------------------------------------
 The following compiler switches are applicable to C++ source files.
@@ -1308,7 +1306,7 @@ bool can_cast_properly(src_type src)
 		}
 	} else if (dst_type_info::is_exact and not src_type_info::is_exact) {
 		const number_parts_type<src_type> number_parts = split_number_into_integer_and_fractional_parts(src);
-		const bool fractional_part_is_zero = (number_parts.fractional_part == 0.0);
+		const bool fractional_part_is_zero = (number_parts.fractional_part == static_cast<src_type>(0));
 		result = fractional_part_is_zero and (number_parts.integer_part >= dst_min) and (number_parts.integer_part <= dst_max);
 	} else if (not dst_type_info::is_exact and src_type_info::is_exact) {
 		assert(dst_type_info::digits >= 0 && src_type_info::digits <= UINT8_MAX);
@@ -1412,7 +1410,7 @@ final
 	typedef T type;
 	typedef std::numeric_limits<T> type_info;
 	STATIC_ASSERT(type_info::is_integer, "The template parameter type T must be an integer type.");
-	STATIC_ASSERT(sizeof(typename integer_policy::bool_type) == 1U, "The size of bool_type shall be 1-byte.");
+	STATIC_ASSERT(sizeof(typename integer_policy::bool_type) <= sizeof(typename integer_policy::char_type), "The size of bool_type shall not exceed the size of char_type.");
 	STATIC_ASSERT(sizeof(typename integer_policy::char_type) == sizeof(typename integer_policy::schar_type), "char_type and schar_type must have the same size.");
 	STATIC_ASSERT(sizeof(typename integer_policy::char_type) == sizeof(typename integer_policy::uchar_type), "char_type and uchar_type must have the same size.");
 	STATIC_ASSERT(sizeof(typename integer_policy::char_type) <= sizeof(typename integer_policy::short_type), "The size of char_type must not exceed the size of short_type.");
@@ -4001,8 +3999,8 @@ operator>>=(
 
 // Specialization of std::numeric_limits for safer_integer::integer_type
 namespace std {
-template<typename T, typename integer_policy>
-struct numeric_limits< safer_integer::integer_type<T, integer_policy> >
+template<typename T, typename integer_policy, typename error_policy>
+struct numeric_limits< safer_integer::integer_type<T, integer_policy, error_policy> >
 {
 	static CONSTEXPR bool is_specialized = std::numeric_limits<T>::is_specialized;
 	static CONSTEXPR bool is_integer = std::numeric_limits<T>::is_integer;
@@ -4030,41 +4028,41 @@ struct numeric_limits< safer_integer::integer_type<T, integer_policy> >
 	static CONSTEXPR bool traps = std::numeric_limits<T>::traps;
 	static CONSTEXPR bool tinyness_before = std::numeric_limits<T>::tinyness_before;
 
-	static safer_integer::integer_type<T, integer_policy> min() NO_EXCEPTION {
+	static safer_integer::integer_type<T, integer_policy, error_policy> min() NO_EXCEPTION {
 		return safer_integer::integer_type<T, integer_policy>(std::numeric_limits<T>::min());
 	}
 
-	static safer_integer::integer_type<T, integer_policy> max() NO_EXCEPTION {
+	static safer_integer::integer_type<T, integer_policy, error_policy> max() NO_EXCEPTION {
 		return safer_integer::integer_type<T, integer_policy>(std::numeric_limits<T>::max());
 	}
 
 #if __cplusplus >= 201103L
-	static safer_integer::integer_type<T, integer_policy> lowest() NO_EXCEPTION {
+	static safer_integer::integer_type<T, integer_policy, error_policy> lowest() NO_EXCEPTION {
 		return safer_integer::integer_type<T, integer_policy>(std::numeric_limits<T>::lowest());
 	}
 #endif
 
-	static safer_integer::integer_type<T, integer_policy> epsilon() NO_EXCEPTION {
+	static safer_integer::integer_type<T, integer_policy, error_policy> epsilon() NO_EXCEPTION {
 		return safer_integer::integer_type<T, integer_policy>(std::numeric_limits<T>::epsilon());
 	}
 
-	static safer_integer::integer_type<T, integer_policy> round_error() NO_EXCEPTION {
+	static safer_integer::integer_type<T, integer_policy, error_policy> round_error() NO_EXCEPTION {
 		return safer_integer::integer_type<T, integer_policy>(std::numeric_limits<T>::round_error());
 	}
 
-	static safer_integer::integer_type<T, integer_policy> infinity() NO_EXCEPTION {
+	static safer_integer::integer_type<T, integer_policy, error_policy> infinity() NO_EXCEPTION {
 		return safer_integer::integer_type<T, integer_policy>(std::numeric_limits<T>::infinity());
 	}
 
-	static safer_integer::integer_type<T, integer_policy> quiet_NaN() NO_EXCEPTION {
+	static safer_integer::integer_type<T, integer_policy, error_policy> quiet_NaN() NO_EXCEPTION {
 		return safer_integer::integer_type<T, integer_policy>(std::numeric_limits<T>::quiet_NaN());
 	}
 
-	static safer_integer::integer_type<T, integer_policy> signaling_NaN() NO_EXCEPTION {
+	static safer_integer::integer_type<T, integer_policy, error_policy> signaling_NaN() NO_EXCEPTION {
 		return safer_integer::integer_type<T, integer_policy>(std::numeric_limits<T>::signaling_NaN());
 	}
 
-	static safer_integer::integer_type<T, integer_policy> denorm_min() NO_EXCEPTION {
+	static safer_integer::integer_type<T, integer_policy, error_policy> denorm_min() NO_EXCEPTION {
 		return safer_integer::integer_type<T, integer_policy>(std::numeric_limits<T>::denorm_min());
 	}
 };
@@ -4090,7 +4088,9 @@ typedef safer_integer::integer_type<safer_integer::default_integer_policy::ulong
 typedef safer_integer::integer_type<safer_integer::default_integer_policy::llong_type> safer_llong_type;
 typedef safer_integer::integer_type<safer_integer::default_integer_policy::ullong_type> safer_ullong_type;
 typedef safer_integer::integer_type<safer_integer::default_integer_policy::ptrdiff_type> safer_ptrdiff_type;
+typedef safer_ptrdiff_type safer_intptr_type;
 typedef safer_integer::integer_type<safer_integer::default_integer_policy::size_type> safer_size_type;
+typedef safer_size_type safer_uintptr_type;
 typedef safer_integer::integer_type<int8_t> safer_int8_type;
 typedef safer_integer::integer_type<uint8_t> safer_uint8_type;
 typedef safer_integer::integer_type<int16_t> safer_int16_type;
@@ -4126,8 +4126,12 @@ typedef safer_integer::integer_type<uint64_t> safer_uint64_type;
 #define SAFER_ULLONG_MAX std::numeric_limits<safer_ullong_type>::max()
 #define SAFER_PTRDIFF_MIN std::numeric_limits<safer_ptrdiff_type>::min()
 #define SAFER_PTRDIFF_MAX std::numeric_limits<safer_ptrdiff_type>::max()
+#define SAFER_INTPTR_MIN std::numeric_limits<safer_intptr_type>::min()
+#define SAFER_INTPTR_MAX std::numeric_limits<safer_intptr_type>::max()
 #define SAFER_SIZE_MIN std::numeric_limits<safer_size_type>::min()
 #define SAFER_SIZE_MAX std::numeric_limits<safer_size_type>::max()
+#define SAFER_UINTPTR_MIN std::numeric_limits<safer_uintptr_type>::min()
+#define SAFER_UINTPTR_MAX std::numeric_limits<safer_uintptr_type>::max()
 #define SAFER_INT8_MIN std::numeric_limits<safer_int8_type>::min()
 #define SAFER_INT8_MAX std::numeric_limits<safer_int8_type>::max()
 #define SAFER_UINT8_MIN std::numeric_limits<safer_uint8_type>::min()
@@ -4158,7 +4162,9 @@ typedef safer_integer::integer_type<uint64_t> safer_uint64_type;
 #define SAFER_LLONG_TYPE_IS_SIGNED std::numeric_limits<safer_llong_type>::is_signed
 #define SAFER_ULLONG_TYPE_IS_SIGNED std::numeric_limits<safer_ullong_type>::is_signed
 #define SAFER_PTRDIFF_TYPE_IS_SIGNED std::numeric_limits<safer_ptrdiff_type>::is_signed
+#define SAFER_INTPTR_TYPE_IS_SIGNED std::numeric_limits<safer_intptr_type>::is_signed
 #define SAFER_SIZE_TYPE_IS_SIGNED std::numeric_limits<safer_size_type>::is_signed
+#define SAFER_UINTPTR_TYPE_IS_SIGNED std::numeric_limits<safer_uintptr_type>::is_signed
 #define SAFER_INT8_TYPE_IS_SIGNED std::numeric_limits<safer_int8_type>::is_signed
 #define SAFER_UINT8_TYPE_IS_SIGNED std::numeric_limits<safer_uint8_type>::is_signed
 #define SAFER_INT16_TYPE_IS_SIGNED std::numeric_limits<safer_int16_type>::is_signed
@@ -4187,7 +4193,9 @@ typedef unsigned long safer_ulong_type;
 typedef long long safer_llong_type;
 typedef unsigned long long safer_ullong_type;
 typedef ptrdiff_t safer_ptrdiff_type;
+typedef safer_ptrdiff_type safer_intptr_type;
 typedef size_t safer_size_type;
+typedef safer_size_type safer_uintptr_type;
 typedef int8_t safer_int8_type;
 typedef uint8_t safer_uint8_type;
 typedef int16_t safer_int16_type;
@@ -4223,8 +4231,12 @@ typedef uint64_t safer_uint64_type;
 #define SAFER_ULLONG_MAX ULLONG_MAX
 #define SAFER_PTRDIFF_MIN PTRDIFF_MIN
 #define SAFER_PTRDIFF_MAX PTRDIFF_MAX
+#define SAFER_INTPTR_MIN INTPTR_MIN
+#define SAFER_INTPTR_MAX INTPTR_MAX
 #define SAFER_SIZE_MIN 0U
 #define SAFER_SIZE_MAX SIZE_MAX
+#define SAFER_UINTPTR_MIN 0U
+#define SAFER_UINTPTR_MAX UINTPTR_MAX
 #define SAFER_INT8_MIN INT8_MIN
 #define SAFER_INT8_MAX INT8_MAX
 #define SAFER_UINT8_MIN 0U
@@ -4255,7 +4267,9 @@ typedef uint64_t safer_uint64_type;
 #define SAFER_LLONG_TYPE_IS_SIGNED (SAFER_LLONG_MIN < 0)
 #define SAFER_ULLONG_TYPE_IS_SIGNED (SAFER_ULLONG_MIN < 0)
 #define SAFER_PTRDIFF_TYPE_IS_SIGNED (SAFER_PTRDIFF_MIN < 0)
+#define SAFER_INTPTR_TYPE_IS_SIGNED (SAFER_INTPTR_MIN < 0)
 #define SAFER_SIZE_TYPE_IS_SIGNED (SAFER_SIZE_MIN < 0)
+#define SAFER_UINTPTR_TYPE_IS_SIGNED (SAFER_UINTPTR_MIN < 0)
 #define SAFER_INT8_TYPE_IS_SIGNED (SAFER_INT8_MIN < 0)
 #define SAFER_UINT8_TYPE_IS_SIGNED (SAFER_UINT8_MIN < 0)
 #define SAFER_INT16_TYPE_IS_SIGNED (SAFER_INT16_MIN < 0)
