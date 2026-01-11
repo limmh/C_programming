@@ -148,10 +148,9 @@ void *static_pool_reallocate(static_pool_type *pool, void *ptr, size_t new_size)
 	}
 
 	if (new_ptr != NULL and chunk_ptr != NULL and new_ptr != chunk_ptr) {
-		assert(new_chunk_size > chunk_size);
-		memset(new_ptr, 0, new_chunk_size * sizeof(*new_ptr));
-		memcpy(new_ptr, chunk_ptr, chunk_size * sizeof(*chunk_ptr));
-		memset(chunk_ptr, 0, chunk_size * sizeof(*chunk_ptr));
+		const size_t size_to_copy = (new_chunk_size < chunk_size) ? new_chunk_size : chunk_size;
+		assert(new_chunk_size != chunk_size);
+		memcpy(new_ptr, chunk_ptr, size_to_copy * sizeof(*chunk_ptr));
 		pool->index_of_chunk_occupied = index;
 	}
 
@@ -162,36 +161,27 @@ void static_pool_deallocate(static_pool_type *pool, void *ptr)
 {
 	unsigned char index = 0U;
 	assert(pool != NULL);
+
 	if (ptr == pool->chunk1) {
 		index = 1U;
-		memset(pool->chunk1, 0, sizeof(pool->chunk1));
 	} else if (ptr == pool->chunk2) {
 		index = 2U;
-		memset(pool->chunk2, 0, sizeof(pool->chunk2));
 	} else if (ptr == pool->chunk3) {
 		index = 3U;
-		memset(pool->chunk3, 0, sizeof(pool->chunk3));
 	} else if (ptr == pool->chunk4) {
 		index = 4U;
-		memset(pool->chunk4, 0, sizeof(pool->chunk4));
 	} else if (ptr == pool->chunk5) {
 		index = 5U;
-		memset(pool->chunk5, 0, sizeof(pool->chunk5));
 	} else if (ptr == pool->chunk6) {
 		index = 6U;
-		memset(pool->chunk6, 0, sizeof(pool->chunk6));
 	} else if (ptr == pool->chunk7) {
 		index = 7U;
-		memset(pool->chunk7, 0, sizeof(pool->chunk7));
 	} else if (ptr == pool->chunk8) {
 		index = 8U;
-		memset(pool->chunk8, 0, sizeof(pool->chunk8));
 	} else if (ptr == pool->chunk9) {
 		index = 9U;
-		memset(pool->chunk9, 0, sizeof(pool->chunk9));
 	} else if (ptr == pool->chunk10) {
 		index = 10U;
-		memset(pool->chunk10, 0, sizeof(pool->chunk10));
 	}
 
 	if (pool->index_of_chunk_occupied == index) {
@@ -201,6 +191,6 @@ void static_pool_deallocate(static_pool_type *pool, void *ptr)
 
 size_t static_pool_largest_chunk_size(void)
 {
-	static static_pool_type pool = {0};
+	static const static_pool_type pool = {0};
 	return sizeof(pool.chunk10);
 }

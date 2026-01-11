@@ -3,6 +3,7 @@
 #ifndef DYNAMIC_ARRAY_H
 #define DYNAMIC_ARRAY_H
 
+#include "allocator_type.h"
 #include "static_assert.h"
 #include <assert.h>
 #include <stddef.h>
@@ -51,12 +52,7 @@ typedef struct dynamic_array_debug_info_type
 	dynamic_array_error_type error;
 } dynamic_array_debug_info_type;
 
-typedef struct dynamic_array_allocator_type
-{
-	void * (*allocate_funcptr)(size_t); /* pointer to a function that behaves like malloc */
-	void * (*reallocate_funcptr)(void*, size_t); /* pointer to a function that behaves like realloc (optional, can be NULL) */
-	void   (*deallocate_funcptr)(void*); /* pointer to a function that behaves like free */
-} dynamic_array_allocator_type;
+typedef allocator_type dynamic_array_allocator_type;
 
 /*
 Provides an exception handler callback function.

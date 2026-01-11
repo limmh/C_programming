@@ -154,9 +154,9 @@ static void dynamic_array_check_error_internal(
 			pdebug_info->info_1 = array->element_size;
 		} else if (array->allocator == NULL) {
 			pdebug_info->error = dynamic_array_error_no_allocator;
-		} else if (array->allocator->allocate_funcptr == NULL) {
+		} else if (array->allocator->allocate == NULL) {
 			pdebug_info->error = dynamic_array_error_no_memory_allocation_function;
-		} else if (array->allocator->deallocate_funcptr == NULL) {
+		} else if (array->allocator->deallocate == NULL) {
 			pdebug_info->error = dynamic_array_error_no_memory_deallocation_function;
 		} else {
 			pdebug_info->error = dynamic_array_error_none;
@@ -270,18 +270,18 @@ dynamic_array_create_(
 #endif
 
 	if (allocator != NULL) {
-		const Boolean_type use_custom_allocator = (allocator->allocate_funcptr != NULL and allocator->deallocate_funcptr != NULL);
-		assert(allocator->allocate_funcptr != NULL);
-		assert(allocator->deallocate_funcptr != NULL);
+		const Boolean_type use_custom_allocator = (allocator->allocate != NULL and allocator->deallocate != NULL);
+		assert(allocator->allocate != NULL);
+		assert(allocator->deallocate != NULL);
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
-		if (allocator->allocate_funcptr == NULL) {
+		if (allocator->allocate == NULL) {
 			debug_info.error = dynamic_array_error_no_memory_allocation_function;
 			debug_info.library_line_number = __LINE__;
 			dynamic_array_report_error(debug_info);
 			dynamic_array_handle_exception(debug_info.error);
 			dynamic_array_terminate();
 		}
-		if (allocator->deallocate_funcptr == NULL) {
+		if (allocator->deallocate == NULL) {
 			debug_info.error = dynamic_array_error_no_memory_deallocation_function;
 			debug_info.library_line_number = __LINE__;
 			dynamic_array_report_error(debug_info);
@@ -298,7 +298,7 @@ dynamic_array_create_(
 
 	assert(allocator != NULL);
 	number_of_bytes = initial_capacity * element_size;
-	ptr = allocator->allocate_funcptr(number_of_bytes);
+	ptr = allocator_allocate(*allocator, number_of_bytes);
 	if (ptr != NULL) {
 		if (source != NULL) {
 			const size_t number_of_bytes_to_copy = initial_size * element_size;
@@ -355,9 +355,9 @@ void dynamic_array_delete_(
 	array->capacity = 0U;
 	array->number_of_elements = 0U;
 	array->element_size = 0U;
-	assert(array->allocator != NULL and array->allocator->deallocate_funcptr != NULL);
-	if (array->ptr != NULL and array->allocator != NULL and array->allocator->deallocate_funcptr != NULL) {
-		array->allocator->deallocate_funcptr(array->ptr);
+	assert(array->allocator != NULL and array->allocator->deallocate != NULL);
+	if (array->ptr != NULL and array->allocator != NULL and array->allocator->deallocate != NULL) {
+		allocator_deallocate(*(array->allocator), array->ptr);
 	}
 	array->ptr = NULL;
 	array->allocator = NULL;
@@ -466,7 +466,7 @@ void *dynamic_array_element_ptr_(
 	array = (const dynamic_array_internal_type*) dynamic_array;
 	assert(element_size == array->element_size);
 	assert(index < array->number_of_elements);
-	assert(not dynamic_array_multiplication_overflow_detected(index, array->number_of_elements));
+	assert(not dynamic_array_multiplication_overflow_detected(index, array->element_size));
 #ifndef DYNAMIC_ARRAY_NO_RUNTIME_CHECKS
 	if (element_size != array->element_size) {
 		debug_info.error = dynamic_array_error_element_size_mismatch;
@@ -582,7 +582,7 @@ void dynamic_array_add_elements_at_index_(
 	new_number_of_elements = array->number_of_elements + number_of_elements;
 	if (new_number_of_elements > array->capacity) {
 		void *ptr = NULL;
-		size_t new_byte_count = 0U;
+		size_t old_byte_count = 0U, new_byte_count = 0U;
 		size_t new_capacity = array->capacity;
 		Boolean_type multiplication_overflow_detected = Boolean_false;
 
@@ -603,19 +603,10 @@ void dynamic_array_add_elements_at_index_(
 			dynamic_array_terminate();
 		}
 #endif
+		old_byte_count = array->capacity * array->element_size;
 		new_byte_count = new_capacity * array->element_size;
-		if (array->allocator->reallocate_funcptr != NULL) {
-			ptr = array->allocator->reallocate_funcptr(array->ptr, new_byte_count);
-		} else {
-			ptr = array->allocator->allocate_funcptr(new_byte_count);
-		}
+		ptr = allocator_reallocate(*(array->allocator), array->ptr, old_byte_count, new_byte_count);
 		if (ptr != NULL) {
-			if (array->allocator->reallocate_funcptr == NULL) {
-				const size_t number_of_bytes_occupied = array->number_of_elements * array->element_size;
-				memcpy(ptr, array->ptr, number_of_bytes_occupied);
-				memset(array->ptr, 0, number_of_bytes_occupied);
-				array->allocator->deallocate_funcptr(array->ptr);
-			}
 			array->ptr = ptr;
 			array->capacity = new_capacity;
 		} else {
@@ -778,7 +769,7 @@ void dynamic_array_resize_(
 		unsigned char *ptr = NULL;
 
 		if (new_number_of_elements > array->capacity) {
-			size_t new_byte_count = 0U;
+			size_t old_byte_count = 0U, new_byte_count = 0U;
 			void *ptr = NULL;
 			size_t new_capacity = array->capacity;
 			Boolean_type multiplication_overflow_detected = Boolean_false;
@@ -800,19 +791,10 @@ void dynamic_array_resize_(
 				dynamic_array_terminate();
 			}
 #endif
+			old_byte_count = array->capacity * array->element_size;
 			new_byte_count = new_capacity * array->element_size;
-			if (array->allocator->reallocate_funcptr != NULL) {
-				ptr = array->allocator->reallocate_funcptr(array->ptr, new_byte_count);
-			} else {
-				ptr = array->allocator->allocate_funcptr(new_byte_count);
-			}
+			ptr = allocator_reallocate(*(array->allocator), array->ptr, old_byte_count, new_byte_count);
 			if (ptr != NULL) {
-				if (array->allocator->reallocate_funcptr == NULL) {
-					const size_t number_of_bytes_occupied = array->number_of_elements * array->element_size;
-					memcpy(ptr, array->ptr, number_of_bytes_occupied);
-					memset(array->ptr, 0, number_of_bytes_occupied);
-					array->allocator->deallocate_funcptr(array->ptr);
-				}
 				array->ptr = ptr;
 				array->capacity = new_capacity;
 			} else {
