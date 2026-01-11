@@ -1,7 +1,6 @@
 #ifndef FAT_POINTER_H
 #define FAT_POINTER_H
 
-#include "static_assert.h"
 #include <assert.h>
 #include <stddef.h>
 
@@ -15,8 +14,8 @@ typedef struct fat_pointer_type_
 	size_t do_not_access_directly[4];
 } fat_pointer_type_;
 
-/* For type annotation, 'type' refers to the type of each element being referenced */
-#define fat_pointer_type(type) fat_pointer_type_
+/* For type annotation, 'element_type' is the type of each element being referenced */
+#define fat_pointer_type(element_type) fat_pointer_type_
 
 typedef enum fat_pointer_error_type
 {
@@ -221,28 +220,16 @@ fat_pointer_add_elements_at_index_(
 );
 
 #define fat_pointer_add_elements_at_index(type, fatptr, index, elements, element_count) \
-	do { \
-		STATIC_ASSERT(sizeof(type) == sizeof((elements)[0]), "Mismatch between type size and element size."); \
-		fat_pointer_add_elements_at_index_(&(fatptr), index, elements, element_count, sizeof((elements)[0]), __FILE__, __LINE__); \
-	} while (0)
+	fat_pointer_add_elements_at_index_(&(fatptr), index, elements, element_count, sizeof((elements)[0]), __FILE__, __LINE__)
 
 #define fat_pointer_add_element_at_index(type, fatptr, index, element) \
-	do { \
-		type tmp = element; \
-		fat_pointer_add_elements_at_index_(&(fatptr), index, &tmp, 1U, sizeof(tmp), __FILE__, __LINE__); \
-	} while (0)
+	fat_pointer_add_elements_at_index_(&(fatptr), index, &(element), 1U, sizeof(element), __FILE__, __LINE__)
 
 #define fat_pointer_append_elements(type, fatptr, elements, element_count) \
-	do { \
-		STATIC_ASSERT(sizeof(type) == sizeof((elements)[0]), "Mismatch between type size and element size."); \
-		fat_pointer_add_elements_at_index_(&(fatptr), fat_pointer_length(fatptr), elements, element_count, sizeof((elements)[0]), __FILE__, __LINE__); \
-	} while (0)
+	fat_pointer_add_elements_at_index_(&(fatptr), fat_pointer_length(fatptr), elements, element_count, sizeof((elements)[0]), __FILE__, __LINE__)
 
 #define fat_pointer_append_element(type, fatptr, element) \
-	do { \
-		type tmp = element; \
-		fat_pointer_add_elements_at_index_(&(fatptr), fat_pointer_length(fatptr), &tmp, 1U, sizeof(tmp), __FILE__, __LINE__); \
-	} while (0)
+	fat_pointer_add_elements_at_index_(&(fatptr), fat_pointer_length(fatptr), &(element), 1U, sizeof(element), __FILE__, __LINE__)
 
 #define fat_pointer_push_back(type, fatptr, element)  fat_pointer_append_element(type, fatptr, element)
 
@@ -280,24 +267,13 @@ fat_pointer_remove_elements_starting_from_index_(
 	fat_pointer_remove_elements_starting_from_index_(&(fatptr), index, NULL, number_of_elements, sizeof(type), __FILE__, __LINE__)
 
 #define fat_pointer_move_elements_starting_from_index_to_buffer(type, fatptr, index, buffer, number_of_elements) \
-	do { \
-		STATIC_ASSERT(sizeof(type) == sizeof((buffer)[0]), "Mismatch between type size and element size."); \
-		assert(buffer != NULL); \
-		fat_pointer_remove_elements_starting_from_index_(&(fatptr), index, buffer, number_of_elements, sizeof((buffer)[0])); \
-	} while (0)
+	fat_pointer_remove_elements_starting_from_index_(&(fatptr), index, buffer, number_of_elements, sizeof((buffer)[0]), __FILE__, __LINE__)
 
 #define fat_pointer_remove_element_at_index(type, fatptr, index) \
 	fat_pointer_remove_elements_starting_from_index_(&(fatptr), index, NULL, 1U, sizeof(type), __FILE__, __LINE__)
 
 #define fat_pointer_pop_back(type, fatptr, variable) \
-	do { \
-		STATIC_ASSERT(sizeof(type) == sizeof(variable), "Mismatch between type size and variable size."); \
-		size_t last_element_index = 0U, fatptr_length = 0U; \
-		fatptr_length = fat_pointer_length(fatptr); \
-		assert(fatptr_length >= 1U); \
-		last_element_index = (fatptr_length >= 1U) ? (fatptr_length - 1U) : 0U; \
-		fat_pointer_remove_elements_starting_from_index_(&(fatptr), last_element_index, &(variable), 1U, sizeof(variable), __FILE__, __LINE__); \
-	} while (0)
+	fat_pointer_remove_elements_starting_from_index_(&(fatptr), fat_pointer_length(fatptr) - 1U, &(variable), 1U, sizeof(variable), __FILE__, __LINE__)
 
 /*
 Resizes the array referenced by an opaque fat pointer

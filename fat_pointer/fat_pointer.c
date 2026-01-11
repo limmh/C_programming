@@ -1,5 +1,7 @@
 #include "fat_pointer.h"
+#include "macro_alignof.h"
 #include "safer_fixed_width_integers.h"
+#include "static_assert.h"
 #include <iso646.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +15,7 @@ typedef struct fat_pointer_internal_type {
 } fat_pointer_internal_type;
 
 STATIC_ASSERT(sizeof(fat_pointer_type_) == sizeof(fat_pointer_internal_type), "Size mismatch between public fat pointer type and internal fat pointer type.");
+STATIC_ASSERT(ALIGNOF(fat_pointer_type_) == ALIGNOF(fat_pointer_internal_type), "Alignment mismatch between public fat pointer type and internal fat pointer type.");
 
 static void fat_pointer_default_error_reporting_handler(fat_pointer_debug_info_type debug_info)
 {
