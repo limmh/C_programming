@@ -72,6 +72,9 @@ void testing_library_print_LHS_and_RHS_as_signed_integers(int LHS, int RHS);
 void testing_library_print_LHS_and_RHS_as_unsigned_integers(unsigned int LHS, unsigned int RHS);
 void testing_library_print_LHS_and_RHS_as_signed_long_integers(long LHS, long RHS);
 void testing_library_print_LHS_and_RHS_as_unsigned_long_integers(unsigned long LHS, unsigned long RHS);
+void testing_library_print_LHS_and_RHS_as_strings(const char *LHS, const char *RHS);
+Boolean_type testing_library_strings_are_equal(const char *LHS, const char *RHS);
+Boolean_type testing_library_strings_are_not_equal(const char *LHS, const char *RHS);
 
 #ifndef UNIT_TESTING_LIBRARY_BUILD_LIBRARY
 
@@ -442,6 +445,11 @@ STATIC_ASSERT(sizeof(size_t) == sizeof(uint16_t), "The size of size_t shall be e
 #else
 #pragma message("unit_testing: Test assertions are not supported for size_t.")
 #endif
+
+#define ASSERT_STRING_EQUAL(LHS, RHS) \
+	COMPARE_USING_FUNCTION(const char*, testing_library_strings_are_equal, LHS, RHS, testing_library_print_LHS_and_RHS_as_strings)
+#define ASSERT_STRING_NOT_EQUAL(LHS, RHS) \
+	COMPARE_USING_FUNCTION(const char*, testing_library_strings_are_not_equal, LHS, RHS, testing_library_print_LHS_and_RHS_as_strings)
 
 #endif /* UNIT_TESTING_LIBRARY_BUILD_LIBRARY */
 

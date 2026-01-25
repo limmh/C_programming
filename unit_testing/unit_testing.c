@@ -7,6 +7,7 @@
 
 #include <assert.h>
 #include <iso646.h>
+#include <string.h>
 
 #define TEST_STATUS_PASSED "Passed"
 #define TEST_STATUS_FAILED "Failed"
@@ -295,29 +296,49 @@ void testing_library_print_test_statistics(const testing_library_test_statistics
 void testing_library_print_file_name(const char *file_name)
 {
 	FILE *file = testing_library_get_file();
+	assert(file_name != NULL);
 	fprintf(file, "%s\n", file_name);
 }
 
 void testing_library_print_LHS_and_RHS_as_signed_integers(int LHS, int RHS)
 {
 	FILE *file = testing_library_get_file();
-	fprintf(file, "(LHS == %d, RHS == %d)\n", LHS, RHS);
+	fprintf(file, "LHS == %d, RHS == %d\n", LHS, RHS);
 }
 
 void testing_library_print_LHS_and_RHS_as_unsigned_integers(unsigned int LHS, unsigned int RHS)
 {
 	FILE *file = testing_library_get_file();
-	fprintf(file, "(LHS == %u, RHS == %u)\n", LHS, RHS);
+	fprintf(file, "LHS == %u, RHS == %u\n", LHS, RHS);
 }
 
 void testing_library_print_LHS_and_RHS_as_signed_long_integers(long LHS, long RHS)
 {
 	FILE *file = testing_library_get_file();
-	fprintf(file, "(LHS == %ld, RHS == %ld)\n", LHS, RHS);
+	fprintf(file, "LHS == %ld, RHS == %ld\n", LHS, RHS);
 }
 
 void testing_library_print_LHS_and_RHS_as_unsigned_long_integers(unsigned long LHS, unsigned long RHS)
 {
 	FILE *file = testing_library_get_file();
-	fprintf(file, "(LHS == %lu, RHS == %lu)\n", LHS, RHS);
+	fprintf(file, "LHS == %lu, RHS == %lu\n", LHS, RHS);
+}
+
+/* LHS and RHS must be null-terminated. */
+void testing_library_print_LHS_and_RHS_as_strings(const char *LHS, const char *RHS)
+{
+	FILE *file = testing_library_get_file();
+	assert(LHS != NULL);
+	assert(RHS != NULL);
+	fprintf(file, "left string == %s, right string == %s\n", LHS, RHS);
+}
+
+Boolean_type testing_library_strings_are_equal(const char *LHS, const char *RHS)
+{
+	return strcmp(LHS, RHS) == 0;
+}
+
+Boolean_type testing_library_strings_are_not_equal(const char *LHS, const char *RHS)
+{
+	return strcmp(LHS, RHS) != 0;
 }
