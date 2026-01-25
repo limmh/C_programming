@@ -1331,6 +1331,18 @@ bool can_cast_properly(src_type src)
 	return result;
 }
 
+template<> bool can_cast_properly<char, char>(char) {return true;}
+template<> bool can_cast_properly<signed char, signed char>(signed char) {return true;}
+template<> bool can_cast_properly<unsigned char, unsigned char>(unsigned char) {return true;}
+template<> bool can_cast_properly<short, short>(short) {return true;}
+template<> bool can_cast_properly<unsigned short, unsigned short>(unsigned short) {return true;}
+template<> bool can_cast_properly<int, int>(int) {return true;}
+template<> bool can_cast_properly<unsigned int, unsigned int>(unsigned int) {return true;}
+template<> bool can_cast_properly<long, long>(long) {return true;}
+template<> bool can_cast_properly<unsigned long, unsigned long>(unsigned long) {return true;}
+template<> bool can_cast_properly<long long, long long>(long long) {return true;}
+template<> bool can_cast_properly<unsigned long long, unsigned long long>(unsigned long long) {return true;}
+
 template<> bool can_cast_properly<bool, bool>(bool) {return true;}
 template<> bool can_cast_properly<bool, char>(char) {return true;}
 template<> bool can_cast_properly<bool, signed char>(signed char) {return true;}
@@ -1343,6 +1355,9 @@ template<> bool can_cast_properly<bool, long>(long) {return true;}
 template<> bool can_cast_properly<bool, unsigned long>(unsigned long) {return true;}
 template<> bool can_cast_properly<bool, long long>(long long) {return true;}
 template<> bool can_cast_properly<bool, unsigned long long>(unsigned long long) {return true;}
+template<> bool can_cast_properly<bool, float>(float) {return true;}
+template<> bool can_cast_properly<bool, double>(double) {return true;}
+template<> bool can_cast_properly<bool, long double>(long double) {return true;}
 
 template<> bool can_cast_properly<char, bool>(bool) {return true;}
 template<> bool can_cast_properly<signed char, bool>(bool) {return true;}
@@ -1355,6 +1370,9 @@ template<> bool can_cast_properly<long, bool>(bool) {return true;}
 template<> bool can_cast_properly<unsigned long, bool>(bool) {return true;}
 template<> bool can_cast_properly<long long, bool>(bool) {return true;}
 template<> bool can_cast_properly<unsigned long long, bool>(bool) {return true;}
+template<> bool can_cast_properly<float, bool>(bool) {return true;}
+template<> bool can_cast_properly<double, bool>(bool) {return true;}
+template<> bool can_cast_properly<long double, bool>(bool) {return true;}
 
 template<typename T1, typename T2, typename promoted_type>
 operation_error_type check_integer_promotion_for_binary_operation(T1 lhs, T2 rhs) {
