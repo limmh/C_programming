@@ -19,6 +19,8 @@ add_library(
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integers.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion.h"
 )
 set_target_properties(
 	safer_integer PROPERTIES
@@ -28,6 +30,46 @@ set_target_properties(
 )
 target_include_directories(
 	safer_integer PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+)
+
+add_library(
+	safer_integer_where_char_is_unsigned STATIC
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integers.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integers.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion.h"
+)
+set_target_properties(
+	safer_integer_where_char_is_unsigned PROPERTIES
+	C_STANDARD ${LIBRARY_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS YES
+)
+target_include_directories(
+	safer_integer_where_char_is_unsigned PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang|IntelLLVM|XLClang|IBMClang")
+	target_compile_options(
+		safer_integer_where_char_is_unsigned PRIVATE
+		"-funsigned-char"
+	)
+elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+	target_compile_options(
+		safer_integer_where_char_is_unsigned PRIVATE
+		"/J"
+	)
+endif()
+target_include_directories(
+	safer_integer_where_char_is_unsigned PRIVATE
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
 )
@@ -211,6 +253,63 @@ target_include_directories(
 )
 target_link_libraries(
 	safe_bitwise_operation_tests
+	terminal_text_color
+	unit_testing
+)
+
+add_executable(
+	safer_integer_conversion_tests
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion_tests.c"
+)
+set_target_properties(
+	safer_integer_conversion_tests PROPERTIES
+	C_STANDARD ${LIBRARY_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS YES
+)
+target_include_directories(
+	safer_integer_conversion_tests PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+target_link_libraries(
+	safer_integer_conversion_tests
+	safer_integer
+	terminal_text_color
+	unit_testing
+)
+
+add_executable(
+	safer_integer_conversion_tests_where_char_is_unsigned
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion_tests.c"
+)
+set_target_properties(
+	safer_integer_conversion_tests_where_char_is_unsigned PROPERTIES
+	C_STANDARD ${LIBRARY_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS YES
+)
+target_include_directories(
+	safer_integer_conversion_tests_where_char_is_unsigned PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+if (CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang|IntelLLVM|XLClang|IBMClang")
+	target_compile_options(
+		safer_integer_conversion_tests_where_char_is_unsigned PRIVATE
+		"-funsigned-char"
+	)
+elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+	target_compile_options(
+		safer_integer_conversion_tests_where_char_is_unsigned PRIVATE
+		"/J"
+	)
+endif()
+target_link_libraries(
+	safer_integer_conversion_tests_where_char_is_unsigned
+	safer_integer_where_char_is_unsigned
 	terminal_text_color
 	unit_testing
 )
