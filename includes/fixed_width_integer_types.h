@@ -63,7 +63,7 @@ STATIC_ASSERT((sizeof(unsigned long long) * CHAR_BIT) == 64U, "The size of unsig
 #define FIXED_WIDTH_INTEGER_TYPE_UINT64_IS_SUPPORTED 0
 #endif
 
-#if (CHAR_MIN == INT8_MIN) && (CHAR_MAX == INT8_MAX)
+#if (SCHAR_MIN == INT8_MIN) && (SCHAR_MAX == INT8_MAX)
 STATIC_ASSERT((sizeof(signed char) * CHAR_BIT) == 8U, "The size of signed char must be 8-bit.");
 #pragma message("The size of signed char is 8-bit.")
 typedef signed char int8_t;
