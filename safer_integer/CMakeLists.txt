@@ -11,6 +11,7 @@ if (NOT DEFINED PROGRAM_C_STANDARD)
 endif()
 
 # library
+
 add_library(
 	safer_integer STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer.c"
@@ -21,6 +22,8 @@ add_library(
 	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integer_conversion.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integer_conversion.h"
 )
 set_target_properties(
 	safer_integer PROPERTIES
@@ -44,6 +47,8 @@ add_library(
 	"${CMAKE_CURRENT_SOURCE_DIR}/debug_mode_integer.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_conversion.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integer_conversion.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integer_conversion.h"
 )
 set_target_properties(
 	safer_integer_where_char_is_unsigned PROPERTIES
@@ -74,7 +79,8 @@ target_include_directories(
 	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
 )
 
-# test program
+# test programs
+
 add_executable(
 	safer_integer_tests
 	"${CMAKE_CURRENT_SOURCE_DIR}/safer_integer_tests.c"
@@ -310,6 +316,29 @@ endif()
 target_link_libraries(
 	safer_integer_conversion_tests_where_char_is_unsigned
 	safer_integer_where_char_is_unsigned
+	terminal_text_color
+	unit_testing
+)
+
+add_executable(
+	safer_fixed_width_integer_conversion_tests
+	"${CMAKE_CURRENT_SOURCE_DIR}/safer_fixed_width_integer_conversion_tests.c"
+)
+set_target_properties(
+	safer_fixed_width_integer_conversion_tests PROPERTIES
+	C_STANDARD ${LIBRARY_C_STANDARD}
+	C_STANDARD_REQUIRED YES
+	C_EXTENSIONS YES
+)
+target_include_directories(
+	safer_fixed_width_integer_conversion_tests PRIVATE
+	"${CMAKE_CURRENT_SOURCE_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../includes"
+	"${CMAKE_CURRENT_SOURCE_DIR}/../unit_testing"
+)
+target_link_libraries(
+	safer_fixed_width_integer_conversion_tests
+	safer_integer
 	terminal_text_color
 	unit_testing
 )
